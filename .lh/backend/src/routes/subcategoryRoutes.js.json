@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/routes/subcategoryRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753116436697,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753116436697,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst subcategoryController = require('../controllers/subcategoryController');\r\nconst { uploadCategoryImage } = require('../utils/fileUpload');\r\nconst { protect, authorizeRoles } = require('../middleware/authMiddleware');\r\n\r\n// Get all subcategories (public)\r\nrouter.get('/', subcategoryController.getSubcategories);\r\n\r\n// Get subcategories by parent category (public)\r\nrouter.get('/parent/:parentId', subcategoryController.getSubcategoriesByParent);\r\n\r\n// Get single subcategory (public)\r\nrouter.get('/:id', subcategoryController.getSubcategory);\r\n\r\n// Protected admin routes\r\nrouter.use(protect, authorizeRoles('admin', 'superadmin'));\r\n\r\n// Create subcategory (with optional image upload)\r\nrouter.post('/', uploadCategoryImage.single('image'), subcategoryController.createSubcategory);\r\n\r\n// Update subcategory (with optional image upload)\r\nrouter.put('/:id', uploadCategoryImage.single('image'), subcategoryController.updateSubcategory);\r\n\r\n// Delete subcategory\r\nrouter.delete('/:id', subcategoryController.deleteSubcategory);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

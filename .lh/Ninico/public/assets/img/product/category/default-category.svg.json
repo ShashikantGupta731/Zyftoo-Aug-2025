@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/public/assets/img/product/category/default-category.svg",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753110070260,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753110070260,
+            "name": "Commit-0",
+            "content": "<!-- Simple SVG placeholder for default category image -->\r\n<svg width=\"40\" height=\"40\" xmlns=\"http://www.w3.org/2000/svg\">\r\n  <rect width=\"40\" height=\"40\" fill=\"#f8f9fa\" stroke=\"#dee2e6\" stroke-width=\"1\"/>\r\n  <text x=\"20\" y=\"25\" text-anchor=\"middle\" font-family=\"Arial\" font-size=\"12\" fill=\"#6c757d\">CAT</text>\r\n</svg>\r\n"
+        }
+    ]
+}

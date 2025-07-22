@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/PagesManagement/CategoryConfigFooter.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753197903973,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753197903973,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React from 'react'\r\n\r\nexport default function CategoryConfigFooter({ onClose, onSave, loading }) {\r\n  return (\r\n    <div className=\"modal-footer\">\r\n      <button \r\n        type=\"button\" \r\n        className=\"btn btn-secondary\" \r\n        onClick={onClose}\r\n      >\r\n        Cancel\r\n      </button>\r\n      <button \r\n        type=\"button\" \r\n        className=\"btn btn-primary\" \r\n        onClick={onSave}\r\n        disabled={loading}\r\n      >\r\n        {loading ? (\r\n          <>\r\n            <span className=\"spinner-border spinner-border-sm me-2\"></span>\r\n            Saving...\r\n          </>\r\n        ) : (\r\n          'Save Configuration'\r\n        )}\r\n      </button>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

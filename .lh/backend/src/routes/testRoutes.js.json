@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/routes/testRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752836816056,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752836816056,
+            "name": "Commit-0",
+            "content": "// Test route to debug encryption issues\r\nconst express = require('express');\r\nconst router = express.Router();\r\nconst { encryptData, decryptData } = require('../utils/cryptoUtil');\r\n\r\n// Test encryption endpoint\r\nrouter.post('/test-encryption', (req, res) => {\r\n    console.log('🧪 TEST ENCRYPTION ENDPOINT HIT');\r\n    console.log('📦 Request body:', JSON.stringify(req.body));\r\n    \r\n    try {\r\n        // Test 1: Check environment variable\r\n        const envKey = process.env.ENCRYPTION_KEY;\r\n        console.log('🔑 Environment key exists:', !!envKey);\r\n        console.log('🔑 Environment key length:', envKey?.length || 0);\r\n        \r\n        // Test 2: Try to encrypt some test data\r\n        const testData = { test: 'hello', number: 123 };\r\n        console.log('📝 Test data:', testData);\r\n        \r\n        const encrypted = encryptData(testData);\r\n        console.log('🔒 Encrypted:', encrypted);\r\n        \r\n        const decrypted = decryptData(encrypted);\r\n        console.log('🔓 Decrypted:', decrypted);\r\n        \r\n        // Test 3: If request has encrypted data, try to decrypt it\r\n        let clientDecryptionTest = null;\r\n        if (req.body.encryptedData) {\r\n            console.log('🔓 Attempting to decrypt client data...');\r\n            clientDecryptionTest = decryptData(req.body.encryptedData);\r\n            console.log('✅ Client data decrypted:', clientDecryptionTest);\r\n        }\r\n        \r\n        res.json({\r\n            success: true,\r\n            envKeyExists: !!envKey,\r\n            envKeyLength: envKey?.length || 0,\r\n            testEncryption: {\r\n                original: testData,\r\n                encrypted,\r\n                decrypted\r\n            },\r\n            clientDecryption: clientDecryptionTest,\r\n            message: 'Encryption test completed'\r\n        });\r\n        \r\n    } catch (error) {\r\n        console.error('❌ Test encryption error:', error);\r\n        res.status(500).json({\r\n            success: false,\r\n            error: error.message,\r\n            stack: error.stack\r\n        });\r\n    }\r\n});\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

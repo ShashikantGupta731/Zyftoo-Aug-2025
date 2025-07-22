@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/layout/header/Profilebar.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752698611573,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752698611573,
+            "name": "Commit-0",
+            "content": "'use client';\r\nimport Link from 'next/link';\r\nimport React, { useContext } from 'react';\r\nimport AuthContext from '@/components/context/AuthContext'; // <-- make sure this is correct path\r\n\r\nexport default function Profilebar({ onLoginClick }) {\r\n  const { user, logout, loading } = useContext(AuthContext);\r\n\r\n  if (loading) return null; // or loading skeleton\r\n\r\n  return (\r\n    <div\r\n      className=\"profilebar-dropdown\"\r\n      onMouseEnter={(e) => e.stopPropagation()}\r\n      onMouseLeave={(e) => e.stopPropagation()}\r\n    >\r\n      {user ? (\r\n        <div className=\"profilebar-welcome\">\r\n          <p><strong>Hello {user.name}</strong></p>\r\n          <p>{user.phone}</p>\r\n        </div>\r\n      ) : (\r\n        <div className=\"profilebar-welcome\">\r\n          <p><strong>Welcome</strong></p>\r\n          <p>To access account and manage orders</p>\r\n          <button className=\"profilebar-login-btn\" onClick={onLoginClick}>\r\n            LOGIN / SIGNUP\r\n          </button>\r\n        </div>\r\n      )}\r\n\r\n      <hr />\r\n      <ul className=\"profilebar-list\">\r\n        <li><Link href=\"/orders\">Orders</Link></li>\r\n        <li><Link href=\"/wishlist\">Wishlist</Link></li>\r\n        <li><Link href=\"#\">Contact Us</Link></li>\r\n        <li><Link href=\"#\">Saved Addresses</Link></li>\r\n        {user && (\r\n          <>\r\n            <li><Link href=\"#\">Edit Profile</Link></li>\r\n            <li><button onClick={logout} className=\"profilebar-login-btn\">Logout</button></li>\r\n          </>\r\n        )}\r\n      </ul>\r\n\r\n      <style jsx>{`\r\n        .profilebar-dropdown {\r\n          position: absolute;\r\n          top: 45px;\r\n          right: 0;\r\n          width: 260px;\r\n          background: white;\r\n          border: 1px solid #ddd;\r\n          padding: 15px;\r\n          z-index: 9999;\r\n          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);\r\n          font-size: 14px;\r\n        }\r\n\r\n        .profilebar-welcome p {\r\n          margin: 4px 0;\r\n        }\r\n\r\n        .profilebar-login-btn {\r\n          margin-top: 10px;\r\n          padding: 5px 15px;\r\n          font-weight: bold;\r\n          background-color: white;\r\n          border: 1px solid #fa5a5a;\r\n          color: #fa5a5a;\r\n          cursor: pointer;\r\n          width: 100%;\r\n        }\r\n\r\n        .profilebar-list {\r\n          list-style: none;\r\n          padding: 0;\r\n          margin-top: 10px;\r\n        }\r\n\r\n        .profilebar-list li {\r\n          margin: 8px 0;\r\n        }\r\n\r\n        .profilebar-list a {\r\n          color: #333;\r\n          text-decoration: none;\r\n          display: flex;\r\n          justify-content: space-between;\r\n          align-items: center;\r\n        }\r\n\r\n        .new-badge {\r\n          font-size: 10px;\r\n          background-color: #fa5a5a;\r\n          color: white;\r\n          padding: 1px 5px;\r\n          border-radius: 3px;\r\n        }\r\n     \r\n      `}</style>\r\n    </div>\r\n  );\r\n}\r\n"
+        }
+    ]
+}

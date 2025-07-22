@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/testConnection.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753113503123,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753113503123,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\nrequire('dotenv').config();\r\n\r\n// Set mongoose options to avoid deprecation warnings\r\nmongoose.set('strictQuery', false);\r\n\r\nconst testConnection = async () => {\r\n  try {\r\n    console.log('🔌 Testing MongoDB connection...');\r\n    console.log('📍 Using connection string:', process.env.MONGO_URI ? process.env.MONGO_URI.replace(/\\/\\/.*:.*@/, '//***:***@') : 'NOT FOUND');\r\n    \r\n    const conn = await mongoose.connect(process.env.MONGO_URI, {\r\n      serverSelectionTimeoutMS: 30000,\r\n      socketTimeoutMS: 45000,\r\n      maxPoolSize: 10,\r\n    });\r\n    \r\n    console.log('✅ MongoDB Connected Successfully!');\r\n    console.log(`🏠 Host: ${conn.connection.host}`);\r\n    console.log(`📂 Database: ${conn.connection.name}`);\r\n    console.log(`🔗 Ready State: ${conn.connection.readyState}`);\r\n    \r\n    // Test a simple operation\r\n    const collections = await mongoose.connection.db.listCollections().toArray();\r\n    console.log(`📚 Collections found: ${collections.length}`);\r\n    \r\n    await mongoose.connection.close();\r\n    console.log('🔌 Connection closed successfully');\r\n    \r\n  } catch (error) {\r\n    console.error('❌ Connection failed:', error.message);\r\n    console.error('🔍 Error details:', error);\r\n    process.exit(1);\r\n  }\r\n};\r\n\r\ntestConnection();\r\n"
+        }
+    ]
+}

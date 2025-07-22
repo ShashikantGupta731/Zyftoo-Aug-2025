@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/services/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752764965726,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752764965726,
+            "name": "Commit-0",
+            "content": "\nimport Layout from \"@/components/layout/Layout\"\nexport default function Services() {\n\n    return (\n        <>\n            <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Services\">\n\n            </Layout>\n        </>\n    )\n}"
+        }
+    ]
+}

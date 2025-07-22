@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/models/User.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1752861022237,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1752861338929,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,10 +21,10 @@\n     required: true\r\n   },\r\n   userType: {\r\n     type: String,\r\n-    enum: ['SuperAdmin', 'Admin', 'Individual', 'Corporate'],\r\n-    default: 'Individual'\r\n+    enum: ['SuperAdmin', 'Admin', 'Customer', 'Corporate'],\r\n+    default: 'Customer'\r\n   },\r\n   status: {\r\n     type: String,\r\n     enum: ['Active', 'Blocked'],\r\n"
+                },
+                {
+                    "date": 1752861449939,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,10 +21,10 @@\n     required: true\r\n   },\r\n   userType: {\r\n     type: String,\r\n-    enum: ['SuperAdmin', 'Admin', 'Customer', 'Corporate'],\r\n-    default: 'Customer'\r\n+    enum: ['SuperAdmin', 'Admin', 'Individual', 'Corporate'],\r\n+    default: 'Individual'\r\n   },\r\n   status: {\r\n     type: String,\r\n     enum: ['Active', 'Blocked'],\r\n"
+                }
+            ],
+            "date": 1752861022237,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\n\r\n\r\nconst userSchema = new mongoose.Schema({\r\n  name: {\r\n    type: String,\r\n    required: true\r\n  },\r\n  email: {\r\n    type: String,\r\n    required: true,\r\n    unique: true,\r\n    sparse: true\r\n  },\r\n  phone: {\r\n    type: String,\r\n    unique: true\r\n  },\r\n  password: {\r\n    type: String,\r\n    required: true\r\n  },\r\n  userType: {\r\n    type: String,\r\n    enum: ['SuperAdmin', 'Admin', 'Individual', 'Corporate'],\r\n    default: 'Individual'\r\n  },\r\n  status: {\r\n    type: String,\r\n    enum: ['Active', 'Blocked'],\r\n    default: 'Active'\r\n  },\r\n  role: {\r\n    type: String,\r\n    enum: ['user', 'admin', 'tempAdmin'],\r\n    default: 'user'\r\n  },\r\n  gender: {\r\n    type: String,\r\n    enum: ['male', 'female', 'others']\r\n  },\r\n  dob: {\r\n    type: Date\r\n  },\r\n  pincode: {\r\n    type: String\r\n  },\r\n  isVerified: {\r\n    type: Boolean,\r\n    default: false\r\n  },\r\n  emailVerified: {\r\n    type: Boolean,\r\n    default: false\r\n  },\r\n  emailVerificationToken: {\r\n    type: String\r\n  },\r\n  companyDetails: {\r\n    companyName: String,\r\n    gstNumber: String,\r\n    address: String\r\n  },\r\n  deleted: {\r\n    type: Boolean,\r\n    default: false\r\n  },\r\n  lastLogin: {\r\n    type: Date\r\n  }\r\n}, { timestamps: true });\r\n\r\nmodule.exports = mongoose.model('User', userSchema);\r\n"
+        }
+    ]
+}

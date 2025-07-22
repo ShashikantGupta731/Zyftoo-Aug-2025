@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/util/cryptoExamples.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752835582010,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752835582010,
+            "name": "Commit-0",
+            "content": "// Example usage of cryptoHelper in Next.js frontend\r\n\r\nimport { encryptData, decryptData, encryptAndStore, decryptAndRetrieve } from '../util/cryptoHelper';\r\n\r\n// Example 1: Encrypting user profile data before API call\r\nexport const saveUserProfile = async (profileData) => {\r\n    try {\r\n        // Encrypt sensitive data before sending to API\r\n        const encryptedProfile = encryptData(profileData);\r\n        \r\n        const response = await fetch('/api/user/profile', {\r\n            method: 'POST',\r\n            headers: {\r\n                'Content-Type': 'application/json',\r\n            },\r\n            body: JSON.stringify({ encryptedData: encryptedProfile })\r\n        });\r\n        \r\n        return response.json();\r\n    } catch (error) {\r\n        console.error('Error saving profile:', error);\r\n        throw error;\r\n    }\r\n};\r\n\r\n// Example 2: Storing encrypted data in localStorage\r\nexport const storeUserPreferences = (preferences) => {\r\n    try {\r\n        encryptAndStore('userPreferences', preferences);\r\n        console.log('User preferences stored securely');\r\n    } catch (error) {\r\n        console.error('Error storing preferences:', error);\r\n    }\r\n};\r\n\r\n// Example 3: Retrieving and decrypting data from localStorage\r\nexport const getUserPreferences = () => {\r\n    try {\r\n        const preferences = decryptAndRetrieve('userPreferences');\r\n        return preferences || {};\r\n    } catch (error) {\r\n        console.error('Error retrieving preferences:', error);\r\n        return {};\r\n    }\r\n};\r\n\r\n// Example 4: Encrypting form data before submission\r\nexport const submitPaymentInfo = async (paymentData) => {\r\n    try {\r\n        // Encrypt payment information\r\n        const encryptedPayment = encryptData({\r\n            cardNumber: paymentData.cardNumber,\r\n            cvv: paymentData.cvv,\r\n            expiryDate: paymentData.expiryDate\r\n        });\r\n        \r\n        const response = await fetch('/api/payment/process', {\r\n            method: 'POST',\r\n            headers: {\r\n                'Content-Type': 'application/json',\r\n            },\r\n            body: JSON.stringify({\r\n                encryptedPayment,\r\n                amount: paymentData.amount,\r\n                currency: paymentData.currency\r\n            })\r\n        });\r\n        \r\n        return response.json();\r\n    } catch (error) {\r\n        console.error('Error processing payment:', error);\r\n        throw error;\r\n    }\r\n};\r\n\r\n// Example 5: Client-side session data encryption\r\nexport const setSecureSession = (sessionData) => {\r\n    try {\r\n        const encrypted = encryptData(sessionData);\r\n        sessionStorage.setItem('secureSession', encrypted);\r\n    } catch (error) {\r\n        console.error('Error setting secure session:', error);\r\n    }\r\n};\r\n\r\nexport const getSecureSession = () => {\r\n    try {\r\n        const encrypted = sessionStorage.getItem('secureSession');\r\n        if (!encrypted) return null;\r\n        \r\n        return decryptData(encrypted);\r\n    } catch (error) {\r\n        console.error('Error getting secure session:', error);\r\n        return null;\r\n    }\r\n};\r\n"
+        }
+    ]
+}

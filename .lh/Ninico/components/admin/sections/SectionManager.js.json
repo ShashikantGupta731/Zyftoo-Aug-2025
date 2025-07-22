@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/sections/SectionManager.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753110070241,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753110070241,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React, { useState } from 'react'\r\nimport CategorySectionManager from './CategorySectionManager'\r\n\r\nconst SECTION_MANAGERS = {\r\n  giftCategories: CategorySectionManager,\r\n  // Add more section managers as needed\r\n  // products: ProductSectionManager,\r\n  // slider: SliderSectionManager,\r\n}\r\n\r\nexport default function SectionManager({ pageKey, sectionKey, sectionData, onClose, onUpdate }) {\r\n  const SectionComponent = SECTION_MANAGERS[sectionKey]\r\n  \r\n  if (!SectionComponent) {\r\n    return (\r\n      <div className=\"modal fade show d-block\" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>\r\n        <div className=\"modal-dialog modal-lg\">\r\n          <div className=\"modal-content\">\r\n            <div className=\"modal-header\">\r\n              <h5 className=\"modal-title\">\r\n                <i className=\"bi bi-gear me-2\"></i>\r\n                Manage {sectionData.label}\r\n              </h5>\r\n              <button type=\"button\" className=\"btn-close\" onClick={onClose}></button>\r\n            </div>\r\n            <div className=\"modal-body text-center py-5\">\r\n              <i className=\"bi bi-exclamation-triangle text-warning\" style={{ fontSize: '3rem' }}></i>\r\n              <h4 className=\"mt-3\">Section Manager Not Available</h4>\r\n              <p className=\"text-muted\">\r\n                Section manager for <strong>{sectionKey}</strong> is not implemented yet.\r\n              </p>\r\n              <p className=\"text-muted\">\r\n                Available managers: {Object.keys(SECTION_MANAGERS).join(', ') || 'None'}\r\n              </p>\r\n            </div>\r\n            <div className=\"modal-footer\">\r\n              <button type=\"button\" className=\"btn btn-secondary\" onClick={onClose}>\r\n                Close\r\n              </button>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    )\r\n  }\r\n\r\n  return (\r\n    <div className=\"modal fade show d-block\" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>\r\n      <div className=\"modal-dialog modal-xl\">\r\n        <div className=\"modal-content\">\r\n          <div className=\"modal-header\">\r\n            <h5 className=\"modal-title\">\r\n              <i className=\"bi bi-gear me-2\"></i>\r\n              Manage {sectionData.label}\r\n            </h5>\r\n            <button type=\"button\" className=\"btn-close\" onClick={onClose}></button>\r\n          </div>\r\n          <div className=\"modal-body p-0\">\r\n            <SectionComponent \r\n              pageKey={pageKey}\r\n              sectionKey={sectionKey}\r\n              sectionData={sectionData}\r\n              onUpdate={onUpdate}\r\n              onClose={onClose}\r\n            />\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

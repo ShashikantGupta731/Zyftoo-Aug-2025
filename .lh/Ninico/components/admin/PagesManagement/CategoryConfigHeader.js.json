@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/PagesManagement/CategoryConfigHeader.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753197903971,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753197903971,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React from 'react'\r\n\r\nexport default function CategoryConfigHeader({ onClose }) {\r\n  return (\r\n    <div className=\"modal-header\">\r\n      <h5 className=\"modal-title\">\r\n        <i className=\"bi bi-grid-3x3-gap me-2\"></i>\r\n        Category Section Configuration\r\n      </h5>\r\n      <button \r\n        type=\"button\" \r\n        className=\"btn-close\" \r\n        onClick={onClose}\r\n      ></button>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

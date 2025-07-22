@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/layout/MobileMenu.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752771291714,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752771291714,
+            "name": "Commit-0",
+            "content": "'use client'\nimport Link from 'next/link'\n\nexport default function MobileMenu() {\n    return (\n        <>\n            <div className=\"mobile-menu mean-container\">\n                <div className=\"mean-bar\">\n                    <nav className=\"mean-nav\">\n                        <ul>\n                            <li><Link href=\"/profile/edit-profile\">Edit Profile</Link></li>\n                            <li><Link href=\"/orders\">Orders</Link></li>\n                            <li><Link href=\"/wishlist\">Wishlist</Link></li>\n                            <li><Link href=\"/contact\">Contact Us</Link></li>\n                            <li><Link href=\"/profile/Addresses\">Saved Addresses</Link></li>\n                        </ul>\n                    </nav>\n                </div>\n            </div>\n        </>\n    )\n}\n"
+        }
+    ]
+}

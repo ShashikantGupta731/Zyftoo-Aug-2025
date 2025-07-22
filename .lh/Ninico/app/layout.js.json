@@ -1,0 +1,22 @@
+{
+    "sourceFile": "Ninico/app/layout.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1752698754088,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1752863702172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,8 +22,11 @@\n })\n export default function RootLayout({ children }) {\n     return (\n         <html lang=\"en\">\n+            <head>\n+                <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css\" />\n+            </head>\n             <body className={`${jost.variable}`}>\n                 <Provider store={store}>\n                     <AuthProvider>\n                         {children}\n"
+                }
+            ],
+            "date": 1752698754088,
+            "name": "Commit-0",
+            "content": "'use client'\nimport { store } from \"@/features/store\"\nimport { Jost } from 'next/font/google'\nimport { Provider } from \"react-redux\"\nimport { AuthProvider } from \"@/components/context/AuthContext\"\nimport \"react-toastify/dist/ReactToastify.css\";\nimport { ToastContainer } from \"react-toastify\"\nimport \"/public/assets/css/animate.css\"\nimport \"/public/assets/css/bootstrap.min.css\"\nimport \"/public/assets/css/fontawesome.min.css\"\nimport \"/public/assets/css/nice-select.css\"\nimport \"/public/assets/css/slick.css\"\nimport \"/public/assets/css/swiper-bundle.css\"\nimport \"/public/assets/css/magnific-popup.css\"\nimport \"/public/assets/css/meanmenu.css\"\nimport \"/public/assets/css/spacing.css\"\nimport \"/public/assets/css/main.css\"\nconst jost = Jost({\n    weight: ['300', '400', '500', '600', '700'],\n    subsets: ['latin'],\n    variable: \"--tp-ff-body\",\n})\nexport default function RootLayout({ children }) {\n    return (\n        <html lang=\"en\">\n            <body className={`${jost.variable}`}>\n                <Provider store={store}>\n                    <AuthProvider>\n                        {children}\n                        <ToastContainer\n                            position=\"bottom-right\"\n                            autoClose={500}\n                            hideProgressBar={false}\n                            newestOnTop={false}\n                            closeOnClick\n                            rtl={false}\n                            pauseOnFocusLoss\n                            draggable\n                            pauseOnHover\n                            theme=\"colored\"\n                        />\n                    </AuthProvider>\n                </Provider>\n            </body>\n        </html>\n    )\n}\n"
+        }
+    ]
+}

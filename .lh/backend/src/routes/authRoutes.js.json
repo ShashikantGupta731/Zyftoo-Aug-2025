@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/routes/authRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1752837698964,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1752860797836,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,9 @@\n \r\n // Debug middleware for all auth routes\r\n router.use((req, res, next) => {\r\n   console.log('🔥 AUTH ROUTE HIT:', req.method, req.path);\r\n-  console.log('🔥 Request body keys:', Object.keys(req.body));\r\n+  console.log('🔥 Request body keys:', req.body ? Object.keys(req.body) : 'No body (GET request)');\r\n   console.log('🔥 Content-Type:', req.get('Content-Type'));\r\n   next();\r\n });\r\n \r\n"
+                }
+            ],
+            "date": 1752837698964,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst {\r\n  signupUser,\r\n  loginUser,\r\n  resetPassword,\r\n  verifyEmail,\r\n  checkUser\r\n} = require('../controllers/authController'); // ✅ This must point to your controller file\r\n\r\n// Debug middleware for all auth routes\r\nrouter.use((req, res, next) => {\r\n  console.log('🔥 AUTH ROUTE HIT:', req.method, req.path);\r\n  console.log('🔥 Request body keys:', Object.keys(req.body));\r\n  console.log('🔥 Content-Type:', req.get('Content-Type'));\r\n  next();\r\n});\r\n\r\nrouter.post('/signup', signupUser);\r\nrouter.post('/login', loginUser);\r\nrouter.post('/reset-password', resetPassword);\r\nrouter.get('/verify-email/:token', verifyEmail);\r\nconsole.log('checkUser is:', typeof checkUser); \r\nrouter.get('/check-user/:phone', checkUser);  // ✅ Now checkUser is defined\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

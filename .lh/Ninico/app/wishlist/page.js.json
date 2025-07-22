@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/wishlist/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752761409562,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752761409562,
+            "name": "Commit-0",
+            "content": "\nimport WishlistItems from \"@/components/elements/WishlistItems\"\nimport Layout from \"@/components/layout/Layout\"\nexport default function Wishlist() {\n\n    return (\n        <>\n            <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Wishlist\">\n                <div className=\"cart-area pt-80 pb-80 wow fadeInUp\" data-wow-duration=\".8s\" data-wow-delay=\".2s\">\n                    <div className=\"container\">\n                        <div className=\"row\">\n                            <div className=\"col-12\">\n                                <form action=\"#\">\n                                    <div className=\"table-content table-responsive\">\n                                        <table className=\"table\">\n                                            <thead>\n                                                <tr>\n                                                    <th className=\"product-thumbnail\">Images</th>\n                                                    <th className=\"cart-product-name\">Courses</th>\n                                                    <th className=\"product-price\">Unit Price</th>\n                                                    <th className=\"product-quantity\">Quantity</th>\n                                                    <th className=\"product-subtotal\">Total</th>\n                                                    <th className=\"product-add-to-cart\">Add To Cart</th>\n                                                    <th className=\"product-remove\">Remove</th>\n                                                </tr>\n                                            </thead>\n                                            <tbody>\n                                                <WishlistItems />\n                                            </tbody>\n                                        </table>\n                                    </div>\n                                </form>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n            </Layout>\n        </>\n    )\n}"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/elements/CountDown.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752759605926,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752759605926,
+            "name": "Commit-0",
+            "content": "'use client'\nimport { useEffect, useState } from \"react\"\n\nconst msInSecond = 1000\nconst msInMinute = 60 * 1000\nconst msInAHour = 60 * msInMinute\nconst msInADay = 24 * msInAHour\n\nconst getPartsofTimeDuration = (duration) => {\n    const days = Math.floor(duration / msInADay)\n    const hours = Math.floor((duration % msInADay) / msInAHour)\n    const minutes = Math.floor((duration % msInAHour) / msInMinute)\n    const seconds = Math.floor((duration % msInSecond) / msInSecond)\n\n    return { days, hours, minutes, seconds }\n}\n\nconst Countdown = (endDateTime) => {\n    const [time, setTime] = useState(new Date().toLocaleTimeString())\n    const [mounted, setMounted] = useState(false)\n    const [timeParts, setTimeParts] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })\n\n    useEffect(() => {\n        setMounted(true)\n        \n        const updateCountdown = () => {\n            const now = Date.now()\n            const future = new Date(endDateTime.endDateTime)\n            const timeDif = future.getTime() - now\n            const parts = getPartsofTimeDuration(timeDif)\n            setTimeParts(parts)\n            setTime(new Date().toLocaleTimeString())\n        }\n\n        updateCountdown() // Initial call\n        \n        const timeout = setInterval(updateCountdown, 1000)\n        \n        return () => {\n            clearInterval(timeout)\n        }\n    }, [endDateTime.endDateTime])\n\n    // Prevent hydration mismatch by not rendering time-dependent content on server\n    if (!mounted) {\n        return (\n            <>\n                <span className=\"cdown days\"> <span className=\"time-count\">0</span>\n                    <p>Days</p>\n                </span>\n                <span className=\"cdown hour\"> <span className=\"time-count\">0</span>\n                    <p>Hour</p>\n                </span>\n                <span className=\"cdown minutes\"> <span className=\"time-count\">0</span>\n                    <p>Minute</p>\n                </span>\n                <span className=\"cdown second\"> <span className=\"time-count\">0</span>\n                    <p>Second</p>\n                </span>\n            </>\n        )\n    }\n\n    return (\n        <>\n            <span className=\"cdown days\"> <span className=\"time-count\">{timeParts.days}</span>\n                <p>Days</p>\n            </span>\n            <span className=\"cdown hour\"> <span className=\"time-count\">{timeParts.hours}</span>\n                <p>Hour</p>\n            </span>\n            <span className=\"cdown minutes\"> <span className=\"time-count\">{timeParts.minutes}</span>\n                <p>Minute</p>\n            </span>\n            <span className=\"cdown second\"> <span className=\"time-count\">{timeParts.seconds}</span>\n                <p>Second</p>\n            </span>\n        </>\n    )\n}\n\nexport default Countdown"
+        }
+    ]
+}

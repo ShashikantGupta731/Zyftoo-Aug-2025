@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/routes/authRoutes-test.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752831493451,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752831493451,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\n\r\n// Simple test routes without any imports\r\nrouter.get('/test', (req, res) => {\r\n  res.json({ message: 'Auth route test successful' });\r\n});\r\n\r\nrouter.post('/test-post', (req, res) => {\r\n  res.json({ message: 'Auth POST test successful', body: req.body });\r\n});\r\n\r\n// Test route with parameter\r\nrouter.get('/test-param/:id', (req, res) => {\r\n  res.json({ message: 'Param test successful', id: req.params.id });\r\n});\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

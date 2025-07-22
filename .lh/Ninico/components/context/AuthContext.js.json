@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/context/AuthContext.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752851951262,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752851951262,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport { createContext, useState, useEffect } from 'react'\r\n\r\nconst AuthContext = createContext()\r\n\r\nexport const AuthProvider = ({ children }) => {\r\n  const [user, setUser] = useState(null)\r\n  const [loading, setLoading] = useState(true)\r\n\r\n  useEffect(() => {\r\n    const user = localStorage.getItem('user')\r\n    if (user) {\r\n      setUser(JSON.parse(user))\r\n    }\r\n    setLoading(false) // done loading\r\n  }, [])\r\n\r\n  const login = (userData) => {\r\n    setUser(userData)\r\n    localStorage.setItem('user', JSON.stringify(userData))\r\n  }\r\n\r\n  const logout = () => {\r\n    setUser(null)\r\n    localStorage.removeItem('user')\r\n  }\r\n\r\n  return (\r\n    <AuthContext.Provider value={{ user, login, logout, loading }}>\r\n      {children}\r\n    </AuthContext.Provider>\r\n  )\r\n}\r\n\r\nexport default AuthContext\r\n"
+        }
+    ]
+}

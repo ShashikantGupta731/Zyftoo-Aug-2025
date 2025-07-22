@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/data/giftPageCategories.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752766210013,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752766210013,
+            "name": "Commit-0",
+            "content": "// /data/giftCategories.js\r\nexport const giftPageCategories = [\r\n  {\r\n    id: 1,\r\n    name: \"Gift Page Categories\",\r\n    icon: \"assets/img/features/feature-icon-01.png\",\r\n    subcategories: [\r\n      { name: \"Chocolate Hampers\" },\r\n      { name: \"Spa Kits\" },\r\n      { name: \"Premium Wine Baskets\" },\r\n      { name: \"Fruit Baskets\" },\r\n    ],\r\n  },\r\n  {\r\n    id: 2,\r\n    name: \"Personalized Gifts\",\r\n    icon: \"assets/img/features/feature-icon-02.png\",\r\n    subcategories: [\r\n      {\r\n        name: \"Custom Mugs\",\r\n        children: [\"Glass Mug\", \"Fiber Mug\", \"Ceramic Mug\"],\r\n      },\r\n      {\r\n        name: \"Engraved Jewelry\",\r\n        children: [\"Gold Necklace\", \"Silver Bracelet\", \"Diamond Ring\"],\r\n      },\r\n      { name: \"Photo Frames\" },\r\n    ],\r\n  },\r\n  {\r\n    id: 3,\r\n    name: \"Beauty & Wellness Gifts\",\r\n    icon: \"assets/img/features/feature-icon-03.png\",\r\n    subcategories: [\r\n      { name: \"Skin Care Kits\" },\r\n      { name: \"Aromatherapy\" },\r\n      { name: \"Wellness Boxes\" },\r\n    ],\r\n  },\r\n  {\r\n    id: 4,\r\n    name: \"Corporate Gifts\",\r\n    icon: \"assets/img/features/feature-icon-04.png\",\r\n    subcategories: [\r\n      { name: \"Office Essentials\" },\r\n      { name: \"Eco-Friendly Kits\" },\r\n      { name: \"Award Gifts\" },\r\n    ],\r\n  },\r\n  {\r\n    id: 5,\r\n    name: \"Home Decor Gifts\",\r\n    icon: \"assets/img/features/feature-icon-05.png\",\r\n    subcategories: [\r\n      { name: \"Planters\" },\r\n      { name: \"Decorative Lights\" },\r\n      { name: \"Wall Frames\" },\r\n    ],\r\n  },\r\n  {\r\n    id: 6,\r\n    name: \"Gourmet Treats\",\r\n    icon: \"assets/img/features/feature-icon-06.png\",\r\n    subcategories: [\r\n      { name: \"Artisanal Chocolates\" },\r\n      { name: \"Exotic Dry Fruits\" },\r\n      { name: \"Gourmet Tea Hampers\" },\r\n    ],\r\n  },\r\n];\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/routes/orderRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752831493452,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752831493452,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst { placeOrder, \r\n        getMyOrders, \r\n        getAllOrders, \r\n        updateOrderStatus, \r\n        cancelOrder, \r\n        getSingleOrder,\r\n        placeOrderFromCart\r\n} = require('../controllers/orderController'); // Import the controller function\r\n        \r\nconst { protect, adminOnly, authorizeRoles } = require('../middleware/authMiddleware'); // middleware to get req.user\r\n\r\n// POST /api/orders - Place Order\r\nrouter.post('/', protect, placeOrder);\r\nrouter.get('/my-orders', protect, getMyOrders);\r\nrouter.get('/all', protect, authorizeRoles('admin'), getAllOrders);\r\nrouter.patch('/:orderId/status', protect, authorizeRoles('admin'), updateOrderStatus);\r\nrouter.patch('/:orderId/cancel', protect, cancelOrder);\r\nrouter.get('/:orderId', protect, getSingleOrder);\r\nrouter.post('/from-cart', protect, placeOrderFromCart);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

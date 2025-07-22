@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/scripts/initializeHomePageConfig.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753162069659,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753162069659,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\nconst PageConfig = require('../models/PageConfig');\r\nconst Category = require('../models/Category');\r\nconst connectDB = require('../config/db');\r\n\r\nasync function initializeHomePageConfig() {\r\n  try {\r\n    await connectDB();\r\n    \r\n    console.log('🏠 Checking home page configuration...');\r\n    \r\n    // Check if home page config already exists\r\n    let homePageConfig = await PageConfig.findById('home');\r\n    \r\n    if (homePageConfig) {\r\n      console.log('✅ Home page configuration already exists');\r\n      return;\r\n    }\r\n    \r\n    console.log('🔧 Creating default home page configuration...');\r\n    \r\n    // Get first 6 categories for default setup\r\n    const categories = await Category.find({ status: true }).limit(6).select('_id');\r\n    const categoryIds = categories.map(cat => cat._id.toString());\r\n    \r\n    // Create default home page configuration\r\n    const defaultHomeConfig = {\r\n      _id: 'home',\r\n      name: 'Home Page',\r\n      slug: '/',\r\n      sections: [\r\n        {\r\n          sectionType: 'categorySection',\r\n          enabled: true,\r\n          order: 1,\r\n          config: {\r\n            maxCategories: 6,\r\n            categories: categoryIds.map((id, index) => ({\r\n              categoryId: id,\r\n              enabled: true,\r\n              order: index\r\n            })),\r\n            layout: 'grid',\r\n            showSubcategories: true\r\n          }\r\n        },\r\n        {\r\n          sectionType: 'sliderSection',\r\n          enabled: true,\r\n          order: 2,\r\n          config: {\r\n            autoplay: true,\r\n            duration: 5000,\r\n            slides: []\r\n          }\r\n        },\r\n        {\r\n          sectionType: 'productSection',\r\n          enabled: true,\r\n          order: 3,\r\n          config: {\r\n            title: 'Featured Products',\r\n            maxProducts: 8,\r\n            category: null\r\n          }\r\n        },\r\n        {\r\n          sectionType: 'bannerSection',\r\n          enabled: true,\r\n          order: 4,\r\n          config: {\r\n            banners: []\r\n          }\r\n        },\r\n        {\r\n          sectionType: 'dealSection',\r\n          enabled: true,\r\n          order: 5,\r\n          config: {\r\n            title: 'Deal Products',\r\n            maxProducts: 6,\r\n            showTimer: true\r\n          }\r\n        }\r\n      ]\r\n    };\r\n    \r\n    homePageConfig = new PageConfig(defaultHomeConfig);\r\n    await homePageConfig.save();\r\n    \r\n    console.log('✅ Home page configuration created successfully!');\r\n    console.log(`📊 Configured with ${categoryIds.length} categories`);\r\n    \r\n  } catch (error) {\r\n    console.error('❌ Error initializing home page configuration:', error);\r\n  } finally {\r\n    mongoose.connection.close();\r\n  }\r\n}\r\n\r\n// Run the script if called directly\r\nif (require.main === module) {\r\n  initializeHomePageConfig();\r\n}\r\n\r\nmodule.exports = initializeHomePageConfig;\r\n"
+        }
+    ]
+}

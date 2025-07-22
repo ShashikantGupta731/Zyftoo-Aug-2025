@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/index-5/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752764965727,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752764965727,
+            "name": "Commit-0",
+            "content": "\nimport Layout from \"@/components/layout/Layout\"\nimport Blog4 from \"@/components/sections/Blog4\"\nimport DealProduct4 from \"@/components/sections/DealProduct4\"\nimport Product4 from \"@/components/sections/Product4\"\nimport SelectedProduct from \"@/components/sections/SelectedProduct\"\nimport Slider5 from \"@/components/sections/Slider5\"\nimport Testimonial2 from \"@/components/sections/Testimonial2\"\nimport Link from \"next/link\"\nexport default function Home5() {\n\n    return (\n        <>\n            <Layout headerStyle={1} footerStyle={1}>\n                <Slider5 />\n                <Product4 />\n                <DealProduct4 />\n                <SelectedProduct />\n                <Testimonial2 />\n                <Blog4 />\n            </Layout>\n        </>\n    )\n}"
+        }
+    ]
+}

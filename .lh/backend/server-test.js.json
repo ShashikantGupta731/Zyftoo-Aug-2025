@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/server-test.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752831493451,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752831493451,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst path = require('path');\r\nconst dotenv = require('dotenv');\r\nconst helmet = require('helmet');\r\nconst cors = require('cors');\r\nconst connectDB = require('./src/config/db');\r\n\r\n// Load environment variables\r\ndotenv.config();\r\n\r\n// Initialize Express app\r\nconst app = express();\r\n\r\n// Connect to database\r\nconnectDB();\r\n\r\n// Basic middleware\r\napp.use(helmet());\r\napp.use(cors());\r\napp.use(express.json());\r\napp.use(express.urlencoded({ extended: true }));\r\n\r\n// Serve static files\r\napp.use(express.static(path.join(__dirname, 'public')));\r\n\r\n// Request logging\r\napp.use((req, res, next) => {\r\n  console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);\r\n  next();\r\n});\r\n\r\n// Health check endpoint\r\napp.get('/health', (req, res) => {\r\n  res.json({ \r\n    status: 'OK', \r\n    timestamp: new Date().toISOString(),\r\n    environment: process.env.NODE_ENV || 'development'\r\n  });\r\n});\r\n\r\napp.get('/', (req, res) => {\r\n  res.json({ \r\n    message: 'Ninico E-commerce API is running...',\r\n    version: '1.0.0',\r\n    timestamp: new Date().toISOString()\r\n  });\r\n});\r\n\r\n// Test route\r\napp.get('/api/test', (req, res) => {\r\n  res.json({ \r\n    message: 'API test successful', \r\n    timestamp: new Date().toISOString()\r\n  });\r\n});\r\n\r\n// Only load basic auth routes for testing\r\nconst authRoutes = require('./src/routes/authRoutes-test');\r\napp.use('/api/auth', authRoutes);\r\n\r\n// Error handler\r\napp.use((err, req, res, next) => {\r\n  console.error('Error:', err);\r\n  res.status(500).json({\r\n    success: false,\r\n    message: 'Internal server error'\r\n  });\r\n});\r\n\r\n// 404 handler\r\napp.use('*', (req, res) => {\r\n  res.status(404).json({\r\n    success: false,\r\n    message: `Route ${req.originalUrl} not found`\r\n  });\r\n});\r\n\r\nconst PORT = process.env.PORT || 5000;\r\napp.listen(PORT, () => {\r\n  console.log(`🚀 Server running on port ${PORT}`);\r\n  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);\r\n});\r\n"
+        }
+    ]
+}

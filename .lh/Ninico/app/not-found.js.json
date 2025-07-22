@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/not-found.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752764965712,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752764965712,
+            "name": "Commit-0",
+            "content": "\nimport Layout from \"@/components/layout/Layout\"\nimport Link from \"next/link\"\nexport default function Home() {\n\n    return (\n        <>\n            <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Error\">\n                <section className=\"erroe-area pt-70 pb-70\">\n                    <div className=\"container\">\n                        <div className=\"row\">\n                            <div className=\"col-12\">\n                                <div className=\"eperror__wrapper text-center\">\n                                    <div className=\"tperror__thumb mb-35\">\n                                        <img src=\"/assets/img/icon/error.png\" alt />\n                                    </div>\n                                    <div className=\"tperror__content\">\n                                        <h4 className=\"tperror__title mb-25\">404. Page not found</h4>\n                                        <p>Sorry, we couldn’t find the page you where looking for. We suggest that <br /> you return to homepage.</p>\n                                        <Link href=\"/\" className=\"tpsecondary-btn tp-color-btn tp-error-btn\"><i className=\"fal fa-long-arrow-left\" /> Back To Home</Link>\n                                    </div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </section>\n            </Layout>\n        </>\n    )\n}"
+        }
+    ]
+}

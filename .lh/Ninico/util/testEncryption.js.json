@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/util/testEncryption.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752836816038,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752836816038,
+            "name": "Commit-0",
+            "content": "// Simple test to verify frontend-backend encryption compatibility\r\n// Run this in browser console after loading the page\r\n\r\nconst testEncryptionCompatibility = async () => {\r\n    console.log('🔐 Testing Frontend-Backend Encryption Compatibility...\\n');\r\n    \r\n    try {\r\n        // Import crypto functions (assuming they're available)\r\n        const { encryptData, decryptData } = window.cryptoHelper || {};\r\n        \r\n        if (!encryptData || !decryptData) {\r\n            console.error('❌ Crypto functions not available. Make sure cryptoHelper is imported.');\r\n            return;\r\n        }\r\n        \r\n        // Test data similar to login\r\n        const testData = {\r\n            phone: '1234567890',\r\n            password: 'testPassword123'\r\n        };\r\n        \r\n        console.log('📝 Original data:', testData);\r\n        \r\n        // Encrypt on frontend\r\n        const encrypted = encryptData(testData);\r\n        console.log('🔒 Encrypted (frontend):', encrypted);\r\n        \r\n        // Test decryption on frontend\r\n        const decrypted = decryptData(encrypted);\r\n        console.log('🔓 Decrypted (frontend):', decrypted);\r\n        \r\n        // Check integrity\r\n        const matches = JSON.stringify(testData) === JSON.stringify(decrypted);\r\n        console.log('✅ Frontend encryption integrity:', matches ? 'PASSED' : 'FAILED');\r\n        \r\n        // Test API call format\r\n        const apiPayload = { encryptedData: encrypted };\r\n        console.log('📡 API payload format:', apiPayload);\r\n        \r\n        console.log('\\n🎉 Frontend encryption test completed!');\r\n        console.log('📋 Next: Test this payload with your backend API');\r\n        \r\n    } catch (error) {\r\n        console.error('❌ Frontend encryption test failed:', error);\r\n    }\r\n};\r\n\r\n// Auto-run if cryptoHelper is available\r\nif (typeof window !== 'undefined') {\r\n    // Browser environment\r\n    console.log('Frontend encryption test ready. Run testEncryptionCompatibility() in console.');\r\n    window.testEncryptionCompatibility = testEncryptionCompatibility;\r\n}\r\n\r\nexport { testEncryptionCompatibility };\r\n"
+        }
+    ]
+}

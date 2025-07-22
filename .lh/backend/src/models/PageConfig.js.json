@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/models/PageConfig.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753113503123,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753113503123,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\n\r\n// Schema for individual section configuration\r\nconst SectionConfigSchema = new mongoose.Schema({\r\n  sectionType: {\r\n    type: String,\r\n    required: true,\r\n    enum: ['categorySection', 'bannerSection', 'dealSection', 'productSection', 'sliderSection']\r\n  },\r\n  enabled: {\r\n    type: Boolean,\r\n    default: true\r\n  },\r\n  order: {\r\n    type: Number,\r\n    default: 0\r\n  },\r\n  config: {\r\n    type: mongoose.Schema.Types.Mixed, // Flexible config object for each section type\r\n    default: {}\r\n  }\r\n}, {\r\n  _id: false // Don't create separate _id for subdocuments\r\n});\r\n\r\n// Main page configuration schema\r\nconst PageConfigSchema = new mongoose.Schema({\r\n  _id: {\r\n    type: String, // Use string ID like \"home\", \"corporate\" etc.\r\n    required: true\r\n  },\r\n  name: {\r\n    type: String,\r\n    required: true\r\n  },\r\n  slug: {\r\n    type: String,\r\n    required: true\r\n  },\r\n  sections: [SectionConfigSchema],\r\n  lastModified: {\r\n    type: Date,\r\n    default: Date.now\r\n  },\r\n  modifiedBy: {\r\n    type: String,\r\n    default: 'admin'\r\n  }\r\n}, {\r\n  timestamps: true\r\n});\r\n\r\n// Update lastModified on save\r\nPageConfigSchema.pre('save', function(next) {\r\n  this.lastModified = new Date();\r\n  next();\r\n});\r\n\r\nmodule.exports = mongoose.model('PageConfig', PageConfigSchema);\r\n"
+        }
+    ]
+}

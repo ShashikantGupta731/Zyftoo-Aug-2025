@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/index-4/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752764965727,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752764965727,
+            "name": "Commit-0",
+            "content": "\nimport Layout from \"@/components/layout/Layout\"\nimport Banner3 from \"@/components/sections/Banner3\"\nimport Blog3 from \"@/components/sections/Blog3\"\nimport Brand3 from \"@/components/sections/Brand3\"\nimport DealProduct3 from \"@/components/sections/DealProduct3\"\nimport Features from \"@/components/sections/Features\"\nimport PlatinamProduct from \"@/components/sections/PlatinamProduct\"\nimport Slider4 from \"@/components/sections/Slider4\"\nimport Testimonial1 from \"@/components/sections/Testimonial1\"\nimport Link from \"next/link\"\nexport default function Home4() {\n\n    return (\n        <>\n            <Layout headerStyle={1} footerStyle={1}>\n                <Slider4 />\n                <Brand3 />\n                <Banner3 />\n                <PlatinamProduct />\n                <Features />\n                <DealProduct3 />\n                <Testimonial1 />\n                <Blog3 />\n            </Layout>\n        </>\n    )\n}"
+        }
+    ]
+}

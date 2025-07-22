@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/layout/MobileCategories.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752768557428,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752768557428,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport Link from 'next/link'\r\nimport { useState } from 'react'\r\nimport { giftPageCategories } from \"@/data/giftPageCategories\"\r\n\r\nexport default function MobileCategories() {\r\n    const [isActive, setIsActive] = useState({\r\n        status: false,\r\n        key: \"\",\r\n    })\r\n\r\n    const handleClick = (key) => {\r\n        if (isActive.key === key) {\r\n            setIsActive({\r\n                status: false,\r\n            })\r\n        } else {\r\n            setIsActive({\r\n                status: true,\r\n                key,\r\n            })\r\n        }\r\n    }\r\n\r\n    return (\r\n        <>\r\n            <div className=\"mobile-menu mean-container\">\r\n                <div className=\"mean-bar\">\r\n                    <Link href=\"#\" className=\"meanmenu-reveal\">\r\n                        <span><span><span /></span></span>\r\n                    </Link>\r\n                    <nav className=\"mean-nav\">\r\n                        <ul>\r\n                            {giftPageCategories.map((category, index) => (\r\n                                <li key={category.id} className=\"has-dropdown\">\r\n                                    <Link href=\"/shop\">{category.name}</Link>\r\n                                    <ul className=\"submenu\" style={{ display: `${isActive.key == category.id ? \"block\" : \"none\"}` }}>\r\n                                        {category.subcategories.map((sub, subIndex) => (\r\n                                            <li key={subIndex}>\r\n                                                <Link href=\"/shop\">{sub.name}</Link>\r\n                                                {sub.children && (\r\n                                                    <ul className=\"submenu\">\r\n                                                        {sub.children.map((child, childIndex) => (\r\n                                                            <li key={childIndex}>\r\n                                                                <Link href=\"/shop\">{child}</Link>\r\n                                                            </li>\r\n                                                        ))}\r\n                                                    </ul>\r\n                                                )}\r\n                                            </li>\r\n                                        ))}\r\n                                    </ul>\r\n                                    <Link \r\n                                        className=\"mean-expand\" \r\n                                        onClick={() => handleClick(category.id)} \r\n                                        href=\"#\" \r\n                                        style={{ fontSize: 18 }}\r\n                                    >\r\n                                        <i className=\"fal fa-plus\" />\r\n                                    </Link>\r\n                                </li>\r\n                            ))}\r\n                        </ul>\r\n                    </nav>\r\n                </div>\r\n            </div>\r\n        </>\r\n    )\r\n}\r\n"
+        }
+    ]
+}

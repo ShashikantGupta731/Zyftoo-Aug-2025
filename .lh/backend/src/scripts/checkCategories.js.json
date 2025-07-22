@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/scripts/checkCategories.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753162069659,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753162069659,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\nconst Category = require('../models/Category');\r\nconst connectDB = require('../config/db');\r\n\r\nasync function checkCategories() {\r\n  try {\r\n    await connectDB();\r\n    \r\n    console.log('🔍 Checking categories in database...');\r\n    \r\n    const categories = await Category.find();\r\n    console.log(`📊 Found ${categories.length} categories in database:`);\r\n    \r\n    if (categories.length === 0) {\r\n      console.log('❌ No categories found in database!');\r\n      console.log('💡 You need to add some categories first.');\r\n    } else {\r\n      categories.forEach((cat, index) => {\r\n        console.log(`${index + 1}. ${cat.name} (ID: ${cat._id})`);\r\n        console.log(`   - Status: ${cat.status}`);\r\n        console.log(`   - Parent: ${cat.parent || 'None (Main Category)'}`);\r\n        console.log(`   - Image: ${cat.image?.url || 'No image'}`);\r\n        console.log('   ---');\r\n      });\r\n    }\r\n    \r\n    // Also check with the same query as the controller\r\n    const categoriesWithParent = await Category.find().populate('parent', 'name _id');\r\n    console.log('🔍 Categories with populated parent data:');\r\n    console.log(JSON.stringify(categoriesWithParent, null, 2));\r\n    \r\n  } catch (error) {\r\n    console.error('❌ Error checking categories:', error);\r\n  } finally {\r\n    mongoose.connection.close();\r\n  }\r\n}\r\n\r\n// Run the script if called directly\r\nif (require.main === module) {\r\n  checkCategories();\r\n}\r\n\r\nmodule.exports = checkCategories;\r\n"
+        }
+    ]
+}

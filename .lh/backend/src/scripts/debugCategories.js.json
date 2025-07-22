@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/scripts/debugCategories.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753162069677,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753162069677,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\nconst Category = require('../models/Category');\r\nconst connectDB = require('../config/db');\r\n\r\nasync function debugCategories() {\r\n  try {\r\n    await connectDB();\r\n    \r\n    console.log('🔍 === DEBUGGING CATEGORIES ===');\r\n    \r\n    // 1. Check total categories in database\r\n    const totalCategories = await Category.countDocuments();\r\n    console.log(`📊 Total categories in database: ${totalCategories}`);\r\n    \r\n    // 2. Check active categories\r\n    const activeCategories = await Category.countDocuments({ status: true });\r\n    console.log(`✅ Active categories: ${activeCategories}`);\r\n    \r\n    // 3. Check inactive categories\r\n    const inactiveCategories = await Category.countDocuments({ status: false });\r\n    console.log(`❌ Inactive categories: ${inactiveCategories}`);\r\n    \r\n    // 4. Get all categories with details\r\n    const allCategories = await Category.find().populate('parent', 'name _id');\r\n    console.log('\\n📋 All categories in database:');\r\n    allCategories.forEach((cat, index) => {\r\n      console.log(`${index + 1}. ${cat.name}`);\r\n      console.log(`   - ID: ${cat._id}`);\r\n      console.log(`   - Status: ${cat.status}`);\r\n      console.log(`   - Parent: ${cat.parent ? cat.parent.name : 'None (Main Category)'}`);\r\n      console.log(`   - Image: ${cat.image?.url || 'No image'}`);\r\n      console.log(`   - Description: ${cat.description || 'No description'}`);\r\n      console.log('   ---');\r\n    });\r\n    \r\n    // 5. Test the exact same query as the controller\r\n    console.log('\\n🔄 Testing controller query...');\r\n    const controllerCategories = await Category.find().populate('parent', 'name _id');\r\n    const transformedCategories = controllerCategories.map(cat => ({\r\n      ...cat.toObject(),\r\n      id: cat._id.toString(),\r\n    }));\r\n    \r\n    console.log(`🎯 Controller would return ${transformedCategories.length} categories`);\r\n    console.log('Sample transformed category:', JSON.stringify(transformedCategories[0], null, 2));\r\n    \r\n    // 6. Check only main categories\r\n    const mainCategories = await Category.find({ parent: null }).populate('parent', 'name _id');\r\n    console.log(`\\n🏠 Main categories: ${mainCategories.length}`);\r\n    mainCategories.forEach((cat, index) => {\r\n      console.log(`${index + 1}. ${cat.name} (ID: ${cat._id})`);\r\n    });\r\n    \r\n    // 7. Check subcategories\r\n    const subCategories = await Category.find({ parent: { $ne: null } }).populate('parent', 'name _id');\r\n    console.log(`\\n🔗 Subcategories: ${subCategories.length}`);\r\n    subCategories.forEach((cat, index) => {\r\n      console.log(`${index + 1}. ${cat.name} (Parent: ${cat.parent?.name || 'Unknown'})`);\r\n    });\r\n    \r\n  } catch (error) {\r\n    console.error('❌ Error debugging categories:', error);\r\n  } finally {\r\n    mongoose.connection.close();\r\n  }\r\n}\r\n\r\n// Run the script if called directly\r\nif (require.main === module) {\r\n  debugCategories();\r\n}\r\n\r\nmodule.exports = debugCategories;\r\n"
+        }
+    ]
+}

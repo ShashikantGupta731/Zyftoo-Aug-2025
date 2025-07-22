@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/config/corsOptions.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1752831493450,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1752831493450,
+            "name": "Commit-0",
+            "content": "/**\r\n * CORS configuration for secure API access\r\n */\r\n\r\n// Get allowed origins from environment variables\r\nconst getAllowedOrigins = () => {\r\n  const clientOrigin = process.env.CLIENT_ORIGIN;\r\n  \r\n  if (clientOrigin) {\r\n    return clientOrigin.split(',').map(origin => origin.trim());\r\n  }\r\n  \r\n  // Default origins for development\r\n  return [\r\n    'http://localhost:3000',\r\n    'http://localhost:3001',\r\n    'http://127.0.0.1:3000',\r\n    'http://127.0.0.1:3001'\r\n  ];\r\n};\r\n\r\nconst corsOptions = {\r\n  origin: function (origin, callback) {\r\n    const allowedOrigins = getAllowedOrigins();\r\n    \r\n    // Allow requests with no origin (mobile apps, postman, etc.)\r\n    if (!origin) {\r\n      return callback(null, true);\r\n    }\r\n    \r\n    if (allowedOrigins.indexOf(origin) !== -1) {\r\n      callback(null, true);\r\n    } else {\r\n      console.warn(`CORS blocked request from origin: ${origin}`);\r\n      callback(new Error('Not allowed by CORS'));\r\n    }\r\n  },\r\n  credentials: true, // Enable credentials (cookies, authorization headers)\r\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],\r\n  allowedHeaders: [\r\n    'Origin',\r\n    'X-Requested-With',\r\n    'Content-Type',\r\n    'Accept',\r\n    'Authorization',\r\n    'X-API-Key',\r\n    'X-Client-Version'\r\n  ],\r\n  exposedHeaders: [\r\n    'X-Total-Count',\r\n    'X-Page-Count',\r\n    'X-Current-Page'\r\n  ],\r\n  maxAge: 86400, // 24 hours\r\n  optionsSuccessStatus: 200 // Some legacy browsers choke on 204\r\n};\r\n\r\n/**\r\n * Development CORS options (more permissive)\r\n */\r\nconst devCorsOptions = {\r\n  origin: true, // Allow all origins in development\r\n  credentials: true,\r\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],\r\n  allowedHeaders: [\r\n    'Origin',\r\n    'X-Requested-With',\r\n    'Content-Type',\r\n    'Accept',\r\n    'Authorization',\r\n    'X-API-Key',\r\n    'X-Client-Version'\r\n  ]\r\n};\r\n\r\n/**\r\n * Production CORS options (strict)\r\n */\r\nconst prodCorsOptions = {\r\n  origin: getAllowedOrigins(),\r\n  credentials: true,\r\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],\r\n  allowedHeaders: [\r\n    'Origin',\r\n    'X-Requested-With',\r\n    'Content-Type',\r\n    'Accept',\r\n    'Authorization'\r\n  ],\r\n  optionsSuccessStatus: 200\r\n};\r\n\r\n/**\r\n * Get CORS options based on environment\r\n */\r\nconst getCorsOptions = () => {\r\n  if (process.env.NODE_ENV === 'production') {\r\n    return prodCorsOptions;\r\n  } else if (process.env.NODE_ENV === 'development') {\r\n    return devCorsOptions;\r\n  }\r\n  return corsOptions;\r\n};\r\n\r\nmodule.exports = {\r\n  corsOptions,\r\n  devCorsOptions,\r\n  prodCorsOptions,\r\n  getCorsOptions,\r\n  getAllowedOrigins\r\n};\r\n"
+        }
+    ]
+}

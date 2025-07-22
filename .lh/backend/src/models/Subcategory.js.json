@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/models/Subcategory.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753116436733,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753116436733,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\n\r\nconst subcategorySchema = new mongoose.Schema({\r\n  name: {\r\n    type: String,\r\n    required: true,\r\n    trim: true\r\n  },\r\n  description: {\r\n    type: String,\r\n    trim: true\r\n  },\r\n  parent: {\r\n    type: mongoose.Schema.Types.ObjectId,\r\n    ref: 'Category',\r\n    required: true\r\n  },\r\n  image: {\r\n    url: String,\r\n    path: String,\r\n    filename: String\r\n  },\r\n  status: {\r\n    type: Boolean,\r\n    default: true\r\n  }\r\n}, {\r\n  timestamps: true\r\n});\r\n\r\n// Index for faster queries\r\nsubcategorySchema.index({ parent: 1, status: 1 });\r\nsubcategorySchema.index({ name: 1 });\r\n\r\nmodule.exports = mongoose.model('Subcategory', subcategorySchema);\r\n"
+        }
+    ]
+}
