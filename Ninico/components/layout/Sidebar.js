@@ -1,0 +1,156 @@
+'use client'
+import Link from "next/link"
+import { useState, useContext } from "react"
+import MobileMenu from "./MobileMenu"
+import MobileCategories from "./MobileCategories"
+import LoginPopup from "@/components/Modal/LoginModal"
+import AuthContext from "@/components/context/AuthContext"
+
+export default function Sidebar({ isMobileMenu, handleMobileMenu }) {
+    const [activeTab, setActiveTab] = useState('menu') // 'menu' or 'categories'
+    const [showLogin, setShowLogin] = useState(false)
+    const { user, logout } = useContext(AuthContext)
+
+    const handleLoginClick = (e) => {
+        e.preventDefault()
+        setShowLogin(true)
+    }
+
+    const handleLogout = (e) => {
+        e.preventDefault()
+        logout()
+        handleMobileMenu() // Close sidebar after logout
+    }
+
+    return (
+        <>
+            <div className={`tpsideinfo ${isMobileMenu ? "tp-sidebar-opened" : ""}`}>
+                <button className="tpsideinfo__close" onClick={handleMobileMenu}>Close<i className="fal fa-times ml-10" /></button>
+                
+                {/* Profile Section */}
+                <div className="tpsideinfo__profile text-center pt-30 pb-20">
+                    <div className="tpsideinfo__profile-img mb-15">
+                        <div className="profile-circle">
+                            <i className="fal fa-user"></i>
+                        </div>
+                    </div>
+                    <div className="tpsideinfo__profile-name mb-10">
+                        <span>Hello {user ? (user.name || 'User') : 'User'}</span>
+                    </div>
+                </div>
+                
+                <div className="tpsideinfo__nabtab">
+                    <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className={`nav-link ${activeTab === 'menu' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('menu')}
+                                type="button" 
+                                role="tab"
+                            >
+                                Menu
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button 
+                                className={`nav-link ${activeTab === 'categories' ? 'active' : ''}`} 
+                                onClick={() => setActiveTab('categories')}
+                                type="button" 
+                                role="tab"
+                            >
+                                Categories
+                            </button>
+                        </li>
+                    </ul>
+                    <div className="tab-content" id="pills-tabContent">
+                        <div className={`tab-pane fade ${activeTab === 'menu' ? 'show active' : ''}`} role="tabpanel">
+                            <MobileMenu />
+                        </div>
+                        <div className={`tab-pane fade ${activeTab === 'categories' ? 'show active' : ''}`} role="tabpanel">
+                            <MobileCategories />
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Auth Section */}
+                {user ? (
+                    <div className="tpsideinfo__logout-link">
+                        <button className="tpsideinfo__logout-btn" onClick={handleLogout}>
+                            <i className="fal fa-sign-out-alt" /> Logout
+                        </button>
+                    </div>
+                ) : (
+                    <div className="tpsideinfo__account-link">
+                        <a href="#" onClick={handleLoginClick}><i className="fal fa-user" /> Login / Register</a>
+                    </div>
+                )}
+            </div>
+            <div className={`body-overlay ${isMobileMenu ? "opened" : ""}`} onClick={handleMobileMenu} />
+            
+            {showLogin && (
+                <LoginPopup
+                    show={showLogin}
+                    onClose={() => setShowLogin(false)}
+                />
+            )}
+            
+            <style jsx>{`
+                .tpsideinfo__profile {
+                    border-bottom: 1px solid #e0e0e0;
+                    margin-bottom: 20px;
+                }
+                
+                .profile-circle {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    background-color: #f8f9fa;
+                    border: 2px solid #e0e0e0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto;
+                    font-size: 24px;
+                    color: #666;
+                }
+                
+                .tpsideinfo__profile-name span {
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: #333;
+                    display: block;
+                }
+                
+                .tpsideinfo__logout-link {
+                    padding: 20px;
+                    margin-top: 20px;
+                }
+                
+                .tpsideinfo__logout-btn {
+                    width: 100%;
+                    padding: 12px 20px;
+                    background-color: #dc3545;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                }
+                
+                .tpsideinfo__logout-btn:hover {
+                    background-color: #c82333;
+                }
+                
+                .tpsideinfo__logout-btn i {
+                    font-size: 14px;
+                }
+            `}</style>
+        </>
+    )
+}
