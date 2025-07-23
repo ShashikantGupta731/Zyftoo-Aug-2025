@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1753281586764,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753283608358,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n   // API base URL - consistent with AddProductPage\n   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'\n   \n   // Hardcoded admin token for testing\n-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzI4MTMyMCwiZXhwIjoxNzUzODg2MTIwfQ.3wEx7ZCDvYtUQppFM9CcXjhG1zTQX9_RYY_dy3Y6MZs'\n+  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjYwNzMyMCwiZXhwIjoxNzUzMjEyMTIwfQ.ugFuaDCq_ewqIE-dZaql3BB91kaXBIxE0TQmqdYnagI'\n \n   // Utility function to format hierarchical category names\n   const formatCategoryHierarchy = (category) => {\n     if (!category.parent || !category.parent.name) {\n"
                 }
             ],
             "date": 1753281586764,
