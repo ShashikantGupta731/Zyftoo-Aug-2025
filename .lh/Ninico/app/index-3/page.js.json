@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 18,
+            "activePatchIndex": 19,
             "patches": [
                 {
                     "date": 1752697208016,
@@ -80,6 +80,10 @@
                 {
                     "date": 1753118719720,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,9 @@\n import Services from \"@/components/sections/Services\"\n import Slider3 from \"@/components/sections/Slider3\"\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\n import GiftCategories from \"@/components/sections/GiftCategories\"\n+import PlatinamProduct from \"@/components/sections/PlatinamProduct\"\n import Link from \"next/link\"\n export default function Home3() {\n \n     return (\n@@ -25,33 +26,5 @@\n                 \n             </Layout>\n         </>\n     )\n-}\n-\n-import Layout from \"@/components/layout/Layout\"\n-import Banner2 from \"@/components/sections/Banner2\"\n-import Blog2 from \"@/components/sections/Blog2\"\n-import Brand2 from \"@/components/sections/Brand2\"\n-import DealProduct2 from \"@/components/sections/DealProduct2\"\n-import Product3 from \"@/components/sections/Product3\"\n-import Services from \"@/components/sections/Services\"\n-import Slider3 from \"@/components/sections/Slider3\"\n-import WhiteProduct from \"@/components/sections/WhiteProduct\"\n-import GiftCategories from \"@/components/sections/GiftCategories\"\n-import Link from \"next/link\"\n-export default function Home3() {\n-\n-    return (\n-        <>\n-            <Layout headerStyle={1} footerStyle={2}>\n-                <GiftCategories />\n-                <Slider3 />\n-                <Services />\n-                <Product3 />\n-                <Banner2 />\n-                <DealProduct2 />             \n-                \n-            </Layout>\n-        </>\n-    )\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1753211751808,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,14 +10,20 @@\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\n import GiftCategories from \"@/components/sections/GiftCategories\"\n import PlatinamProduct from \"@/components/sections/PlatinamProduct\"\n import Link from \"next/link\"\n+\n+console.log('📄 === PAGE.JS LOADED ===')\n+console.log('📦 GiftCategories imported:', typeof GiftCategories)\n+\n export default function Home3() {\n \n     return (\n         <>\n             <Layout headerStyle={1} footerStyle={2}>\n+                {console.log('🎯 About to render GiftCategories')}\n                 <GiftCategories />\n+                {console.log('🎯 About to render Slider3')}\n                 <Slider3 />\n                 <Services />\n                 <Product3 />\n                 <PlatinamProduct/>\n"
                 }
             ],
             "date": 1752697208016,

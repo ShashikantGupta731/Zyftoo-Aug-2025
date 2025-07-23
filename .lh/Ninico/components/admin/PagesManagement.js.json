@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 16,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1753107753818,
@@ -72,6 +72,10 @@
                 {
                     "date": 1753200447655,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,13 +40,8 @@\n \r\n // ...existing code around line 1612...\r\n \r\n // FIX: Add null safety check for categoryIds\r\n-{isCategorySection && categoryConfig.categoryIds && categoryConfig.categoryIds.length > 0 && (\r\n-  <small className=\"text-muted\">\r\n-    {categoryConfig.categoryIds.length} categories selected\r\n-  </small>\r\n-)}\r\n \r\n   // Business rule constants\r\n   const MAX_MAIN_CATEGORIES = 10\r\n   const MIN_MAIN_CATEGORIES = 1\r\n"
+                },
+                {
+                    "date": 1753281671327,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -136,9 +136,9 @@\n     },\r\n   })\r\n \r\n   // Hardcoded admin token for testing\r\n-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjYwNzMyMCwiZXhwIjoxNzUzMjEyMTIwfQ.ugFuaDCq_ewqIE-dZaql3BB91kaXBIxE0TQmqdYnagI'\r\n+  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzI4MTMyMCwiZXhwIjoxNzUzODg2MTIwfQ.3wEx7ZCDvYtUQppFM9CcXjhG1zTQX9_RYY_dy3Y6MZs'\r\n \r\n   // ========== HIERARCHICAL DATA MANAGEMENT HELPERS ==========\r\n   \r\n   // Get current counts for validation\r\n"
                 }
             ],
             "date": 1753107753818,

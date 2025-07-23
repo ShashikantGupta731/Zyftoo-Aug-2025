@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1753197903776,
@@ -12,6 +12,10 @@
                 {
                     "date": 1753202256625,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -136,9 +136,9 @@\n     try {\r\n       setLoading(true)\r\n       localStorage.setItem('authToken', ADMIN_TOKEN)\r\n       \r\n-      const response = await get(`/api/pages/${pageKey}`)\r\n+      const response = await get(`/pages/${pageKey}`)\r\n       console.log('Page config response:', response)\r\n       \r\n       // Handle the double-wrapped response from apiService\r\n       const actualData = response.data\r\n"
+                },
+                {
+                    "date": 1753281645216,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,9 +60,9 @@\n     },\r\n   })\r\n \r\n   // Hardcoded admin token for testing\r\n-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjYwNzMyMCwiZXhwIjoxNzUzMjEyMTIwfQ.ugFuaDCq_ewqIE-dZaql3BB91kaXBIxE0TQmqdYnagI'\r\n+  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzI4MTMyMCwiZXhwIjoxNzUzODg2MTIwfQ.3wEx7ZCDvYtUQppFM9CcXjhG1zTQX9_RYY_dy3Y6MZs'\r\n \r\n   // Define sections for each page\r\n   const homeSections = [\r\n     { \r\n"
                 }
             ],
             "date": 1753197903776,

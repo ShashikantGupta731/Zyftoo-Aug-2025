@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/utils/fileUpdater.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753240251959,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753240251959,
+            "name": "Commit-0",
+            "content": "const fs = require('fs').promises;\r\nconst path = require('path');\r\n\r\n/**\r\n * Updates the static giftPageCategories.js file with latest data\r\n */\r\nasync function updateGiftCategoriesFile(categories, config = {}) {\r\n  try {\r\n    console.log('📝 === UPDATING STATIC FILE ===');\r\n    console.log('Categories to write:', categories.length);\r\n    \r\n    // Path to the frontend data file\r\n    const filePath = path.join(__dirname, '../../../Ninico/data/giftPageCategories.js');\r\n    console.log('File path:', filePath);\r\n    \r\n    // Generate the file content\r\n    const fileContent = generateGiftCategoriesContent(categories, config);\r\n    \r\n    // Write to file\r\n    await fs.writeFile(filePath, fileContent, 'utf8');\r\n    console.log('✅ Static file updated successfully');\r\n    \r\n    return { success: true, path: filePath };\r\n  } catch (error) {\r\n    console.error('❌ Error updating static file:', error);\r\n    return { success: false, error: error.message };\r\n  }\r\n}\r\n\r\n/**\r\n * Generates the content for giftPageCategories.js\r\n */\r\nfunction generateGiftCategoriesContent(categories, config) {\r\n  // Transform categories to match frontend structure\r\n  const transformedCategories = categories.map((cat, index) => ({\r\n    id: cat.id || cat._id?.toString(),\r\n    name: cat.name,\r\n    description: cat.description || `${cat.name} products and accessories`,\r\n    icon: cat.icon || cat.image || `assets/img/features/feature-icon-${String(index + 1).padStart(2, '0')}.png`,\r\n    image: cat.image || cat.icon || `assets/img/features/feature-icon-${String(index + 1).padStart(2, '0')}.png`,\r\n    order: cat.order !== undefined ? cat.order : index,\r\n    subcategories: cat.subcategories ? cat.subcategories.map(sub => ({\r\n      id: sub.id || sub._id?.toString(),\r\n      name: sub.name,\r\n      description: sub.description || `${sub.name} items`,\r\n      icon: sub.icon || sub.image || cat.icon,\r\n      image: sub.image || sub.icon || cat.image,\r\n      children: sub.children || []\r\n    })) : []\r\n  }));\r\n\r\n  const timestamp = new Date().toISOString();\r\n  \r\n  return `// Auto-generated file - Updated from admin panel\r\n// Last updated: ${timestamp}\r\n// Configuration: ${JSON.stringify(config, null, 2)}\r\n\r\nexport const giftPageCategories = ${JSON.stringify(transformedCategories, null, 2)};\r\n\r\n// Metadata\r\nexport const giftCategoriesMetadata = {\r\n  lastUpdated: \"${timestamp}\",\r\n  totalCategories: ${transformedCategories.length},\r\n  source: \"admin_panel\",\r\n  config: ${JSON.stringify(config, null, 2)}\r\n};\r\n`;\r\n}\r\n\r\nmodule.exports = {\r\n  updateGiftCategoriesFile,\r\n  generateGiftCategoriesContent\r\n};\r\n"
+        }
+    ]
+}
