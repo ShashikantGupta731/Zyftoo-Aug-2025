@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/services/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753440030085,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753440030085,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Services Index\r\n * \r\n * Centralized export for all admin services\r\n */\r\n\r\nconst CategoryService = require('./CategoryService');\r\nconst FileService = require('./FileService');\r\nconst PageConfigService = require('./PageConfigService');\r\n\r\nmodule.exports = {\r\n  CategoryService,\r\n  FileService,\r\n  PageConfigService\r\n};\r\n"
+        }
+    ]
+}

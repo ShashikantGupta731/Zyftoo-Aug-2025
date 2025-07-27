@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1753197903971,
@@ -16,6 +16,18 @@
                 {
                     "date": 1753199066414,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,9 +129,9 @@\n         \r\n         // Trigger refresh notification (optional)\r\n         try {\r\n           console.log('12. Triggering homepage refresh...')\r\n-          await get('/api/pages/home/refresh/categorySection')\r\n+          await get('/pages/home/refresh/categorySection')\r\n           console.log('    - Homepage refresh successful')\r\n         } catch (refreshError) {\r\n           console.log('⚠️ Refresh notification failed, but save was successful:', refreshError)\r\n         }\r\n"
+                },
+                {
+                    "date": 1753290189693,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,8 +103,9 @@\n       console.log('   - Request data:', configData)\r\n       console.log('   - Request headers will include auth token')\r\n       \r\n       console.log('9. Making API request...')\r\n+      console.log(\"sending\",configData,\" ---to--:\",apiEndpoint)\r\n       const response = await put(apiEndpoint, configData)\r\n       console.log('10. API response received:')\r\n       console.log('    - Raw response:', response)\r\n       console.log('    - Response type:', typeof response)\r\n"
+                },
+                {
+                    "date": 1753290396411,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,9 +103,9 @@\n       console.log('   - Request data:', configData)\r\n       console.log('   - Request headers will include auth token')\r\n       \r\n       console.log('9. Making API request...')\r\n-      console.log(\"sending\",configData,\" ---to--:\",apiEndpoint)\r\n+      console.log(\"------------------sending-------------\",configData,\" ---to--:\",apiEndpoint)\r\n       const response = await put(apiEndpoint, configData)\r\n       console.log('10. API response received:')\r\n       console.log('    - Raw response:', response)\r\n       console.log('    - Response type:', typeof response)\r\n"
+                },
+                {
+                    "date": 1753449736213,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,9 +103,9 @@\n       console.log('   - Request data:', configData)\r\n       console.log('   - Request headers will include auth token')\r\n       \r\n       console.log('9. Making API request...')\r\n-      console.log(\"------------------sending-------------\",configData,\" ---to--:\",apiEndpoint)\r\n+      console.log(\"------------------sending--------------------\",configData,\" ---to--:\",apiEndpoint)\r\n       const response = await put(apiEndpoint, configData)\r\n       console.log('10. API response received:')\r\n       console.log('    - Raw response:', response)\r\n       console.log('    - Response type:', typeof response)\r\n"
                 }
             ],
             "date": 1753197903971,

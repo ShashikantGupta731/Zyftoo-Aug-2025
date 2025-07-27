@@ -1,0 +1,38 @@
+{
+    "sourceFile": "Ninico/app/CorporateHome/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1753598962937,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753605610200,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,11 +19,9 @@\n \r\n     return (\r\n         <>\r\n             <Layout headerStyle={1} footerStyle={2}>\r\n-                {console.log('🎯 About to render ModernGiftCategories')}\r\n                 <ModernGiftCategories />\r\n-                {console.log('🎯 About to render Slider3')}\r\n                 <Slider3 />\r\n                 <Services />\r\n                 <Product3 />\r\n                 <PlatinamProduct/>\r\n"
+                },
+                {
+                    "date": 1753605837006,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n import Blog2 from \"@/components/sections/Blog2\"\r\n import Brand2 from \"@/components/sections/Brand2\"\r\n import DealProduct2 from \"@/components/sections/DealProduct2\"\r\n import Product3 from \"@/components/sections/Product3\"\r\n+import Product2 from \"@/components/sections/Product2\"\r\n import Services from \"@/components/sections/Services\"\r\n import Slider3 from \"@/components/sections/Slider3\"\r\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\r\n import ModernGiftCategories from \"@/components/sections/ModernGiftCategories\"\r\n@@ -22,9 +23,9 @@\n             <Layout headerStyle={1} footerStyle={2}>\r\n                 <ModernGiftCategories />\r\n                 <Slider3 />\r\n                 <Services />\r\n-                <Product3 />\r\n+                <Product2 />\r\n                 <PlatinamProduct/>\r\n                 <Banner2 />\r\n                 <DealProduct2 />             \r\n                 \r\n"
+                },
+                {
+                    "date": 1753605871225,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n                 <ModernGiftCategories />\r\n                 <Slider3 />\r\n                 <Services />\r\n                 <Product2 />\r\n-                <PlatinamProduct/>\r\n+                \r\n                 <Banner2 />\r\n                 <DealProduct2 />             \r\n                 \r\n             </Layout>\r\n"
+                },
+                {
+                    "date": 1753606152522,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\r\n import ModernGiftCategories from \"@/components/sections/ModernGiftCategories\"\r\n import PlatinamProduct from \"@/components/sections/PlatinamProduct\"\r\n import Link from \"next/link\"\r\n+import Banner1 from \"@/components/sections/Banner1\"\r\n \r\n console.log('📄 === MODERN PAGE.JS LOADED ===')\r\n console.log('📦 ModernGiftCategories imported:', typeof ModernGiftCategories)\r\n \r\n@@ -22,11 +23,11 @@\n         <>\r\n             <Layout headerStyle={1} footerStyle={2}>\r\n                 <ModernGiftCategories />\r\n                 <Slider3 />\r\n-                <Services />\r\n+                <Banner1 />\r\n                 <Product2 />\r\n-                \r\n+                <Product3 />\r\n                 <Banner2 />\r\n                 <DealProduct2 />             \r\n                 \r\n             </Layout>\r\n"
+                },
+                {
+                    "date": 1753606182020,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,10 +26,9 @@\n                 <Slider3 />\r\n                 <Banner1 />\r\n                 <Product2 />\r\n                 <Product3 />\r\n-                <Banner2 />\r\n-                <DealProduct2 />             \r\n+                <Banner2 />           \r\n                 \r\n             </Layout>\r\n         </>\r\n     )\r\n"
+                }
+            ],
+            "date": 1753598962937,
+            "name": "Commit-0",
+            "content": "\r\nimport Layout from \"@/components/layout/Layout\"\r\nimport Banner2 from \"@/components/sections/Banner2\"\r\nimport Blog2 from \"@/components/sections/Blog2\"\r\nimport Brand2 from \"@/components/sections/Brand2\"\r\nimport DealProduct2 from \"@/components/sections/DealProduct2\"\r\nimport Product3 from \"@/components/sections/Product3\"\r\nimport Services from \"@/components/sections/Services\"\r\nimport Slider3 from \"@/components/sections/Slider3\"\r\nimport WhiteProduct from \"@/components/sections/WhiteProduct\"\r\nimport ModernGiftCategories from \"@/components/sections/ModernGiftCategories\"\r\nimport PlatinamProduct from \"@/components/sections/PlatinamProduct\"\r\nimport Link from \"next/link\"\r\n\r\nconsole.log('📄 === MODERN PAGE.JS LOADED ===')\r\nconsole.log('📦 ModernGiftCategories imported:', typeof ModernGiftCategories)\r\n\r\nexport default function Home3() {\r\n\r\n    return (\r\n        <>\r\n            <Layout headerStyle={1} footerStyle={2}>\r\n                {console.log('🎯 About to render ModernGiftCategories')}\r\n                <ModernGiftCategories />\r\n                {console.log('🎯 About to render Slider3')}\r\n                <Slider3 />\r\n                <Services />\r\n                <Product3 />\r\n                <PlatinamProduct/>\r\n                <Banner2 />\r\n                <DealProduct2 />             \r\n                \r\n            </Layout>\r\n        </>\r\n    )\r\n}"
+        }
+    ]
+}

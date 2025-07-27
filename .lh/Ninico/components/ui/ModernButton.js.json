@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/ModernButton.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753441696952,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753441696952,
+            "name": "Commit-0",
+            "content": "/**\r\n * Modern Button Component\r\n * \r\n * A sleek, minimalistic button component with curved edges\r\n * and smooth animations\r\n */\r\n\r\nimport React from 'react';\r\n\r\nconst ModernButton = ({\r\n  children,\r\n  variant = 'primary',\r\n  size = 'md',\r\n  icon,\r\n  iconPosition = 'left',\r\n  loading = false,\r\n  disabled = false,\r\n  fullWidth = false,\r\n  className = '',\r\n  onClick,\r\n  type = 'button',\r\n  ...props\r\n}) => {\r\n  const baseClasses = 'btn-modern';\r\n  \r\n  const variantClasses = {\r\n    primary: 'btn-modern--primary',\r\n    secondary: 'btn-modern--secondary',\r\n    ghost: 'btn-modern--ghost'\r\n  };\r\n  \r\n  const sizeClasses = {\r\n    sm: 'btn-modern--sm',\r\n    md: 'btn-modern--md',\r\n    lg: 'btn-modern--lg'\r\n  };\r\n  \r\n  const classes = [\r\n    baseClasses,\r\n    variantClasses[variant],\r\n    sizeClasses[size],\r\n    fullWidth ? 'w-full' : '',\r\n    disabled || loading ? 'opacity-50 cursor-not-allowed' : '',\r\n    className\r\n  ].filter(Boolean).join(' ');\r\n\r\n  const LoadingSpinner = () => (\r\n    <svg \r\n      className=\"animate-spin h-4 w-4\" \r\n      xmlns=\"http://www.w3.org/2000/svg\" \r\n      fill=\"none\" \r\n      viewBox=\"0 0 24 24\"\r\n    >\r\n      <circle \r\n        className=\"opacity-25\" \r\n        cx=\"12\" \r\n        cy=\"12\" \r\n        r=\"10\" \r\n        stroke=\"currentColor\" \r\n        strokeWidth=\"4\"\r\n      />\r\n      <path \r\n        className=\"opacity-75\" \r\n        fill=\"currentColor\" \r\n        d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"\r\n      />\r\n    </svg>\r\n  );\r\n\r\n  return (\r\n    <button\r\n      type={type}\r\n      className={classes}\r\n      onClick={onClick}\r\n      disabled={disabled || loading}\r\n      {...props}\r\n    >\r\n      {loading && <LoadingSpinner />}\r\n      {!loading && icon && iconPosition === 'left' && (\r\n        <span className=\"flex-shrink-0\">{icon}</span>\r\n      )}\r\n      {children}\r\n      {!loading && icon && iconPosition === 'right' && (\r\n        <span className=\"flex-shrink-0\">{icon}</span>\r\n      )}\r\n    </button>\r\n  );\r\n};\r\n\r\nexport default ModernButton;\r\n"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 19,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1752697208016,
@@ -84,6 +84,10 @@
                 {
                     "date": 1753211751808,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,14 +10,20 @@\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\n import GiftCategories from \"@/components/sections/GiftCategories\"\n import PlatinamProduct from \"@/components/sections/PlatinamProduct\"\n import Link from \"next/link\"\n+\n+console.log('📄 === PAGE.JS LOADED ===')\n+console.log('📦 GiftCategories imported:', typeof GiftCategories)\n+\n export default function Home3() {\n \n     return (\n         <>\n             <Layout headerStyle={1} footerStyle={2}>\n+                {console.log('🎯 About to render GiftCategories')}\n                 <GiftCategories />\n+                {console.log('🎯 About to render Slider3')}\n                 <Slider3 />\n                 <Services />\n                 <Product3 />\n                 <PlatinamProduct/>\n"
+                },
+                {
+                    "date": 1753441696981,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,22 +7,22 @@\n import Product3 from \"@/components/sections/Product3\"\n import Services from \"@/components/sections/Services\"\n import Slider3 from \"@/components/sections/Slider3\"\n import WhiteProduct from \"@/components/sections/WhiteProduct\"\n-import GiftCategories from \"@/components/sections/GiftCategories\"\n+import ModernGiftCategories from \"@/components/sections/ModernGiftCategories\"\n import PlatinamProduct from \"@/components/sections/PlatinamProduct\"\n import Link from \"next/link\"\n \n-console.log('📄 === PAGE.JS LOADED ===')\n-console.log('📦 GiftCategories imported:', typeof GiftCategories)\n+console.log('📄 === MODERN PAGE.JS LOADED ===')\n+console.log('📦 ModernGiftCategories imported:', typeof ModernGiftCategories)\n \n export default function Home3() {\n \n     return (\n         <>\n             <Layout headerStyle={1} footerStyle={2}>\n-                {console.log('🎯 About to render GiftCategories')}\n-                <GiftCategories />\n+                {console.log('🎯 About to render ModernGiftCategories')}\n+                <ModernGiftCategories />\n                 {console.log('🎯 About to render Slider3')}\n                 <Slider3 />\n                 <Services />\n                 <Product3 />\n"
                 }
             ],
             "date": 1752697208016,

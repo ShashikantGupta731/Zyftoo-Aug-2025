@@ -1,0 +1,437 @@
+/**
+ * Modern Minimalistic Design System
+ * 
+ * A sleek, elegant, and user-friendly design system with curved edges
+ * and clean aesthetics for the NIC-Next e-commerce platform
+ */
+
+/* ========================================
+   🎨 DESIGN TOKENS & VARIABLES
+======================================== */
+
+:root {
+  /* 🎯 Primary Color Palette - Sleek & Professional */
+  --modern-primary: #2563eb;
+  --modern-primary-light: #3b82f6;
+  --modern-primary-dark: #1d4ed8;
+  --modern-primary-50: #eff6ff;
+  --modern-primary-100: #dbeafe;
+  --modern-primary-500: #3b82f6;
+  --modern-primary-600: #2563eb;
+  --modern-primary-700: #1d4ed8;
+
+  /* 🎨 Neutral Palette - Clean & Minimalistic */
+  --modern-white: #ffffff;
+  --modern-black: #000000;
+  --modern-gray-50: #f9fafb;
+  --modern-gray-100: #f3f4f6;
+  --modern-gray-200: #e5e7eb;
+  --modern-gray-300: #d1d5db;
+  --modern-gray-400: #9ca3af;
+  --modern-gray-500: #6b7280;
+  --modern-gray-600: #4b5563;
+  --modern-gray-700: #374151;
+  --modern-gray-800: #1f2937;
+  --modern-gray-900: #111827;
+
+  /* 🌈 Accent Colors - Subtle & Elegant */
+  --modern-success: #10b981;
+  --modern-success-light: #34d399;
+  --modern-warning: #f59e0b;
+  --modern-warning-light: #fbbf24;
+  --modern-error: #ef4444;
+  --modern-error-light: #f87171;
+  --modern-info: #3b82f6;
+  --modern-info-light: #60a5fa;
+
+  /* 📏 Spacing System - Consistent & Harmonious */
+  --space-1: 0.25rem;    /* 4px */
+  --space-2: 0.5rem;     /* 8px */
+  --space-3: 0.75rem;    /* 12px */
+  --space-4: 1rem;       /* 16px */
+  --space-5: 1.25rem;    /* 20px */
+  --space-6: 1.5rem;     /* 24px */
+  --space-8: 2rem;       /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+
+  /* 🔤 Typography Scale - Readable & Elegant */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-5xl: 3rem;        /* 48px */
+
+  /* 🎭 Border Radius - Smooth & Curved */
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.375rem;   /* 6px */
+  --radius-lg: 0.5rem;     /* 8px */
+  --radius-xl: 0.75rem;    /* 12px */
+  --radius-2xl: 1rem;      /* 16px */
+  --radius-3xl: 1.5rem;    /* 24px */
+  --radius-full: 9999px;   /* Full rounded */
+
+  /* 🌊 Shadows - Subtle & Layered */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ⚡ Transitions - Smooth & Natural */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.25s ease-out;
+  --transition-slow: 0.35s ease-out;
+
+  /* 📐 Layout */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+}
+
+/* ========================================
+   🔄 MODERN RESET & BASE STYLES
+======================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--modern-gray-700);
+  background-color: var(--modern-white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   📱 MODERN BUTTON SYSTEM
+======================================== */
+
+.btn-modern {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Button Sizes */
+.btn-modern--sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  border-radius: var(--radius-md);
+  min-height: 2rem;
+}
+
+.btn-modern--md {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-lg);
+  min-height: 2.5rem;
+}
+
+.btn-modern--lg {
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-base);
+  border-radius: var(--radius-xl);
+  min-height: 3rem;
+}
+
+/* Button Variants */
+.btn-modern--primary {
+  background: linear-gradient(135deg, var(--modern-primary) 0%, var(--modern-primary-light) 100%);
+  color: var(--modern-white);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-modern--primary:hover {
+  background: linear-gradient(135deg, var(--modern-primary-dark) 0%, var(--modern-primary) 100%);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-modern--secondary {
+  background: var(--modern-white);
+  color: var(--modern-gray-700);
+  border: 1px solid var(--modern-gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-modern--secondary:hover {
+  background: var(--modern-gray-50);
+  border-color: var(--modern-gray-300);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-modern--ghost {
+  background: transparent;
+  color: var(--modern-gray-600);
+  border: 1px solid transparent;
+}
+
+.btn-modern--ghost:hover {
+  background: var(--modern-gray-50);
+  color: var(--modern-gray-700);
+}
+
+/* ========================================
+   🎯 MODERN CARD SYSTEM
+======================================== */
+
+.card-modern {
+  background: var(--modern-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  border: 1px solid var(--modern-gray-100);
+}
+
+.card-modern:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-modern__header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--modern-gray-100);
+}
+
+.card-modern__body {
+  padding: var(--space-6);
+}
+
+.card-modern__footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--modern-gray-100);
+  background: var(--modern-gray-50);
+}
+
+/* ========================================
+   📝 MODERN FORM SYSTEM
+======================================== */
+
+.form-modern {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-group-modern {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label-modern {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--modern-gray-700);
+  margin-bottom: var(--space-1);
+}
+
+.form-input-modern {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--modern-gray-300);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--modern-gray-700);
+  background: var(--modern-white);
+  transition: all var(--transition-normal);
+  min-height: 2.75rem;
+}
+
+.form-input-modern:focus {
+  outline: none;
+  border-color: var(--modern-primary);
+  box-shadow: 0 0 0 3px var(--modern-primary-100);
+}
+
+.form-input-modern::placeholder {
+  color: var(--modern-gray-400);
+}
+
+/* ========================================
+   🏷️ MODERN BADGE SYSTEM
+======================================== */
+
+.badge-modern {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge-modern--primary {
+  background: var(--modern-primary-100);
+  color: var(--modern-primary-700);
+}
+
+.badge-modern--success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-modern--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-modern--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ========================================
+   📊 MODERN LAYOUT COMPONENTS
+======================================== */
+
+.container-modern {
+  max-width: var(--container-xl);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.grid-modern {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.grid-modern--1 { grid-template-columns: 1fr; }
+.grid-modern--2 { grid-template-columns: repeat(2, 1fr); }
+.grid-modern--3 { grid-template-columns: repeat(3, 1fr); }
+.grid-modern--4 { grid-template-columns: repeat(4, 1fr); }
+.grid-modern--6 { grid-template-columns: repeat(6, 1fr); }
+
+@media (max-width: 768px) {
+  .grid-modern--2,
+  .grid-modern--3,
+  .grid-modern--4,
+  .grid-modern--6 {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .grid-modern--3,
+  .grid-modern--4,
+  .grid-modern--6 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   🎭 MODERN UTILITIES
+======================================== */
+
+/* Spacing */
+.p-modern-1 { padding: var(--space-1); }
+.p-modern-2 { padding: var(--space-2); }
+.p-modern-3 { padding: var(--space-3); }
+.p-modern-4 { padding: var(--space-4); }
+.p-modern-6 { padding: var(--space-6); }
+.p-modern-8 { padding: var(--space-8); }
+
+.m-modern-1 { margin: var(--space-1); }
+.m-modern-2 { margin: var(--space-2); }
+.m-modern-3 { margin: var(--space-3); }
+.m-modern-4 { margin: var(--space-4); }
+.m-modern-6 { margin: var(--space-6); }
+.m-modern-8 { margin: var(--space-8); }
+
+/* Text */
+.text-modern-xs { font-size: var(--text-xs); }
+.text-modern-sm { font-size: var(--text-sm); }
+.text-modern-base { font-size: var(--text-base); }
+.text-modern-lg { font-size: var(--text-lg); }
+.text-modern-xl { font-size: var(--text-xl); }
+.text-modern-2xl { font-size: var(--text-2xl); }
+
+.text-modern-center { text-align: center; }
+.text-modern-left { text-align: left; }
+.text-modern-right { text-align: right; }
+
+/* Colors */
+.text-modern-primary { color: var(--modern-primary); }
+.text-modern-gray-500 { color: var(--modern-gray-500); }
+.text-modern-gray-600 { color: var(--modern-gray-600); }
+.text-modern-gray-700 { color: var(--modern-gray-700); }
+.text-modern-success { color: var(--modern-success); }
+.text-modern-warning { color: var(--modern-warning); }
+.text-modern-error { color: var(--modern-error); }
+
+/* Rounded corners */
+.rounded-modern-sm { border-radius: var(--radius-sm); }
+.rounded-modern-md { border-radius: var(--radius-md); }
+.rounded-modern-lg { border-radius: var(--radius-lg); }
+.rounded-modern-xl { border-radius: var(--radius-xl); }
+.rounded-modern-2xl { border-radius: var(--radius-2xl); }
+.rounded-modern-full { border-radius: var(--radius-full); }
+
+/* Shadows */
+.shadow-modern-sm { box-shadow: var(--shadow-sm); }
+.shadow-modern-md { box-shadow: var(--shadow-md); }
+.shadow-modern-lg { box-shadow: var(--shadow-lg); }
+.shadow-modern-xl { box-shadow: var(--shadow-xl); }
+
+/* ========================================
+   📱 RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 640px) {
+  .container-modern {
+    padding: 0 var(--space-3);
+  }
+  
+  .btn-modern--lg {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+  }
+  
+  .card-modern__header,
+  .card-modern__body,
+  .card-modern__footer {
+    padding: var(--space-4);
+  }
+}

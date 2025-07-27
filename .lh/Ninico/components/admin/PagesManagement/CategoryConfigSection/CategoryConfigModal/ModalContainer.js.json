@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/PagesManagement/CategoryConfigSection/CategoryConfigModal/ModalContainer.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753451875047,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753451875047,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React from 'react'\r\n\r\n/**\r\n * Modal Container Component\r\n * Provides the basic modal structure and backdrop\r\n */\r\nexport default function ModalContainer({ show, children, size = \"modal-xl\" }) {\r\n  if (!show) return null\r\n\r\n  return (\r\n    <div className=\"modal show d-block\" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>\r\n      <div className={`modal-dialog ${size}`}>\r\n        <div className=\"modal-content\">\r\n          {children}\r\n        </div>\r\n      </div>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

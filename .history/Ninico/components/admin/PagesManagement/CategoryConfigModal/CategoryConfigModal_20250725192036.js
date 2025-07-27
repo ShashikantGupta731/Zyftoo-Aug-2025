@@ -5,7 +5,7 @@ import CategoryConfigHeader from './CategoryConfigHeader'
 import CategoryConfigSettings from './CategoryConfigSettings'
 import CategorySelection from './CategorySelection'
 import CategoryConfigFooter from './CategoryConfigFooter'
-import { useCategoryHelpers } from './hooks/useCategoryHelpers'
+import { useCategoryHelpers } from '../hooks/useCategoryHelpers'
 
 export default function CategoryConfigModal({
   show,
@@ -104,6 +104,7 @@ export default function CategoryConfigModal({
       console.log('   - Request headers will include auth token')
       
       console.log('9. Making API request...')
+      console.log("------------------sending--------------------",configData," ---to--:",apiEndpoint)
       const response = await put(apiEndpoint, configData)
       console.log('10. API response received:')
       console.log('    - Raw response:', response)

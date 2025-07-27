@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/ModernInput.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753441696952,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753441696952,
+            "name": "Commit-0",
+            "content": "/**\r\n * Modern Input Component\r\n * \r\n * A clean, accessible input component with smooth focus states\r\n * and elegant styling\r\n */\r\n\r\nimport React, { forwardRef } from 'react';\r\n\r\nconst ModernInput = forwardRef(({\r\n  label,\r\n  error,\r\n  hint,\r\n  icon,\r\n  iconPosition = 'left',\r\n  className = '',\r\n  type = 'text',\r\n  required = false,\r\n  disabled = false,\r\n  ...props\r\n}, ref) => {\r\n  const inputId = props.id || `input-${Math.random().toString(36).substr(2, 9)}`;\r\n  \r\n  const inputClasses = [\r\n    'form-input-modern',\r\n    error ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : '',\r\n    disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : '',\r\n    icon ? (iconPosition === 'left' ? 'pl-10' : 'pr-10') : '',\r\n    className\r\n  ].filter(Boolean).join(' ');\r\n\r\n  return (\r\n    <div className=\"form-group-modern\">\r\n      {label && (\r\n        <label \r\n          htmlFor={inputId} \r\n          className=\"form-label-modern\"\r\n        >\r\n          {label}\r\n          {required && <span className=\"text-red-500 ml-1\">*</span>}\r\n        </label>\r\n      )}\r\n      \r\n      <div className=\"relative\">\r\n        {icon && iconPosition === 'left' && (\r\n          <div className=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\">\r\n            <div className=\"text-gray-400 h-5 w-5\">\r\n              {icon}\r\n            </div>\r\n          </div>\r\n        )}\r\n        \r\n        <input\r\n          ref={ref}\r\n          id={inputId}\r\n          type={type}\r\n          className={inputClasses}\r\n          disabled={disabled}\r\n          {...props}\r\n        />\r\n        \r\n        {icon && iconPosition === 'right' && (\r\n          <div className=\"absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none\">\r\n            <div className=\"text-gray-400 h-5 w-5\">\r\n              {icon}\r\n            </div>\r\n          </div>\r\n        )}\r\n      </div>\r\n      \r\n      {hint && !error && (\r\n        <p className=\"text-modern-sm text-modern-gray-500 mt-1\">\r\n          {hint}\r\n        </p>\r\n      )}\r\n      \r\n      {error && (\r\n        <p className=\"text-modern-sm text-modern-error mt-1\">\r\n          {error}\r\n        </p>\r\n      )}\r\n    </div>\r\n  );\r\n});\r\n\r\nModernInput.displayName = 'ModernInput';\r\n\r\nexport default ModernInput;\r\n"
+        }
+    ]
+}

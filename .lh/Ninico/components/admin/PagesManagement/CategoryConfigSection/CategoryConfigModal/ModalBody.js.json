@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/PagesManagement/CategoryConfigSection/CategoryConfigModal/ModalBody.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753451875023,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753451875023,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React from 'react'\r\n\r\n/**\r\n * Modal Body Component\r\n * Handles the main content area of the modal\r\n */\r\nexport default function ModalBody({ \r\n  categoryConfig, \r\n  setCategoryConfig,\r\n  availableCategories,\r\n  subcategories,\r\n  selectedMainCategory,\r\n  setSelectedMainCategory,\r\n  getCurrentCounts,\r\n  handleCategoryToggle,\r\n  handleMaxCategoriesChange,\r\n  MAX_MAIN_CATEGORIES,\r\n  MIN_MAIN_CATEGORIES,\r\n  MAX_SUBCATEGORIES_PER_CATEGORY,\r\n  setError,\r\n  CategoryConfigSettings,\r\n  CategorySelection\r\n}) {\r\n  return (\r\n    <div className=\"modal-body\">\r\n      {/* Category Configuration Settings */}\r\n      <CategoryConfigSettings \r\n        categoryConfig={categoryConfig}\r\n        setCategoryConfig={setCategoryConfig}\r\n        getCurrentCounts={getCurrentCounts}\r\n        handleMaxCategoriesChange={handleMaxCategoriesChange}\r\n        MAX_MAIN_CATEGORIES={MAX_MAIN_CATEGORIES}\r\n        MIN_MAIN_CATEGORIES={MIN_MAIN_CATEGORIES}\r\n        MAX_SUBCATEGORIES_PER_CATEGORY={MAX_SUBCATEGORIES_PER_CATEGORY}\r\n        selectedMainCategory={selectedMainCategory}\r\n        availableCategories={availableCategories}\r\n        subcategories={subcategories}\r\n      />\r\n\r\n      {/* Category Selection Interface */}\r\n      {categoryConfig.enabled && (\r\n        <CategorySelection \r\n          availableCategories={availableCategories}\r\n          subcategories={subcategories}\r\n          categoryConfig={categoryConfig}\r\n          setCategoryConfig={setCategoryConfig}\r\n          selectedMainCategory={selectedMainCategory}\r\n          setSelectedMainCategory={setSelectedMainCategory}\r\n          handleCategoryToggle={handleCategoryToggle}\r\n          getCurrentCounts={getCurrentCounts}\r\n          MAX_MAIN_CATEGORIES={MAX_MAIN_CATEGORIES}\r\n          MAX_SUBCATEGORIES_PER_CATEGORY={MAX_SUBCATEGORIES_PER_CATEGORY}\r\n          setError={setError}\r\n        />\r\n      )}\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

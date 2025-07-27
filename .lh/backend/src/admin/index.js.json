@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/admin/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753440030083,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753442162902,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,6 +33,9 @@\n   routes: require('./routes'),\r\n   controllers: require('./controllers'),\r\n   services: require('./services'),\r\n   middleware: require('./middleware'),\r\n-  utils: require('./utils')\r\n+  // Lazy load utils to avoid startup issues\r\n+  get utils() {\r\n+    return require('./utils');\r\n+  }\r\n };\r\n"
+                }
+            ],
+            "date": 1753440030083,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Module Entry Point\r\n * \r\n * This is the main entry point for the admin sub-project.\r\n * It provides a clean interface to access all admin functionality.\r\n * \r\n * @module Admin\r\n * @version 1.0.0\r\n */\r\n\r\nconst express = require('express');\r\nconst adminRoutes = require('./routes');\r\nconst { adminAuth, rolePermissions } = require('./middleware');\r\nconst config = require('./config');\r\n\r\n/**\r\n * Initialize Admin Module\r\n * @param {Object} app - Express app instance\r\n */\r\nconst initializeAdmin = (app) => {\r\n  console.log('🔧 Initializing Admin Module...');\r\n  \r\n  // Mount admin routes at /api/admin\r\n  app.use('/api/admin', adminRoutes);\r\n  \r\n  console.log('✅ Admin Module initialized successfully');\r\n  console.log('📁 Admin routes available at: /api/admin/*');\r\n};\r\n\r\nmodule.exports = {\r\n  initializeAdmin,\r\n  config,\r\n  routes: require('./routes'),\r\n  controllers: require('./controllers'),\r\n  services: require('./services'),\r\n  middleware: require('./middleware'),\r\n  utils: require('./utils')\r\n};\r\n"
+        }
+    ]
+}

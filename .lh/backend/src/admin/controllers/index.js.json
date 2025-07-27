@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/controllers/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753440030085,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753440030085,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Controllers Index\r\n * \r\n * Centralized export for all admin controllers\r\n */\r\n\r\n// Catalog controllers\r\nconst CategoryController = require('./catalog/CategoryController');\r\n\r\n// Note: Other controllers will be added as they are created\r\n// const ProductController = require('./catalog/ProductController');\r\n// const UserController = require('./users/UserController');\r\n// const AdminController = require('./users/AdminController');\r\n// const AuthController = require('./auth/AuthController');\r\n// const PageController = require('./content/PageController');\r\n\r\nmodule.exports = {\r\n  // Catalog\r\n  CategoryController,\r\n  \r\n  // Placeholders for future controllers\r\n  // ProductController,\r\n  // UserController,\r\n  // AdminController,\r\n  // AuthController,\r\n  // PageController\r\n};\r\n"
+        }
+    ]
+}

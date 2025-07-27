@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/sections/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753289008655,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753289008655,
+            "name": "Commit-0",
+            "content": "// Export all category section configuration components\r\nexport { default as CategoryConfigModal } from './CategoryConfigModal'\r\nexport { default as CategorySettings } from './CategorySettings'\r\nexport { default as CategorySelectionSummary } from './CategorySelectionSummary'\r\nexport { default as CurrentSelections } from './CurrentSelections'\r\nexport { default as CategorySelector } from './CategorySelector'\r\nexport { default as MainCategoriesList } from './MainCategoriesList'\r\nexport { default as SubcategoriesList } from './SubcategoriesList'\r\n"
+        }
+    ]
+}

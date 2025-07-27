@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1753197903776,
@@ -16,6 +16,14 @@
                 {
                     "date": 1753281645216,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,9 +60,9 @@\n     },\r\n   })\r\n \r\n   // Hardcoded admin token for testing\r\n-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjYwNzMyMCwiZXhwIjoxNzUzMjEyMTIwfQ.ugFuaDCq_ewqIE-dZaql3BB91kaXBIxE0TQmqdYnagI'\r\n+  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzI4MTMyMCwiZXhwIjoxNzUzODg2MTIwfQ.3wEx7ZCDvYtUQppFM9CcXjhG1zTQX9_RYY_dy3Y6MZs'\r\n \r\n   // Define sections for each page\r\n   const homeSections = [\r\n     { \r\n"
+                },
+                {
+                    "date": 1753451436564,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n 'use client'\r\n import React, { useState, useEffect } from 'react'\r\n import { get } from '@/util/apiService'\r\n import { CATEGORY, SUBCATEGORY } from '@/util/apiEndpoints'\r\n-import CategoryConfigModal from './CategoryConfigModal'\r\n+import CategoryConfigModal from './CategoryConfigModal/CategoryConfigModal'\r\n import PageSelector from './PageSelector'\r\n import SectionsList from './SectionsList'\r\n \r\n const PAGES = [\r\n"
+                },
+                {
+                    "date": 1753451502507,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n 'use client'\r\n import React, { useState, useEffect } from 'react'\r\n import { get } from '@/util/apiService'\r\n import { CATEGORY, SUBCATEGORY } from '@/util/apiEndpoints'\r\n-import CategoryConfigModal from './CategoryConfigModal/CategoryConfigModal'\r\n+import CategoryConfigModal from './CategoryConfigSection/CategoryConfigModal/CategoryConfigModal'\r\n import PageSelector from './PageSelector'\r\n import SectionsList from './SectionsList'\r\n \r\n const PAGES = [\r\n"
                 }
             ],
             "date": 1753197903776,

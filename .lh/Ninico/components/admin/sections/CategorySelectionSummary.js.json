@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/sections/CategorySelectionSummary.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753289008405,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753289008405,
+            "name": "Commit-0",
+            "content": "import React from 'react'\r\n\r\nexport default function CategorySelectionSummary({\r\n  getCurrentCounts,\r\n  selectedMainCategory,\r\n  MAX_MAIN_CATEGORIES,\r\n  MIN_MAIN_CATEGORIES,\r\n  MAX_SUBCATEGORIES_PER_CATEGORY\r\n}) {\r\n  const counts = getCurrentCounts()\r\n\r\n  return (\r\n    <div className=\"row mb-4\">\r\n      <div className=\"col-12\">\r\n        <div className=\"card border-info\">\r\n          <div className=\"card-header bg-info bg-opacity-10\">\r\n            <h6 className=\"mb-0 text-info\">\r\n              <i className=\"bi bi-info-circle me-2\"></i>\r\n              Selection Summary\r\n            </h6>\r\n          </div>\r\n          <div className=\"card-body\">\r\n            <div className=\"row\">\r\n              <div className=\"col-md-6\">\r\n                <div className={`d-flex justify-content-between align-items-center p-2 rounded ${counts.mainCategoriesCount >= MIN_MAIN_CATEGORIES && counts.mainCategoriesCount <= MAX_MAIN_CATEGORIES ? 'bg-success bg-opacity-10 text-success' : 'bg-warning bg-opacity-10 text-warning'}`}>\r\n                  <span className=\"fw-semibold\">\r\n                    <i className=\"bi bi-grid me-1\"></i>\r\n                    Main Categories:\r\n                  </span>\r\n                  <span className=\"badge bg-primary\">\r\n                    {counts.mainCategoriesCount} / {MAX_MAIN_CATEGORIES}\r\n                  </span>\r\n                </div>\r\n                {counts.mainCategoriesCount < MIN_MAIN_CATEGORIES && (\r\n                  <small className=\"text-warning\">\r\n                    <i className=\"bi bi-exclamation-triangle me-1\"></i>\r\n                    Minimum {MIN_MAIN_CATEGORIES} main category required\r\n                  </small>\r\n                )}\r\n              </div>\r\n              <div className=\"col-md-6\">\r\n                <div className=\"d-flex justify-content-between align-items-center p-2 rounded bg-info bg-opacity-10 text-info\">\r\n                  <span className=\"fw-semibold\">\r\n                    <i className=\"bi bi-tags me-1\"></i>\r\n                    Total Subcategories:\r\n                  </span>\r\n                  <span className=\"badge bg-info\">\r\n                    {counts.totalSubcategoriesCount}\r\n                  </span>\r\n                </div>\r\n                {selectedMainCategory && (\r\n                  <small className=\"text-muted\">\r\n                    <i className=\"bi bi-arrow-right me-1\"></i>\r\n                    Selected category: {counts.selectedCategorySubCount} / {MAX_SUBCATEGORIES_PER_CATEGORY}\r\n                  </small>\r\n                )}\r\n              </div>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      </div>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

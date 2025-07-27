@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/admin/routes/content.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753440030085,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753441696980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,12 +7,12 @@\n const express = require('express');\r\n const router = express.Router();\r\n \r\n // Middleware\r\n-const { adminAuth, rolePermissions, validation } = require('../../middleware');\r\n+const { adminAuth, rolePermissions, validation } = require('../middleware');\r\n \r\n // Controllers\r\n-const PageController = require('../../controllers/content/PageController');\r\n+const PageController = require('../controllers/content/PageController');\r\n \r\n // ============= PAGE CONFIGURATION ROUTES =============\r\n \r\n // Get page configurations\r\n"
+                }
+            ],
+            "date": 1753440030085,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Content Management Routes\r\n * \r\n * Routes for pages, configurations, and content management\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Middleware\r\nconst { adminAuth, rolePermissions, validation } = require('../../middleware');\r\n\r\n// Controllers\r\nconst PageController = require('../../controllers/content/PageController');\r\n\r\n// ============= PAGE CONFIGURATION ROUTES =============\r\n\r\n// Get page configurations\r\nrouter.get('/pages', \r\n  validation.validatePagination,\r\n  PageController.getPages\r\n);\r\n\r\n// Get specific page configuration\r\nrouter.get('/pages/:pageId',\r\n  validation.validatePageId,\r\n  PageController.getPageConfig\r\n);\r\n\r\n// Save page configuration\r\nrouter.post('/pages/:pageId/save-config',\r\n  validation.validatePageId,\r\n  rolePermissions.requirePermission('pages:update'),\r\n  PageController.savePageConfig\r\n);\r\n\r\n// Refresh static data for a page\r\nrouter.post('/pages/:pageId/refresh-static',\r\n  validation.validatePageId,\r\n  rolePermissions.requirePermission('pages:update'),\r\n  PageController.refreshStaticData\r\n);\r\n\r\n// ============= CONTENT MANAGEMENT ROUTES =============\r\n\r\n// Get media files\r\nrouter.get('/media', \r\n  validation.validatePagination,\r\n  // MediaController.getMedia\r\n  (req, res) => res.json({ message: 'Media route - to be implemented' })\r\n);\r\n\r\n// Upload media\r\nrouter.post('/media',\r\n  // Upload middleware will be added later\r\n  rolePermissions.requirePermission('media:create'),\r\n  // MediaController.uploadMedia\r\n  (req, res) => res.json({ message: 'Upload media route - to be implemented' })\r\n);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/utils/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753440030082,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753440030082,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Utilities Index\r\n * \r\n * Centralized export for all admin utilities\r\n */\r\n\r\nconst { ApiResponse, ApiError } = require('./responseHelpers');\r\nconst { validateImageFile, sanitizeString, generateSlug } = require('./validationHelpers');\r\nconst migrationHelper = require('./migrationHelper');\r\n\r\n// Image fallback utility\r\nconst generateImageFallback = (name, type = 'category') => {\r\n  const cleanName = name ? name.charAt(0).toUpperCase() : '?';\r\n  const color = type === 'category' ? '#6366f1' : '#8b5cf6';\r\n  \r\n  return `data:image/svg+xml;base64,${Buffer.from(`\r\n    <svg width=\"200\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\">\r\n      <rect width=\"200\" height=\"200\" fill=\"${color}\"/>\r\n      <text x=\"100\" y=\"110\" font-family=\"Arial, sans-serif\" font-size=\"72\" \r\n            fill=\"white\" text-anchor=\"middle\" dominant-baseline=\"middle\">\r\n        ${cleanName}\r\n      </text>\r\n    </svg>\r\n  `).toString('base64')}`;\r\n};\r\n\r\nmodule.exports = {\r\n  // Response helpers\r\n  ApiResponse,\r\n  ApiError,\r\n  \r\n  // Validation helpers\r\n  validateImageFile,\r\n  sanitizeString,\r\n  generateSlug,\r\n  \r\n  // Image utilities\r\n  generateImageFallback,\r\n  \r\n  // Migration helper\r\n  migrationHelper,\r\n  \r\n  // Legacy exports for compatibility\r\n  responseHelpers: require('./responseHelpers'),\r\n  validationHelpers: require('./validationHelpers')\r\n};\r\n"
+        }
+    ]
+}

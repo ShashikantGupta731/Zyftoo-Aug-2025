@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/admin/routes/catalog.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753440030084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753441696980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,13 +7,13 @@\n const express = require('express');\r\n const router = express.Router();\r\n \r\n // Middleware\r\n-const { adminAuth, rolePermissions, validation } = require('../../middleware');\r\n-const { uploadCategoryImage } = require('../../../utils/fileUpload');\r\n+const { adminAuth, rolePermissions, validation } = require('../middleware');\r\n+const { uploadCategoryImage } = require('../../utils/fileUpload');\r\n \r\n // Controllers\r\n-const CategoryController = require('../../controllers/catalog/CategoryController');\r\n+const CategoryController = require('../controllers/catalog/CategoryController');\r\n \r\n // ============= CATEGORY ROUTES =============\r\n \r\n // Get categories with filtering and pagination\r\n"
+                }
+            ],
+            "date": 1753440030084,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Catalog Routes\r\n * \r\n * Routes for category and product management\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Middleware\r\nconst { adminAuth, rolePermissions, validation } = require('../../middleware');\r\nconst { uploadCategoryImage } = require('../../../utils/fileUpload');\r\n\r\n// Controllers\r\nconst CategoryController = require('../../controllers/catalog/CategoryController');\r\n\r\n// ============= CATEGORY ROUTES =============\r\n\r\n// Get categories with filtering and pagination\r\nrouter.get('/categories', \r\n  validation.validatePagination,\r\n  CategoryController.getCategories\r\n);\r\n\r\n// Get category hierarchy\r\nrouter.get('/categories/hierarchy', \r\n  CategoryController.getCategoryHierarchy\r\n);\r\n\r\n// Get single category\r\nrouter.get('/categories/:id', \r\n  validation.validateObjectId('id'),\r\n  CategoryController.getCategory\r\n);\r\n\r\n// Create category\r\nrouter.post('/categories',\r\n  uploadCategoryImage.single('image'),\r\n  validation.validateCategory,\r\n  validation.sanitizeBody(['name', 'description']),\r\n  rolePermissions.requirePermission('categories:create'),\r\n  CategoryController.createCategory\r\n);\r\n\r\n// Update category\r\nrouter.put('/categories/:id',\r\n  validation.validateObjectId('id'),\r\n  uploadCategoryImage.single('image'),\r\n  validation.validateCategory,\r\n  validation.sanitizeBody(['name', 'description']),\r\n  rolePermissions.requirePermission('categories:update'),\r\n  CategoryController.updateCategory\r\n);\r\n\r\n// Delete category\r\nrouter.delete('/categories/:id',\r\n  validation.validateObjectId('id'),\r\n  rolePermissions.requirePermission('categories:delete'),\r\n  CategoryController.deleteCategory\r\n);\r\n\r\n// Bulk operations on categories\r\nrouter.post('/categories/bulk',\r\n  validation.validateBulkOperation,\r\n  rolePermissions.checkBulkPermissions,\r\n  CategoryController.bulkOperations\r\n);\r\n\r\n// ============= SUBCATEGORY ROUTES =============\r\n// Note: Subcategories are just categories with a parent\r\n\r\n// Get subcategories for a specific category\r\nrouter.get('/categories/:parentId/subcategories',\r\n  validation.validateObjectId('parentId'),\r\n  validation.validatePagination,\r\n  (req, res, next) => {\r\n    req.query.parent = req.params.parentId;\r\n    next();\r\n  },\r\n  CategoryController.getCategories\r\n);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

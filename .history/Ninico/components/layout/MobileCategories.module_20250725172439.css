@@ -1,0 +1,450 @@
+/* ================================================
+   Mobile Categories - Bootstrap Responsive Styles
+   ================================================ */
+
+.mobileMenuContainer {
+  width: 100%;
+}
+
+.meanContainer {
+  position: relative;
+}
+
+.meanBar {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  min-height: auto;
+}
+
+.meanNav {
+  background: #070337;
+  margin-top: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.meanNavList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.meanNavItem {
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.meanNavItem:last-child {
+  border-bottom: none;
+}
+
+.meanNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.meanNavLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-decoration: none;
+}
+
+.meanNavLink:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.submenu {
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: none;
+  animation: slideDown 0.3s ease;
+}
+
+.submenu.active {
+  display: block;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.submenuItem {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.submenuItem:last-child {
+  border-bottom: none;
+}
+
+.submenuLink {
+  display: block;
+  padding: 12px 24px 12px 40px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.submenuLink:before {
+  content: '•';
+  position: absolute;
+  left: 28px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.submenuLink:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+  padding-left: 44px;
+}
+
+.submenuLink:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.subSubmenu {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.subSubmenuItem {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.subSubmenuItem:last-child {
+  border-bottom: none;
+}
+
+.subSubmenuLink {
+  display: block;
+  padding: 10px 24px 10px 60px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 300;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.subSubmenuLink:before {
+  content: '◦';
+  position: absolute;
+  left: 48px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.subSubmenuLink:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  padding-left: 64px;
+}
+
+.subSubmenuLink:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.meanExpand {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.meanExpand:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.meanExpand:focus {
+  outline: 2px solid #007bff;
+  outline-offset: -2px;
+}
+
+.meanExpand.active {
+  background: #007bff;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.meanExpandIcon {
+  transition: transform 0.2s ease;
+}
+
+.meanExpand.active .meanExpandIcon {
+  transform: rotate(45deg);
+}
+
+/* ================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================ */
+
+/* Large Mobile (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .meanNavLink {
+    padding: 18px 24px;
+    font-size: 16px;
+  }
+  
+  .submenuLink {
+    padding: 14px 28px 14px 44px;
+    font-size: 15px;
+  }
+  
+  .subSubmenuLink {
+    padding: 12px 28px 12px 64px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile (less than 576px) */
+@media (max-width: 575px) {
+  .meanNav {
+    border-radius: 6px;
+  }
+  
+  .meanNavLink {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  
+  .submenuLink {
+    padding: 10px 20px 10px 36px;
+    font-size: 13px;
+  }
+  
+  .submenuLink:before {
+    left: 24px;
+  }
+  
+  .submenuLink:hover {
+    padding-left: 40px;
+  }
+  
+  .subSubmenuLink {
+    padding: 8px 20px 8px 52px;
+    font-size: 12px;
+  }
+  
+  .subSubmenuLink:before {
+    left: 40px;
+  }
+  
+  .subSubmenuLink:hover {
+    padding-left: 56px;
+  }
+  
+  .meanExpand {
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+}
+
+/* Extra Small Mobile (less than 400px) */
+@media (max-width: 399px) {
+  .meanNavLink {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  
+  .submenuLink {
+    padding: 9px 18px 9px 32px;
+    font-size: 12px;
+  }
+  
+  .submenuLink:before {
+    left: 22px;
+  }
+  
+  .submenuLink:hover {
+    padding-left: 36px;
+  }
+  
+  .subSubmenuLink {
+    padding: 7px 18px 7px 48px;
+    font-size: 11px;
+  }
+  
+  .subSubmenuLink:before {
+    left: 36px;
+  }
+  
+  .subSubmenuLink:hover {
+    padding-left: 52px;
+  }
+  
+  .meanExpand {
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+  }
+}
+
+/* ================================================
+   ACCESSIBILITY & INTERACTION STATES
+   ================================================ */
+
+/* Focus visible for better keyboard navigation */
+.meanNavLink:focus-visible,
+.submenuLink:focus-visible,
+.subSubmenuLink:focus-visible,
+.meanExpand:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .meanNav {
+    border: 2px solid white;
+  }
+  
+  .meanNavItem {
+    border-bottom: 2px solid white;
+  }
+  
+  .meanNavLink,
+  .submenuLink,
+  .subSubmenuLink {
+    color: white;
+    font-weight: 700;
+  }
+  
+  .meanExpand {
+    border: 2px solid white;
+    background: black;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .meanNavLink,
+  .submenuLink,
+  .subSubmenuLink,
+  .meanExpand,
+  .meanExpandIcon {
+    transition: none;
+  }
+  
+  .submenu {
+    animation: none;
+  }
+  
+  .meanExpand:hover {
+    transform: translateY(-50%);
+  }
+  
+  .meanExpand.active {
+    transform: translateY(-50%);
+  }
+}
+
+/* Dark theme adjustments */
+@media (prefers-color-scheme: dark) {
+  .meanNav {
+    background: #1a1a2e;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .submenu {
+    background: rgba(0, 0, 0, 0.4);
+  }
+  
+  .subSubmenu {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ================================================
+   LOADING AND ERROR STATES
+   ================================================ */
+
+.loadingState {
+  padding: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  background: #070337;
+  border-radius: 8px;
+}
+
+.errorState {
+  padding: 20px;
+  text-align: center;
+  color: #ff6b6b;
+  background: #070337;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* ================================================
+   ANIMATION UTILITIES
+   ================================================ */
+
+.fadeIn {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slideIn {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

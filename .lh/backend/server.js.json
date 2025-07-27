@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1752831493450,
@@ -28,6 +28,10 @@
                 {
                     "date": 1753116436703,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,8 +14,9 @@\n const addressRoutes = require('./src/routes/addressRoutes');\r\n const corporateRoutes = require('./src/routes/corporateRoutes');\r\n const trackOrderRoutes = require('./src/routes/trackOrderRoutes');\r\n const categoryRoutes = require('./src/routes/categoryRoutes');\r\n+const subcategoryRoutes = require('./src/routes/subcategoryRoutes');\r\n const uploadRoutes = require('./src/routes/uploadRoutes');\r\n const testRoutes = require('./src/routes/testRoutes');\r\n const pageRoutes = require('./src/routes/pageRoutes');\r\n \r\n@@ -71,8 +72,9 @@\n app.use('/api/address', addressRoutes);\r\n app.use('/api/corporate', corporateRoutes);\r\n app.use('/api', trackOrderRoutes);\r\n app.use('/api/categories', categoryRoutes);\r\n+app.use('/api/subcategories', subcategoryRoutes);\r\n app.use('/api/upload', uploadRoutes);\r\n app.use('/api/test', testRoutes);\r\n app.use('/api', pageRoutes);\r\n \r\n"
+                },
+                {
+                    "date": 1753440030152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,12 @@\n const uploadRoutes = require('./src/routes/uploadRoutes');\r\n const testRoutes = require('./src/routes/testRoutes');\r\n const pageRoutes = require('./src/routes/pageRoutes');\r\n \r\n+// Import new admin module\r\n+const Admin = require('./src/admin');\r\n \r\n+\r\n dotenv.config();\r\n \r\n // Test crypto utility at startup\r\n console.log('🧪 Testing crypto utility at startup...');\r\n@@ -77,9 +80,16 @@\n app.use('/api/upload', uploadRoutes);\r\n app.use('/api/test', testRoutes);\r\n app.use('/api', pageRoutes);\r\n \r\n+// Initialize new admin module\r\n+Admin.initializeAdmin(app);\r\n+console.log('🔧 New admin module initialized');\r\n \r\n+// Legacy admin routes (if still needed)\r\n+// app.use('/api/admin', require('./src/routes/admin/adminRoutes'));\r\n+\r\n+\r\n app.get('/', (req, res) => {\r\n   res.send('API is running...');\r\n });\r\n \r\n"
                 }
             ],
             "date": 1752831493450,

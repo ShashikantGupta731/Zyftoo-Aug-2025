@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/config/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753440030082,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753440030082,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Configuration Module\r\n * \r\n * Exports all configuration files\r\n */\r\n\r\nmodule.exports = {\r\n  constants: require('./constants'),\r\n  permissions: require('./permissions')\r\n};\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/ModernBadge.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753441696953,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753441696953,
+            "name": "Commit-0",
+            "content": "/**\r\n * Modern Badge Component\r\n * \r\n * A sleek badge component for status indicators, labels,\r\n * and notifications\r\n */\r\n\r\nimport React from 'react';\r\n\r\nconst ModernBadge = ({\r\n  children,\r\n  variant = 'primary',\r\n  size = 'md',\r\n  icon,\r\n  className = '',\r\n  ...props\r\n}) => {\r\n  const baseClasses = 'badge-modern';\r\n  \r\n  const variantClasses = {\r\n    primary: 'badge-modern--primary',\r\n    success: 'badge-modern--success',\r\n    warning: 'badge-modern--warning',\r\n    error: 'badge-modern--error',\r\n    neutral: 'bg-gray-100 text-gray-700'\r\n  };\r\n  \r\n  const sizeClasses = {\r\n    sm: 'text-xs px-2 py-0.5',\r\n    md: 'text-xs px-3 py-1',\r\n    lg: 'text-sm px-4 py-1.5'\r\n  };\r\n  \r\n  const classes = [\r\n    baseClasses,\r\n    variantClasses[variant],\r\n    sizeClasses[size],\r\n    className\r\n  ].filter(Boolean).join(' ');\r\n\r\n  return (\r\n    <span className={classes} {...props}>\r\n      {icon && (\r\n        <span className=\"mr-1 inline-flex items-center\">\r\n          {icon}\r\n        </span>\r\n      )}\r\n      {children}\r\n    </span>\r\n  );\r\n};\r\n\r\nexport default ModernBadge;\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/routes/simple.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753441696953,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753441696953,
+            "name": "Commit-0",
+            "content": "/**\r\n * Temporary Simple Admin Routes\r\n * \r\n * Basic working routes to get the admin module running\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Simple health check route\r\nrouter.get('/health', (req, res) => {\r\n  res.json({\r\n    status: 'ok',\r\n    message: 'Admin API is running',\r\n    timestamp: new Date().toISOString()\r\n  });\r\n});\r\n\r\n// Placeholder routes for now\r\nrouter.get('/test', (req, res) => {\r\n  res.json({\r\n    success: true,\r\n    message: 'Admin module test endpoint working'\r\n  });\r\n});\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

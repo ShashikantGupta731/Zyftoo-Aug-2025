@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/admin/PagesManagement/CategoryConfigSection/CategoryConfigModal/ConfigurationValidator.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753451875011,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753451875011,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport React from 'react'\r\n\r\n/**\r\n * Configuration Validation Component\r\n * Handles validation logic and error display\r\n */\r\nexport default function ConfigurationValidator({ \r\n  categoryConfig, \r\n  getCurrentCounts, \r\n  MIN_MAIN_CATEGORIES, \r\n  MAX_MAIN_CATEGORIES \r\n}) {\r\n  const { mainCategoriesCount } = getCurrentCounts()\r\n  \r\n  const getValidationStatus = () => {\r\n    if (!categoryConfig.enabled) {\r\n      return { isValid: true, message: 'Category section is disabled' }\r\n    }\r\n    \r\n    if (mainCategoriesCount < MIN_MAIN_CATEGORIES) {\r\n      return { \r\n        isValid: false, \r\n        message: `Please select at least ${MIN_MAIN_CATEGORIES} main category` \r\n      }\r\n    }\r\n    \r\n    if (mainCategoriesCount > MAX_MAIN_CATEGORIES) {\r\n      return { \r\n        isValid: false, \r\n        message: `Too many main categories selected. Maximum ${MAX_MAIN_CATEGORIES} allowed` \r\n      }\r\n    }\r\n    \r\n    return { isValid: true, message: 'Configuration is valid' }\r\n  }\r\n\r\n  const validation = getValidationStatus()\r\n\r\n  if (!categoryConfig.enabled) {\r\n    return null\r\n  }\r\n\r\n  return (\r\n    <div className=\"mb-3\">\r\n      <div className={`alert ${validation.isValid ? 'alert-success' : 'alert-warning'} py-2`}>\r\n        <i className={`bi ${validation.isValid ? 'bi-check-circle' : 'bi-exclamation-triangle'} me-2`}></i>\r\n        <small>{validation.message}</small>\r\n        {validation.isValid && (\r\n          <span className=\"ms-2\">\r\n            ({mainCategoriesCount} of {MAX_MAIN_CATEGORIES} categories selected)\r\n          </span>\r\n        )}\r\n      </div>\r\n    </div>\r\n  )\r\n}\r\n"
+        }
+    ]
+}

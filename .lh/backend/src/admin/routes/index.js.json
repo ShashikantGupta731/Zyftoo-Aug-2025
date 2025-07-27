@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/admin/routes/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1753440030084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753441696991,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,32 +6,38 @@\n \r\n const express = require('express');\r\n const router = express.Router();\r\n \r\n-// Import route modules\r\n-const authRoutes = require('./auth');\r\n-const catalogRoutes = require('./catalog');\r\n-const contentRoutes = require('./content');\r\n-const userRoutes = require('./users');\r\n+// Import simple routes for testing\r\n+const simpleRoutes = require('./simple');\r\n \r\n-// Middleware\r\n-const { adminAuth } = require('../middleware');\r\n+// Import route modules (commented out while fixing issues)\r\n+// const authRoutes = require('./auth');\r\n+// const catalogRoutes = require('./catalog');\r\n+// const contentRoutes = require('./content');\r\n+// const userRoutes = require('./users');\r\n \r\n+// Middleware (commented out while fixing issues)\r\n+// const { adminAuth } = require('../middleware');\r\n+\r\n // ============= PUBLIC ROUTES (NO AUTH) =============\r\n-router.use('/auth', authRoutes);\r\n+// router.use('/auth', authRoutes);\r\n \r\n+// Simple routes for testing\r\n+router.use('/', simpleRoutes);\r\n+\r\n // ============= PROTECTED ROUTES (REQUIRE AUTH) =============\r\n // Apply admin authentication to all routes below\r\n-router.use(adminAuth);\r\n+// router.use(adminAuth);\r\n \r\n // Catalog management (categories, products)\r\n-router.use('/catalog', catalogRoutes);\r\n+// router.use('/catalog', catalogRoutes);\r\n \r\n // Content management (pages, media)\r\n-router.use('/content', contentRoutes);\r\n+// router.use('/content', contentRoutes);\r\n \r\n // User management\r\n-router.use('/users', userRoutes);\r\n+// router.use('/users', userRoutes);\r\n \r\n // Health check for admin panel\r\n router.get('/health', (req, res) => {\r\n   res.json({\r\n"
+                },
+                {
+                    "date": 1753454690983,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,8 +9,11 @@\n \r\n // Import simple routes for testing\r\n const simpleRoutes = require('./simple');\r\n \r\n+// Import category section routes\r\n+const categorySectionRoutes = require('../../routes/categorySectionRoutes');\r\n+\r\n // Import route modules (commented out while fixing issues)\r\n // const authRoutes = require('./auth');\r\n // const catalogRoutes = require('./catalog');\r\n // const contentRoutes = require('./content');\r\n@@ -24,8 +27,11 @@\n \r\n // Simple routes for testing\r\n router.use('/', simpleRoutes);\r\n \r\n+// Category section management routes\r\n+router.use('/category-section', categorySectionRoutes);\r\n+\r\n // ============= PROTECTED ROUTES (REQUIRE AUTH) =============\r\n // Apply admin authentication to all routes below\r\n // router.use(adminAuth);\r\n \r\n"
+                }
+            ],
+            "date": 1753440030084,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Routes Index\r\n * \r\n * Main router for all admin routes\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Import route modules\r\nconst authRoutes = require('./auth');\r\nconst catalogRoutes = require('./catalog');\r\nconst contentRoutes = require('./content');\r\nconst userRoutes = require('./users');\r\n\r\n// Middleware\r\nconst { adminAuth } = require('../middleware');\r\n\r\n// ============= PUBLIC ROUTES (NO AUTH) =============\r\nrouter.use('/auth', authRoutes);\r\n\r\n// ============= PROTECTED ROUTES (REQUIRE AUTH) =============\r\n// Apply admin authentication to all routes below\r\nrouter.use(adminAuth);\r\n\r\n// Catalog management (categories, products)\r\nrouter.use('/catalog', catalogRoutes);\r\n\r\n// Content management (pages, media)\r\nrouter.use('/content', contentRoutes);\r\n\r\n// User management\r\nrouter.use('/users', userRoutes);\r\n\r\n// Health check for admin panel\r\nrouter.get('/health', (req, res) => {\r\n  res.json({\r\n    status: 'ok',\r\n    message: 'Admin API is running',\r\n    timestamp: new Date().toISOString(),\r\n    admin: req.admin ? {\r\n      id: req.admin._id,\r\n      username: req.admin.username,\r\n      role: req.admin.role\r\n    } : null\r\n  });\r\n});\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

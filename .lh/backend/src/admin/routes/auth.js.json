@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/admin/routes/auth.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753440030084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753441696979,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n const express = require('express');\r\n const router = express.Router();\r\n \r\n // Middleware\r\n-const { validation } = require('../../middleware');\r\n+const { validation } = require('../middleware');\r\n \r\n // We'll create this controller later\r\n // const AuthController = require('../../controllers/auth/AuthController');\r\n \r\n"
+                }
+            ],
+            "date": 1753440030084,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Authentication Routes\r\n * \r\n * Routes for admin login, logout, and authentication\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Middleware\r\nconst { validation } = require('../../middleware');\r\n\r\n// We'll create this controller later\r\n// const AuthController = require('../../controllers/auth/AuthController');\r\n\r\n// ============= AUTHENTICATION ROUTES =============\r\n\r\n// Admin login\r\nrouter.post('/login',\r\n  validation.sanitizeBody(['username', 'password']),\r\n  validation.validateLogin,\r\n  // AuthController.login\r\n  (req, res) => res.json({ message: 'Admin login route - to be implemented' })\r\n);\r\n\r\n// Admin logout\r\nrouter.post('/logout',\r\n  // AuthController.logout\r\n  (req, res) => res.json({ message: 'Admin logout route - to be implemented' })\r\n);\r\n\r\n// Refresh token\r\nrouter.post('/refresh',\r\n  validation.validateRefreshToken,\r\n  // AuthController.refreshToken\r\n  (req, res) => res.json({ message: 'Refresh token route - to be implemented' })\r\n);\r\n\r\n// Get current admin info\r\nrouter.get('/me',\r\n  // AuthController.getCurrentAdmin\r\n  (req, res) => res.json({ message: 'Get current admin route - to be implemented' })\r\n);\r\n\r\n// Change password\r\nrouter.put('/change-password',\r\n  validation.sanitizeBody(['currentPassword', 'newPassword']),\r\n  validation.validatePasswordChange,\r\n  // AuthController.changePassword\r\n  (req, res) => res.json({ message: 'Change password route - to be implemented' })\r\n);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

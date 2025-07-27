@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/admin/config/constants.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753440030071,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753440030071,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin Configuration Constants\r\n * \r\n * Centralized configuration for admin module\r\n */\r\n\r\nmodule.exports = {\r\n  // Authentication\r\n  AUTH: {\r\n    TOKEN_EXPIRY: '7d',\r\n    REFRESH_TOKEN_EXPIRY: '30d',\r\n    ALLOWED_ROLES: ['admin', 'superadmin', 'SuperAdmin', 'Admin'],\r\n    SUPER_ADMIN_ROLES: ['superadmin', 'SuperAdmin']\r\n  },\r\n\r\n  // File Upload\r\n  UPLOAD: {\r\n    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB\r\n    ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],\r\n    UPLOAD_PATHS: {\r\n      CATEGORIES: 'uploads/categories',\r\n      PRODUCTS: 'uploads/products',\r\n      USERS: 'uploads/users'\r\n    }\r\n  },\r\n\r\n  // Pagination\r\n  PAGINATION: {\r\n    DEFAULT_PAGE: 1,\r\n    DEFAULT_LIMIT: 10,\r\n    MAX_LIMIT: 100\r\n  },\r\n\r\n  // Cache\r\n  CACHE: {\r\n    CATEGORIES_TTL: 3600, // 1 hour\r\n    PAGES_TTL: 1800, // 30 minutes\r\n    PRODUCTS_TTL: 1800 // 30 minutes\r\n  },\r\n\r\n  // Business Rules\r\n  BUSINESS_RULES: {\r\n    CATEGORY: {\r\n      MIN_MAIN_CATEGORIES: 1,\r\n      MAX_MAIN_CATEGORIES: 10,\r\n      MAX_SUBCATEGORIES_PER_CATEGORY: 10,\r\n      MAX_NESTING_LEVEL: 2\r\n    },\r\n    PAGE_CONFIG: {\r\n      MAX_SECTIONS: 20,\r\n      DEFAULT_SECTIONS: ['giftCategories', 'slider', 'services', 'products']\r\n    }\r\n  },\r\n\r\n  // Response Messages\r\n  MESSAGES: {\r\n    SUCCESS: {\r\n      CREATED: 'Resource created successfully',\r\n      UPDATED: 'Resource updated successfully',\r\n      DELETED: 'Resource deleted successfully',\r\n      FETCHED: 'Resource fetched successfully'\r\n    },\r\n    ERRORS: {\r\n      NOT_FOUND: 'Resource not found',\r\n      UNAUTHORIZED: 'Unauthorized access',\r\n      FORBIDDEN: 'Insufficient permissions',\r\n      VALIDATION_FAILED: 'Validation failed',\r\n      INTERNAL_ERROR: 'Internal server error'\r\n    }\r\n  }\r\n};\r\n"
+        }
+    ]
+}

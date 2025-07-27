@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/admin/routes/users.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753440030084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753441696990,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n const express = require('express');\r\n const router = express.Router();\r\n \r\n // Middleware\r\n-const { adminAuth, rolePermissions, validation } = require('../../middleware');\r\n+const { adminAuth, rolePermissions, validation } = require('../middleware');\r\n \r\n // We'll create these controllers later\r\n // const UserController = require('../../controllers/users/UserController');\r\n // const AdminController = require('../../controllers/users/AdminController');\r\n"
+                }
+            ],
+            "date": 1753440030084,
+            "name": "Commit-0",
+            "content": "/**\r\n * Admin User Management Routes\r\n * \r\n * Routes for user and admin management\r\n */\r\n\r\nconst express = require('express');\r\nconst router = express.Router();\r\n\r\n// Middleware\r\nconst { adminAuth, rolePermissions, validation } = require('../../middleware');\r\n\r\n// We'll create these controllers later\r\n// const UserController = require('../../controllers/users/UserController');\r\n// const AdminController = require('../../controllers/users/AdminController');\r\n\r\n// ============= USER MANAGEMENT ROUTES =============\r\n\r\n// Get users with filtering and pagination\r\nrouter.get('/users', \r\n  validation.validatePagination,\r\n  // UserController.getUsers\r\n  (req, res) => res.json({ message: 'Users route - to be implemented' })\r\n);\r\n\r\n// Get single user\r\nrouter.get('/users/:id', \r\n  validation.validateObjectId('id'),\r\n  rolePermissions.requirePermission('users:read'),\r\n  // UserController.getUser\r\n  (req, res) => res.json({ message: 'Get user route - to be implemented' })\r\n);\r\n\r\n// Update user\r\nrouter.put('/users/:id',\r\n  validation.validateObjectId('id'),\r\n  validation.sanitizeBody(['name', 'email']),\r\n  rolePermissions.requirePermission('users:update'),\r\n  // UserController.updateUser\r\n  (req, res) => res.json({ message: 'Update user route - to be implemented' })\r\n);\r\n\r\n// Delete user\r\nrouter.delete('/users/:id',\r\n  validation.validateObjectId('id'),\r\n  rolePermissions.requirePermission('users:delete'),\r\n  // UserController.deleteUser\r\n  (req, res) => res.json({ message: 'Delete user route - to be implemented' })\r\n);\r\n\r\n// ============= ADMIN MANAGEMENT ROUTES =============\r\n\r\n// Get admin users\r\nrouter.get('/admins', \r\n  validation.validatePagination,\r\n  rolePermissions.requirePermission('admins:read'),\r\n  // AdminController.getAdmins\r\n  (req, res) => res.json({ message: 'Admins route - to be implemented' })\r\n);\r\n\r\n// Create admin user\r\nrouter.post('/admins',\r\n  validation.sanitizeBody(['username', 'email', 'password']),\r\n  rolePermissions.requirePermission('admins:create'),\r\n  // AdminController.createAdmin\r\n  (req, res) => res.json({ message: 'Create admin route - to be implemented' })\r\n);\r\n\r\n// Update admin user\r\nrouter.put('/admins/:id',\r\n  validation.validateObjectId('id'),\r\n  validation.sanitizeBody(['username', 'email']),\r\n  rolePermissions.requirePermission('admins:update'),\r\n  // AdminController.updateAdmin\r\n  (req, res) => res.json({ message: 'Update admin route - to be implemented' })\r\n);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

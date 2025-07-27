@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/ModernCard.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753441696953,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753441696953,
+            "name": "Commit-0",
+            "content": "/**\r\n * Modern Card Component\r\n * \r\n * A clean, minimalistic card component with subtle shadows\r\n * and smooth hover effects\r\n */\r\n\r\nimport React from 'react';\r\n\r\nconst ModernCard = ({\r\n  children,\r\n  className = '',\r\n  hover = true,\r\n  padding = 'default',\r\n  shadow = 'sm',\r\n  ...props\r\n}) => {\r\n  const baseClasses = 'card-modern';\r\n  \r\n  const paddingClasses = {\r\n    none: '',\r\n    sm: 'p-modern-4',\r\n    default: 'p-modern-6',\r\n    lg: 'p-modern-8'\r\n  };\r\n  \r\n  const shadowClasses = {\r\n    none: '',\r\n    sm: 'shadow-modern-sm',\r\n    md: 'shadow-modern-md',\r\n    lg: 'shadow-modern-lg'\r\n  };\r\n  \r\n  const classes = [\r\n    baseClasses,\r\n    hover ? 'hover:shadow-modern-lg hover:-translate-y-1' : '',\r\n    paddingClasses[padding],\r\n    shadowClasses[shadow],\r\n    className\r\n  ].filter(Boolean).join(' ');\r\n\r\n  return (\r\n    <div className={classes} {...props}>\r\n      {children}\r\n    </div>\r\n  );\r\n};\r\n\r\nconst CardHeader = ({ children, className = '', ...props }) => (\r\n  <div className={`card-modern__header ${className}`} {...props}>\r\n    {children}\r\n  </div>\r\n);\r\n\r\nconst CardBody = ({ children, className = '', ...props }) => (\r\n  <div className={`card-modern__body ${className}`} {...props}>\r\n    {children}\r\n  </div>\r\n);\r\n\r\nconst CardFooter = ({ children, className = '', ...props }) => (\r\n  <div className={`card-modern__footer ${className}`} {...props}>\r\n    {children}\r\n  </div>\r\n);\r\n\r\nModernCard.Header = CardHeader;\r\nModernCard.Body = CardBody;\r\nModernCard.Footer = CardFooter;\r\n\r\nexport default ModernCard;\r\n"
+        }
+    ]
+}

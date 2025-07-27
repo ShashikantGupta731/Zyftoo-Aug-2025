@@ -1,0 +1,311 @@
+/**
+ * Modern UI Overrides
+ * 
+ * Overrides for existing components to implement the modern design system
+ */
+
+/* ========================================
+   🎯 GLOBAL OVERRIDES
+======================================== */
+
+/* Override default font and improve readability */
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Improve button transitions globally */
+button,
+.btn,
+input[type="button"],
+input[type="submit"] {
+  transition: all var(--transition-normal) !important;
+}
+
+/* ========================================
+   🔄 COMPONENT OVERRIDES
+======================================== */
+
+/* Modern Button Styles */
+.tp-btn,
+.tp-btn-2,
+.tp-btn-3 {
+  border-radius: var(--radius-lg) !important;
+  font-weight: 500 !important;
+  padding: var(--space-3) var(--space-6) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.tp-btn:hover,
+.tp-btn-2:hover,
+.tp-btn-3:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Modern Card Styles */
+.tp-product-item,
+.tp-category-item,
+.tp-blog-item {
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--modern-gray-100) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.tp-product-item:hover,
+.tp-category-item:hover,
+.tp-blog-item:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Modern Form Inputs */
+.tp-form-input,
+.tp-contact-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--modern-gray-300) !important;
+  padding: var(--space-3) var(--space-4) !important;
+  font-size: var(--text-base) !important;
+  transition: all var(--transition-normal) !important;
+  background: var(--modern-white) !important;
+}
+
+.tp-form-input:focus,
+.tp-contact-input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: var(--modern-primary) !important;
+  box-shadow: 0 0 0 3px var(--modern-primary-100) !important;
+}
+
+/* Modern Modal Styles */
+.modal-content,
+.tp-modal-box {
+  border-radius: var(--radius-2xl) !important;
+  border: none !important;
+  box-shadow: var(--shadow-2xl) !important;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--modern-gray-100) !important;
+  padding: var(--space-6) !important;
+}
+
+.modal-body {
+  padding: var(--space-6) !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--modern-gray-100) !important;
+  padding: var(--space-6) !important;
+  background: var(--modern-gray-50) !important;
+}
+
+/* ========================================
+   📱 NAVIGATION OVERRIDES
+======================================== */
+
+/* Header improvements */
+.tp-header-area {
+  backdrop-filter: blur(10px) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid var(--modern-gray-100) !important;
+}
+
+.tp-header-top {
+  background: var(--modern-gray-50) !important;
+  border-bottom: 1px solid var(--modern-gray-100) !important;
+}
+
+/* Menu items */
+.tp-main-menu > nav > ul > li > a {
+  font-weight: 500 !important;
+  padding: var(--space-2) var(--space-4) !important;
+  border-radius: var(--radius-lg) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.tp-main-menu > nav > ul > li > a:hover {
+  background: var(--modern-gray-50) !important;
+  color: var(--modern-primary) !important;
+}
+
+/* ========================================
+   🏷️ PRODUCT CARD OVERRIDES
+======================================== */
+
+.tp-product-thumb {
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+  overflow: hidden !important;
+}
+
+.tp-product-content {
+  padding: var(--space-5) !important;
+}
+
+.tp-product-title {
+  font-weight: 600 !important;
+  margin-bottom: var(--space-2) !important;
+}
+
+.tp-product-price {
+  font-weight: 700 !important;
+  color: var(--modern-primary) !important;
+}
+
+/* Product badges */
+.tp-product-badge {
+  border-radius: var(--radius-full) !important;
+  padding: var(--space-1) var(--space-3) !important;
+  font-size: var(--text-xs) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* ========================================
+   🎯 SECTION OVERRIDES
+======================================== */
+
+/* Section spacing */
+.tp-section-padding {
+  padding: var(--space-20) 0 !important;
+}
+
+.tp-section-title {
+  font-weight: 700 !important;
+  margin-bottom: var(--space-12) !important;
+}
+
+/* Container improvements */
+.container {
+  padding-left: var(--space-4) !important;
+  padding-right: var(--space-4) !important;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--space-6) !important;
+    padding-right: var(--space-6) !important;
+  }
+}
+
+/* ========================================
+   🔍 SEARCH & FILTER OVERRIDES
+======================================== */
+
+.tp-search-box {
+  border-radius: var(--radius-xl) !important;
+  border: 1px solid var(--modern-gray-300) !important;
+  overflow: hidden !important;
+}
+
+.tp-search-input {
+  border: none !important;
+  padding: var(--space-4) !important;
+}
+
+.tp-search-btn {
+  background: var(--modern-primary) !important;
+  border: none !important;
+  padding: var(--space-4) !important;
+}
+
+/* Filter buttons */
+.tp-shop-widget-filter-btn {
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--modern-gray-300) !important;
+  background: var(--modern-white) !important;
+  padding: var(--space-2) var(--space-4) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.tp-shop-widget-filter-btn.active,
+.tp-shop-widget-filter-btn:hover {
+  background: var(--modern-primary) !important;
+  color: var(--modern-white) !important;
+  border-color: var(--modern-primary) !important;
+}
+
+/* ========================================
+   📱 RESPONSIVE IMPROVEMENTS
+======================================== */
+
+@media (max-width: 767px) {
+  .tp-section-padding {
+    padding: var(--space-16) 0 !important;
+  }
+  
+  .container {
+    padding-left: var(--space-3) !important;
+    padding-right: var(--space-3) !important;
+  }
+  
+  .tp-product-item,
+  .tp-category-item {
+    margin-bottom: var(--space-6) !important;
+  }
+}
+
+/* ========================================
+   🎨 ANIMATION IMPROVEMENTS
+======================================== */
+
+/* Add subtle entrance animations */
+.tp-product-item,
+.tp-category-item,
+.tp-blog-item {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation for grid items */
+.tp-product-item:nth-child(1) { animation-delay: 0.1s; }
+.tp-product-item:nth-child(2) { animation-delay: 0.2s; }
+.tp-product-item:nth-child(3) { animation-delay: 0.3s; }
+.tp-product-item:nth-child(4) { animation-delay: 0.4s; }
+.tp-product-item:nth-child(5) { animation-delay: 0.5s; }
+.tp-product-item:nth-child(6) { animation-delay: 0.6s; }
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ========================================
+   🔧 UTILITY CLASSES
+======================================== */
+
+/* Quick utility classes for modern styling */
+.modern-shadow { box-shadow: var(--shadow-lg) !important; }
+.modern-radius { border-radius: var(--radius-xl) !important; }
+.modern-transition { transition: all var(--transition-normal) !important; }
+
+/* Text utilities */
+.text-modern-primary { color: var(--modern-primary) !important; }
+.text-modern-secondary { color: var(--modern-gray-600) !important; }
+.bg-modern-primary { background-color: var(--modern-primary) !important; }
+.bg-modern-light { background-color: var(--modern-gray-50) !important; }

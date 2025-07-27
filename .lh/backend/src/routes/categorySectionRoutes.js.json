@@ -1,0 +1,38 @@
+{
+    "sourceFile": "backend/src/routes/categorySectionRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1753454690765,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753604585912,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n const express = require('express');\r\n const router = express.Router();\r\n-const categorySectionController = require('../../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\n+const categorySectionController = require('../controllers/categorySectionController');\r\n const authMiddleware = require('../../middleware/authMiddleware');\r\n \r\n // Apply authentication middleware to admin routes\r\n router.use('/config', authMiddleware);\r\n"
+                },
+                {
+                    "date": 1753604643951,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n const express = require('express');\r\n const router = express.Router();\r\n-const categorySectionController = require('../controllers/categorySectionController');\r\n+const categorySectionController = require('../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\n const authMiddleware = require('../../middleware/authMiddleware');\r\n \r\n // Apply authentication middleware to admin routes\r\n router.use('/config', authMiddleware);\r\n"
+                },
+                {
+                    "date": 1753604671860,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n const express = require('express');\r\n const router = express.Router();\r\n const categorySectionController = require('../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\n-const authMiddleware = require('../../middleware/authMiddleware');\r\n+const authMiddleware = require('../middleware/authMiddleware');\r\n \r\n // Apply authentication middleware to admin routes\r\n router.use('/config', authMiddleware);\r\n router.use('/available-categories', authMiddleware);\r\n"
+                },
+                {
+                    "date": 1753604901790,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,12 @@\n const express = require('express');\r\n const router = express.Router();\r\n const categorySectionController = require('../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\n-const authMiddleware = require('../middleware/authMiddleware');\r\n+const { protect, adminOnly } = require('../middleware/authMiddleware'); \r\n \r\n // Apply authentication middleware to admin routes\r\n-router.use('/config', authMiddleware);\r\n-router.use('/available-categories', authMiddleware);\r\n+router.use('/config', protect, adminOnly); // Use protect and adminOnly\r\n+router.use('/available-categories', protect, adminOnly);\r\n \r\n // Admin routes for category section management\r\n router.get('/config/:pageId', categorySectionController.getCategorySectionConfig);\r\n router.put('/config/:pageId', categorySectionController.updateCategorySectionConfig);\r\n@@ -14,5 +14,5 @@\n \r\n // Public route for frontend display (no auth required)\r\n router.get('/display/:pageId', categorySectionController.getCategorySectionForDisplay);\r\n \r\n-module.exports = router;\r\n+module.exports = router;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1753604924248,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,18 +1,14 @@\n const express = require('express');\r\n const router = express.Router();\r\n const categorySectionController = require('../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\n-const { protect, adminOnly } = require('../middleware/authMiddleware'); \r\n+const { protect, adminOnly } = require('../middleware/authMiddleware');\r\n \r\n-// Apply authentication middleware to admin routes\r\n-router.use('/config', protect, adminOnly); // Use protect and adminOnly\r\n-router.use('/available-categories', protect, adminOnly);\r\n+// Admin routes for category section management (with authentication)\r\n+router.get('/category-section/:pageId', protect, adminOnly, categorySectionController.getCategorySectionConfig);\r\n+router.put('/category-section/:pageId', protect, adminOnly, categorySectionController.updateCategorySectionConfig);\r\n+router.get('/categories/available', protect, adminOnly, categorySectionController.getAvailableCategories);\r\n \r\n-// Admin routes for category section management\r\n-router.get('/config/:pageId', categorySectionController.getCategorySectionConfig);\r\n-router.put('/config/:pageId', categorySectionController.updateCategorySectionConfig);\r\n-router.get('/available-categories', categorySectionController.getAvailableCategories);\r\n-\r\n // Public route for frontend display (no auth required)\r\n-router.get('/display/:pageId', categorySectionController.getCategorySectionForDisplay);\r\n+router.get('/category-section/:pageId/display', categorySectionController.getCategorySectionForDisplay);\r\n \r\n module.exports = router;\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1753454690765,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst categorySectionController = require('../../controllers/AdminController/PageSectionController/categorySectionConfiguration');\r\nconst authMiddleware = require('../../middleware/authMiddleware');\r\n\r\n// Apply authentication middleware to admin routes\r\nrouter.use('/config', authMiddleware);\r\nrouter.use('/available-categories', authMiddleware);\r\n\r\n// Admin routes for category section management\r\nrouter.get('/config/:pageId', categorySectionController.getCategorySectionConfig);\r\nrouter.put('/config/:pageId', categorySectionController.updateCategorySectionConfig);\r\nrouter.get('/available-categories', categorySectionController.getAvailableCategories);\r\n\r\n// Public route for frontend display (no auth required)\r\nrouter.get('/display/:pageId', categorySectionController.getCategorySectionForDisplay);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}
