@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/hooks/useCorporateAuth.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753614542919,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753614542919,
+            "name": "Commit-0",
+            "content": "/**\r\n * Corporate User Hook\r\n * Custom hook to handle corporate user authentication and checks\r\n */\r\n\r\n'use client'\r\nimport { useContext, useEffect, useState } from 'react'\r\nimport { useRouter } from 'next/navigation'\r\nimport AuthContext from '@/components/context/AuthContext'\r\n\r\nexport const useCorporateAuth = () => {\r\n    const { user, loading } = useContext(AuthContext)\r\n    const router = useRouter()\r\n    const [isCorporateUser, setIsCorporateUser] = useState(false)\r\n\r\n    useEffect(() => {\r\n        if (!loading) {\r\n            const isCorpUser = user && user.userType === 'Corporate'\r\n            setIsCorporateUser(isCorpUser)\r\n        }\r\n    }, [user, loading])\r\n\r\n    const redirectToCorporateSignIn = () => {\r\n        router.push('/corporate/sign-in')\r\n    }\r\n\r\n    const redirectToCorporateDashboard = () => {\r\n        if (isCorporateUser) {\r\n            router.push('/CorporateHome')\r\n        } else {\r\n            redirectToCorporateSignIn()\r\n        }\r\n    }\r\n\r\n    const requireCorporateAuth = (callback) => {\r\n        if (loading) return\r\n\r\n        if (!user) {\r\n            redirectToCorporateSignIn()\r\n            return\r\n        }\r\n\r\n        if (user.userType !== 'Corporate') {\r\n            router.push('/')\r\n            return\r\n        }\r\n\r\n        if (callback) callback()\r\n    }\r\n\r\n    return {\r\n        isCorporateUser,\r\n        loading,\r\n        user,\r\n        redirectToCorporateSignIn,\r\n        redirectToCorporateDashboard,\r\n        requireCorporateAuth\r\n    }\r\n}\r\n\r\nexport default useCorporateAuth\r\n"
+        }
+    ]
+}

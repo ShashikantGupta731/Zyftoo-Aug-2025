@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1752861022237,
@@ -16,6 +16,10 @@
                 {
                     "date": 1752861449939,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,10 +21,10 @@\n     required: true\r\n   },\r\n   userType: {\r\n     type: String,\r\n-    enum: ['SuperAdmin', 'Admin', 'Customer', 'Corporate'],\r\n-    default: 'Customer'\r\n+    enum: ['SuperAdmin', 'Admin', 'Individual', 'Corporate'],\r\n+    default: 'Individual'\r\n   },\r\n   status: {\r\n     type: String,\r\n     enum: ['Active', 'Blocked'],\r\n"
+                },
+                {
+                    "date": 1753634367343,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,15 +7,21 @@\n     required: true\r\n   },\r\n   email: {\r\n     type: String,\r\n-    required: true,\r\n+    required: function() {\r\n+      return this.userType === 'Corporate' || this.userType === 'Admin' || this.userType === 'SuperAdmin';\r\n+    },\r\n     unique: true,\r\n     sparse: true\r\n   },\r\n   phone: {\r\n     type: String,\r\n-    unique: true\r\n+    required: function() {\r\n+      return this.userType === 'Individual' || this.userType === 'Corporate';\r\n+    },\r\n+    unique: true,\r\n+    sparse: true\r\n   },\r\n   password: {\r\n     type: String,\r\n     required: true\r\n@@ -36,15 +42,18 @@\n     default: 'user'\r\n   },\r\n   gender: {\r\n     type: String,\r\n-    enum: ['male', 'female', 'others']\r\n+    enum: ['male', 'female', 'others'],\r\n+    required: true\r\n   },\r\n   dob: {\r\n-    type: Date\r\n+    type: Date,\r\n+    required: true\r\n   },\r\n   pincode: {\r\n-    type: String\r\n+    type: String,\r\n+    required: true\r\n   },\r\n   isVerified: {\r\n     type: Boolean,\r\n     default: false\r\n@@ -56,11 +65,26 @@\n   emailVerificationToken: {\r\n     type: String\r\n   },\r\n   companyDetails: {\r\n-    companyName: String,\r\n-    gstNumber: String,\r\n-    address: String\r\n+    companyName: {\r\n+      type: String,\r\n+      required: function() {\r\n+        return this.userType === 'Corporate';\r\n+      }\r\n+    },\r\n+    gstNumber: {\r\n+      type: String,\r\n+      required: function() {\r\n+        return this.userType === 'Corporate';\r\n+      }\r\n+    },\r\n+    address: {\r\n+      type: String,\r\n+      required: function() {\r\n+        return this.userType === 'Corporate';\r\n+      }\r\n+    }\r\n   },\r\n   deleted: {\r\n     type: Boolean,\r\n     default: false\r\n@@ -69,5 +93,11 @@\n     type: Date\r\n   }\r\n }, { timestamps: true });\r\n \r\n+// Add indexes for better performance and to handle unique constraints properly\r\n+userSchema.index({ email: 1 }, { unique: true, sparse: true });\r\n+userSchema.index({ phone: 1 }, { unique: true, sparse: true });\r\n+userSchema.index({ userType: 1 });\r\n+userSchema.index({ emailVerificationToken: 1 });\r\n+\r\n module.exports = mongoose.model('User', userSchema);\r\n"
                 }
             ],
             "date": 1752861022237,

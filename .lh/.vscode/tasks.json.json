@@ -1,0 +1,18 @@
+{
+    "sourceFile": ".vscode/tasks.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753634241129,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753634241129,
+            "name": "Commit-0",
+            "content": "{\n\t\"version\": \"2.0.0\",\n\t\"tasks\": [\n\t\t{\n\t\t\t\"label\": \"Start Backend Server\",\n\t\t\t\"type\": \"shell\",\n\t\t\t\"command\": \"cd backend && npm start\",\n\t\t\t\"group\": \"build\",\n\t\t\t\"isBackground\": true,\n\t\t\t\"problemMatcher\": [\n\t\t\t\t\"$node-sass\"\n\t\t\t]\n\t\t}\n\t]\n}"
+        }
+    ]
+}

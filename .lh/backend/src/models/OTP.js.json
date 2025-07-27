@@ -1,0 +1,18 @@
+{
+    "sourceFile": "backend/src/models/OTP.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753633460334,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753633460334,
+            "name": "Commit-0",
+            "content": "const mongoose = require('mongoose');\r\n\r\nconst otpSchema = new mongoose.Schema({\r\n  phone: {\r\n    type: String,\r\n    required: function() {\r\n      return !this.email; // Phone required only if email is not provided\r\n    }\r\n  },\r\n  email: {\r\n    type: String,\r\n    required: function() {\r\n      return !this.phone; // Email required only if phone is not provided\r\n    }\r\n  },\r\n  otp: {\r\n    type: String,\r\n    required: true\r\n  },\r\n  purpose: {\r\n    type: String,\r\n    enum: ['signup', 'reset', 'verification'],\r\n    required: true\r\n  },\r\n  userType: {\r\n    type: String,\r\n    enum: ['Individual', 'Corporate', 'Admin', 'SuperAdmin'],\r\n    default: 'Individual'\r\n  },\r\n  createdAt: {\r\n    type: Date,\r\n    default: Date.now,\r\n    expires: 300  // TTL: expires after 5 minutes\r\n  }\r\n});\r\n\r\nmodule.exports = mongoose.model('OTP', otpSchema);\r\n"
+        }
+    ]
+}

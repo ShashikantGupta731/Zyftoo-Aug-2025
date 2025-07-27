@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/services/index.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1753608586725,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753608750432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,10 @@\n // Centralized service exports\r\n // This file will grow as we add more services\r\n \r\n+const AuthService = require('./AuthService');\r\n+\r\n module.exports = {\r\n-  // AuthService will be added in next step\r\n+  AuthService,\r\n   // AdminService will be added later\r\n   // Other services will be added as needed\r\n };\r\n"
+                },
+                {
+                    "date": 1753609071411,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,11 @@\n // Centralized service exports\r\n // This file will grow as we add more services\r\n \r\n const AuthService = require('./AuthService');\r\n+const AdminService = require('./AdminService');\r\n \r\n module.exports = {\r\n   AuthService,\r\n-  // AdminService will be added later\r\n+  AdminService,\r\n   // Other services will be added as needed\r\n };\r\n"
+                }
+            ],
+            "date": 1753608586725,
+            "name": "Commit-0",
+            "content": "// Centralized service exports\r\n// This file will grow as we add more services\r\n\r\nmodule.exports = {\r\n  // AuthService will be added in next step\r\n  // AdminService will be added later\r\n  // Other services will be added as needed\r\n};\r\n"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1752833065399,
@@ -16,6 +16,10 @@
                 {
                     "date": 1753116437105,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,8 +51,18 @@\n   UPDATE: '/categories',\r\n   DELETE: '/categories'\r\n };\r\n \r\n+// Subcategory endpoints\r\n+export const SUBCATEGORY = {\r\n+  GET_ALL: '/subcategories',\r\n+  GET_BY_ID: '/subcategories',\r\n+  GET_BY_PARENT: '/subcategories/parent',\r\n+  CREATE: '/subcategories',\r\n+  UPDATE: '/subcategories',\r\n+  DELETE: '/subcategories'\r\n+};\r\n+\r\n // Page Management endpoints\r\n export const PAGE_MANAGEMENT = {\r\n   GET_PAGE_SECTIONS: '/pages', // GET /pages/:pageKey/sections\r\n   UPDATE_PAGE_SECTIONS: '/pages', // PUT /pages/:pageKey/sections\r\n"
+                },
+                {
+                    "date": 1753614088192,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   LOGIN: '/auth/login',\r\n   SIGNUP: '/auth/signup',\r\n   LOGOUT: '/auth/logout',\r\n   CHECK_USER: '/auth/check-user',\r\n+  CHECK_USER_EMAIL: '/auth/check-user-email',\r\n   RESET_PASSWORD: '/auth/reset-password',\r\n   REFRESH_TOKEN: '/auth/refresh-token'\r\n };\r\n \r\n"
                 }
             ],
             "date": 1752833065399,
