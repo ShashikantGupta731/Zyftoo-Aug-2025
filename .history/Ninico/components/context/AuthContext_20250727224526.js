@@ -146,36 +146,16 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
 
-      console.log('🔍 [AuthContext] Stored data check:', {
-        hasToken: !!token,
-        hasUser: !!userData
-      });
-
       if (token && userData) {
-        try {
-          const user = JSON.parse(userData);
-          const permissions = ROLE_PERMISSIONS[user.role] || [];
-          
-          console.log('👤 [AuthContext] Restoring user session:', {
-            name: user.name,
-            email: user.email,
-            userType: user.userType,
-            role: user.role
-          });
-          
-          dispatch({
-            type: AUTH_ACTIONS.LOGIN_SUCCESS,
-            payload: { user, token, permissions }
-          });
-          
-          console.log('✅ [AuthContext] Auth initialized from localStorage');
-        } catch (parseError) {
-          console.error('❌ [AuthContext] Error parsing stored user data:', parseError);
-          // Clear corrupted data
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
-        }
+        const user = JSON.parse(userData);
+        const permissions = ROLE_PERMISSIONS[user.role] || [];
+        
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user, token, permissions }
+        });
+        
+        console.log('✅ [AuthContext] Auth initialized from localStorage');
       } else {
         dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
         console.log('🔍 [AuthContext] No stored auth found');
@@ -253,25 +233,15 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = () => {
-    try {
-      console.log('� [AuthContext] Logging out user...');
-      
-      // Clear localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Clear context state
-      dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      
-      console.log('✅ [AuthContext] Logout successful');
-      
-      // Redirect to home page
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
-      }
-    } catch (error) {
-      console.error('❌ [AuthContext] Logout error:', error);
-    }
+    console.log('🔄 [AuthContext] Logging out...');
+    
+    // Clear localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    dispatch({ type: AUTH_ACTIONS.LOGOUT });
+    
+    console.log('✅ [AuthContext] Logout successful');
   };
 
   // Register function

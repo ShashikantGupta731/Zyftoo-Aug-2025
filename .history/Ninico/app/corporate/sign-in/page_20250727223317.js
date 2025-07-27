@@ -66,9 +66,9 @@ export default function CorporateSignIn() {
             
             // Login data specifically for corporate users
             const loginData = { 
-                email: email.toLowerCase().trim(),
+                email: email.toLowerCase().trim(), // Ensure email is properly formatted
                 password,
-                userType: 'Corporate'
+                userType: 'Corporate' // Explicitly set userType for backend query
             }
             
             console.log('📤 [Frontend] Sending login data:', { email: loginData.email, userType: loginData.userType })
@@ -83,26 +83,12 @@ export default function CorporateSignIn() {
                 return
             }
 
-            // Extract user data and token from response
+            // Extract user data from response (handle both encrypted and unencrypted responses)
             const userData = response.data?.data?.user || response.data?.user || response.user
-            const token = response.data?.data?.token || response.data?.token || response.token
-            
-            console.log('🔍 [Frontend] Extracted data:', {
-                hasUserData: !!userData,
-                hasToken: !!token,
-                userType: userData?.userType,
-                tokenLength: token?.length
-            })
             
             if (!userData) {
                 console.error('❌ [Frontend] No user data in response')
                 setToast('Invalid response from server')
-                return
-            }
-            
-            if (!token) {
-                console.error('❌ [Frontend] No token in response')
-                setToast('Authentication token missing')
                 return
             }
             
@@ -119,32 +105,18 @@ export default function CorporateSignIn() {
                 return
             }
 
-            // Update auth context with user data and token
+            // Update auth context if login function is available
             if (login && typeof login === 'function') {
                 console.log('📝 [Frontend] Updating auth context...')
-                const contextResult = await login(userData, token)
-                
-                if (!contextResult.success) {
-                    console.error('❌ [Frontend] Failed to update auth context:', contextResult.message)
-                    setToast('Authentication failed')
-                    return
-                }
-                console.log('✅ [Frontend] Auth context updated successfully')
+                await login(userData, response.data?.data?.token || response.data?.token || response.token)
             }
 
-            // Success message and form reset
+            // Success - redirect to corporate home
             console.log('✅ [Frontend] Corporate login successful')
-            setToast('Login successful! Redirecting...')
-            
-            // Clear form fields
-            setEmail('')
-            setPassword('')
-            
-            // Redirect after a short delay
+            setToast('Login successful!')
             setTimeout(() => {
-                console.log('🔄 [Frontend] Redirecting to CorporateHome...')
                 router.push('/CorporateHome')
-            }, 1500)
+            }, 1000)
             
         } catch (error) {
             console.error('❌ [Frontend] Login error:', error)
@@ -464,6 +436,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="email"
                                                     className="corporate-input"
+                                                    placeholder="your@company.com"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     required
@@ -474,6 +447,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="password"
                                                     className="corporate-input"
+                                                    placeholder="Enter your password"
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     required
@@ -526,7 +500,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="text"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="John Doe"
                                                             value={name}
                                                             onChange={(e) => setName(e.target.value)}
                                                             required
@@ -539,7 +513,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="email"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="your@company.com"
                                                             value={email}
                                                             onChange={(e) => setEmail(e.target.value)}
                                                             required
@@ -552,7 +526,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="tel"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="10-digit mobile number"
                                                             value={phone}
                                                             onChange={(e) => setPhone(e.target.value)}
                                                             maxLength="10"
@@ -566,7 +540,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="text"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="Your Company Ltd."
                                                             value={companyName}
                                                             onChange={(e) => setCompanyName(e.target.value)}
                                                             required
@@ -579,7 +553,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="text"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="GST123456789"
                                                             value={gstNumber}
                                                             onChange={(e) => setGstNumber(e.target.value)}
                                                             required
@@ -592,7 +566,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="text"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="123 Business Park"
                                                             value={companyAddress}
                                                             onChange={(e) => setCompanyAddress(e.target.value)}
                                                             required
@@ -605,7 +579,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="text"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="123456"
                                                             value={pincode}
                                                             onChange={(e) => setPincode(e.target.value)}
                                                             maxLength="6"
@@ -619,7 +593,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="password"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="Create password"
                                                             value={password}
                                                             onChange={(e) => setPassword(e.target.value)}
                                                             required
@@ -632,7 +606,7 @@ export default function CorporateSignIn() {
                                                         <input
                                                             type="password"
                                                             className="corporate-input"
-                                                            placeholder=""
+                                                            placeholder="Confirm password"
                                                             value={confirmPassword}
                                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                                             required
@@ -693,15 +667,6 @@ export default function CorporateSignIn() {
                                         >
                                             Verify OTP
                                         </button>
-                                        <button 
-                                            className="corporate-btn-secondary mt-10"
-                                            onClick={() => {
-                                                setStep('login')
-                                                setOtp(new Array(6).fill(''))
-                                            }}
-                                        >
-                                            Back to Form
-                                        </button>
                                         <div className="otp-resend mt-20">
                                             <span>Didn't receive OTP? </span>
                                             <a href="#" onClick={handleResendOTP}>Resend</a>
@@ -718,6 +683,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="email"
                                                 className="corporate-input"
+                                                placeholder="your@company.com"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                             />
@@ -739,14 +705,6 @@ export default function CorporateSignIn() {
 
                                 {step === 'resetOtp' && (
                                     <div className="corporate-auth-box">
-                                        <div className="back-button-container">
-                                            <button 
-                                                className="back-btn"
-                                                onClick={() => setStep('forgotPassword')}
-                                            >
-                                                ← Back
-                                            </button>
-                                        </div>
                                         <h3 className="auth-box-title">Enter OTP & New Password</h3>
                                         <p className="otp-info">OTP sent to phone ending with {phone.slice(-4)}</p>
                                         <div className="otp-inputs">
@@ -767,6 +725,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="password"
                                                 className="corporate-input"
+                                                placeholder="Enter new password"
                                                 value={newPassword}
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                             />
@@ -776,6 +735,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="password"
                                                 className="corporate-input"
+                                                placeholder="Confirm new password"
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             />

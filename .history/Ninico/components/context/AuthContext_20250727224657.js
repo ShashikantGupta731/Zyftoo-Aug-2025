@@ -253,25 +253,15 @@ export const AuthProvider = ({ children }) => {
 
   // Logout function
   const logout = () => {
-    try {
-      console.log('� [AuthContext] Logging out user...');
-      
-      // Clear localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Clear context state
-      dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      
-      console.log('✅ [AuthContext] Logout successful');
-      
-      // Redirect to home page
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
-      }
-    } catch (error) {
-      console.error('❌ [AuthContext] Logout error:', error);
-    }
+    console.log('🔄 [AuthContext] Logging out...');
+    
+    // Clear localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    dispatch({ type: AUTH_ACTIONS.LOGOUT });
+    
+    console.log('✅ [AuthContext] Logout successful');
   };
 
   // Register function

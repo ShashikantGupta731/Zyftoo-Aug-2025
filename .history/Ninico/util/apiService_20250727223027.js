@@ -54,29 +54,19 @@ apiClient.interceptors.response.use(
 );
 
 /**
- * Encrypt data using AES encryption (matches backend implementation)
+ * Encrypt data using AES encryption
  */
 export const encryptData = (data) => {
   try {
-    console.log('🔒 [Frontend] Starting encryption...');
-    console.log('📝 [Frontend] Input data:', data);
-    console.log('📝 [Frontend] Data type:', typeof data);
-    
-    const key = ENCRYPTION_KEY;
-    console.log('🔑 [Frontend] Using key (first 8 chars):', key.substring(0, 8) + '...');
-    
     const jsonString = JSON.stringify(data);
-    console.log('📝 [Frontend] JSON string:', jsonString);
-    console.log('📝 [Frontend] JSON string length:', jsonString.length);
-    
-    // Use the exact same method as backend (without IV)
-    const encrypted = CryptoJS.AES.encrypt(jsonString, key).toString();
-    console.log('🔒 [Frontend] Encrypted result:', encrypted);
-    console.log('🔒 [Frontend] Encrypted length:', encrypted.length);
-    
-    return encrypted;
+    const encrypted = CryptoJS.AES.encrypt(jsonString, ENCRYPTION_KEY, {
+      iv: CryptoJS.enc.Utf8.parse(ENCRYPTION_IV),
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString();
   } catch (error) {
-    console.error('❌ [Frontend] Encryption error:', error);
+    console.error('Encryption error:', error);
     throw new Error('Failed to encrypt data');
   }
 };

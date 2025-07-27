@@ -464,6 +464,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="email"
                                                     className="corporate-input"
+                                                    placeholder="your@company.com"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     required
@@ -474,6 +475,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="password"
                                                     className="corporate-input"
+                                                    placeholder="Enter your password"
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     required

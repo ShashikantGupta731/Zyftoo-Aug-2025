@@ -464,6 +464,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="email"
                                                     className="corporate-input"
+                                                    placeholder="your@company.com"
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     required
@@ -474,6 +475,7 @@ export default function CorporateSignIn() {
                                                 <input
                                                     type="password"
                                                     className="corporate-input"
+                                                    placeholder="Enter your password"
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     required
@@ -718,6 +720,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="email"
                                                 className="corporate-input"
+                                                placeholder="your@company.com"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                             />
@@ -739,14 +742,6 @@ export default function CorporateSignIn() {
 
                                 {step === 'resetOtp' && (
                                     <div className="corporate-auth-box">
-                                        <div className="back-button-container">
-                                            <button 
-                                                className="back-btn"
-                                                onClick={() => setStep('forgotPassword')}
-                                            >
-                                                ← Back
-                                            </button>
-                                        </div>
                                         <h3 className="auth-box-title">Enter OTP & New Password</h3>
                                         <p className="otp-info">OTP sent to phone ending with {phone.slice(-4)}</p>
                                         <div className="otp-inputs">
@@ -767,6 +762,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="password"
                                                 className="corporate-input"
+                                                placeholder="Enter new password"
                                                 value={newPassword}
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                             />
@@ -776,6 +772,7 @@ export default function CorporateSignIn() {
                                             <input
                                                 type="password"
                                                 className="corporate-input"
+                                                placeholder="Confirm new password"
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                             />

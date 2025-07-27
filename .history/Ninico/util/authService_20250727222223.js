@@ -59,78 +59,15 @@ class AuthService {
       
       console.log('📥 [AuthService] Login response received:', { 
         success: response.success, 
-        hasData: !!response.data,
-        hasEncryptedData: !!response.data?.encryptedData
+        hasData: !!response.data 
       })
-
-      // Handle encrypted response
-      if (response.success && response.data?.encryptedData) {
-        console.log('🔓 [AuthService] Decrypting response data...')
-        
-        try {
-          // Import decryptData function
-          const { decryptData } = await import('./apiService.js')
-          
-          // Decrypt the response
-          const decryptedData = decryptData(response.data.encryptedData)
-          console.log('✅ [AuthService] Decryption successful:', {
-            hasUser: !!decryptedData.data?.user,
-            hasToken: !!decryptedData.data?.token
-          })
-          
-          // Store auth data if login successful
-          if (decryptedData.success && decryptedData.data) {
-            const { token, user } = decryptedData.data
-            
-            if (token) {
-              const storage = credentials.rememberMe ? localStorage : sessionStorage;
-              storage.setItem('authToken', token);
-              console.log('💾 [AuthService] Token stored successfully')
-            }
-            
-            if (user) {
-              const storage = credentials.rememberMe ? localStorage : sessionStorage;
-              storage.setItem('user', JSON.stringify(user));
-              console.log('💾 [AuthService] User data stored:', {
-                name: user.name,
-                email: user.email,
-                userType: user.userType
-              })
-            }
-            
-            // Return in the expected format
-            return {
-              success: true,
-              data: {
-                data: {
-                  token,
-                  user
-                }
-              },
-              message: decryptedData.message || 'Login successful'
-            }
-          }
-          
-          return {
-            success: false,
-            message: decryptedData.message || 'Login failed'
-          }
-          
-        } catch (decryptError) {
-          console.error('❌ [AuthService] Decryption failed:', decryptError)
-          return {
-            success: false,
-            message: 'Failed to process server response'
-          }
-        }
-      }
       
-      // Handle unencrypted response (fallback)
+      // Store auth token if login successful
       if (response.success && response.data?.data?.token) {
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
         storage.setItem('authToken', response.data.data.token);
         storage.setItem('user', JSON.stringify(response.data.data.user));
-        console.log('💾 [AuthService] Auth data stored successfully (unencrypted)')
+        console.log('💾 [AuthService] Auth data stored successfully')
       } else if (response.success && response.data?.token) {
         // Handle alternative token structure
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
