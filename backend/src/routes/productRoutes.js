@@ -6,14 +6,18 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProductMeta
+  getProductMeta,
+  getCorporateProducts,
+  getProductPricing
 } = require('../controllers/productController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
-// Public routes
+// Public routes (specific routes first, then dynamic routes)
 router.get('/meta', getProductMeta);
+router.get('/corporate', getCorporateProducts);
 router.get('/', getAllProducts);
 router.get('/:id', getProductById);
+router.get('/:id/pricing', protect, getProductPricing);
 
 // Protected admin routes
 router.use(protect, authorizeRoles('admin', 'superadmin'));

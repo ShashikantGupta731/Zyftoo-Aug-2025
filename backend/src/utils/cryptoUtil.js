@@ -1,90 +1,80 @@
 const CryptoJS = require('crypto-js');
 require('dotenv').config();
 
-/**
- * Get encryption key from environment variables
- * @returns {string} Encryption key
- */
 const getEncryptionKey = () => {
-    const key = process.env.ENCRYPTION_KEY;
-    console.log('🔑 DEBUG: Checking encryption key...');
-    console.log('🔑 Key exists:', !!key);
-    console.log('🔑 Key length:', key?.length || 0);
-    console.log('🔑 Key value:', key ? key.substring(0, 8) + '...' : 'UNDEFINED');
+    // Using same environment variable as frontend for consistency
+    const key = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || process.env.ENCRYPTION_KEY;
     
     if (!key) {
-        console.error('❌ ENCRYPTION_KEY is not defined in environment variables');
-        throw new Error('ENCRYPTION_KEY is not defined in environment variables');
+        console.error('❌ Encryption key not found in environment variables');
+        throw new Error('Encryption key not found in environment variables');
     }
+
+    console.log('🔑 Key validation:', {
+        exists: !!key,
+        length: key.length,
+        preview: key.substring(0, 4) + '...'
+    });
+
     return key;
 };
 
-/**
- * Encrypts data and returns a cipher string (matches frontend crypto-js format)
- * @param {any} data - The data to encrypt
- * @returns {string} Encrypted string
- */
 const encryptData = (data) => {
     try {
-        console.log('🔒 Backend DEBUG: Starting encryption...');
-        console.log('📝 Input data:', data);
-        console.log('📝 Data type:', typeof data);
+        console.log('🔒 Starting encryption process');
         
         const key = getEncryptionKey();
-        console.log('🔑 Using key for encryption (first 8 chars):', key.substring(0, 8) + '...');
-        
         const jsonString = JSON.stringify(data);
-        console.log('📝 JSON string:', jsonString);
-        console.log('📝 JSON string length:', jsonString.length);
         
-        // Use the exact same method as frontend
+        // Use same encryption method as frontend
         const encrypted = CryptoJS.AES.encrypt(jsonString, key).toString();
-        console.log('🔒 Encrypted result:', encrypted);
-        console.log('🔒 Encrypted length:', encrypted.length);
+        
+        console.log('✅ Encryption successful:', {
+            inputType: typeof data,
+            jsonLength: jsonString.length,
+            outputLength: encrypted.length
+        });
         
         return encrypted;
     } catch (error) {
-        console.error('❌ Backend encryption error:', error);
-        throw new Error('Failed to encrypt data');
+        console.error('❌ Encryption failed:', error.message);
+        throw new Error(`Encryption failed: ${error.message}`);
     }
 };
 
-/**
- * Decrypts a cipher string and returns the parsed data (matches frontend crypto-js format)
- * @param {string} cipherText - The encrypted string to decrypt
- * @returns {any} Decrypted and parsed data
- */
 const decryptData = (cipherText) => {
-    console.log('🔓 Backend DEBUG: Starting decryption...');
-    console.log('📝 Input cipher:', cipherText);
-    console.log('📝 Cipher type:', typeof cipherText);
-    console.log('📝 Cipher length:', cipherText?.length || 0);
-    
     try {
-        const key = getEncryptionKey();
-        console.log('🔑 Using key for decryption (first 8 chars):', key.substring(0, 8) + '...');
-        
-        // Use the exact same method as frontend
-        const decryptedBytes = CryptoJS.AES.decrypt(cipherText, key);
-        const decryptedString = decryptedBytes.toString(CryptoJS.enc.Utf8);
-        
-        console.log('🔓 Decrypted string:', decryptedString);
-        console.log('🔓 Decrypted string length:', decryptedString.length);
-        
-        if (!decryptedString) {
-            console.error('❌ Failed to decrypt data - empty result');
-            throw new Error('Failed to decrypt data - invalid cipher or key');
+        console.log('🔓 Starting decryption process');
+
+        if (!cipherText || typeof cipherText !== 'string') {
+            throw new Error('Invalid cipher text format');
         }
+
+        const key = getEncryptionKey();
         
-        const parsed = JSON.parse(decryptedString);
-        console.log('✅ Successfully parsed JSON:', parsed);
+        // Use same decryption method as frontend
+        const bytes = CryptoJS.AES.decrypt(cipherText, key);
+        const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+        
+        if (!decrypted) {
+            throw new Error('Decryption produced empty result');
+        }
+
+        const parsed = JSON.parse(decrypted);
+        
+        console.log('✅ Decryption successful:', {
+            inputLength: cipherText.length,
+            outputType: typeof parsed,
+            hasData: !!parsed
+        });
+
         return parsed;
     } catch (error) {
-        console.error('❌ Backend decryption error details:', {
-            message: error.message,
-            cipher: cipherText
+        console.error('❌ Decryption failed:', {
+            error: error.message,
+            cipherPreview: cipherText?.substring(0, 32) + '...'
         });
-        throw new Error('Failed to decrypt data: ' + error.message);
+        throw new Error(`Decryption failed: ${error.message}`);
     }
 };
 

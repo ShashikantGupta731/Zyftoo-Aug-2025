@@ -21,7 +21,6 @@ router.post('/signup', signupUser);
 router.post('/login', loginUser);
 router.post('/reset-password', resetPassword);
 router.get('/verify-email/:token', verifyEmail);
-console.log('checkUser is:', typeof checkUser); 
 router.get('/check-user/:phone', checkUser);  // ✅ Now checkUser is defined
 router.get('/check-user-email/:email', checkUserByEmail);  // ✅ New email-based user check
 

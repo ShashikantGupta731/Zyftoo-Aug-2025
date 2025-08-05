@@ -5,6 +5,73 @@ const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 const Address = require('../models/Address'); 
 
+// Helper function to determine user type
+const getUserType = (user) => {
+  return user.accountType === 'corporate' || user.userType === 'Corporate' ? 'corporate' : 'individual';
+};
+
+// Helper function to get effective price for a product
+const getEffectivePrice = (product, user, quantity = 1) => {
+  const userType = getUserType(user);
+  
+  // If corporate user and product has corporate pricing
+  if (userType === 'corporate' && product.corporatePricing?.enabled && product.corporatePricing.priceTiers?.length > 0) {
+    // Find the appropriate tier based on quantity
+    const applicableTier = product.corporatePricing.priceTiers
+      .filter(tier => quantity >= tier.minQuantity && (!tier.maxQuantity || quantity <= tier.maxQuantity))
+      .sort((a, b) => b.minQuantity - a.minQuantity)[0]; // Get the highest minimum quantity tier that applies
+    
+    if (applicableTier) {
+      return applicableTier.pricePerUnit;
+    }
+  }
+  
+  // Fallback to regular pricing
+  return product.finalPrice || product.retailPrice?.sellingPrice || product.sale_price || product.price;
+};
+
+// Helper function to validate and update stock
+const validateAndUpdateStock = async (product, requestedQuantity) => {
+  // Check if product is published
+  if (!product.status) {
+    return { valid: false, message: `Product ${product.name} is not available` };
+  }
+  
+  // Handle different stock statuses
+  switch (product.stock_status) {
+    case 'out_of_stock':
+      return { valid: false, message: `Product ${product.name} is out of stock` };
+    
+    case 'in_stock':
+      if (product.quantity < requestedQuantity) {
+        return { valid: false, message: `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${requestedQuantity}` };
+      }
+      // Reduce stock for in_stock items
+      product.quantity -= requestedQuantity;
+      break;
+    
+    case 'pre_order':
+    case 'back_order':
+      // For pre-order and back-order, we don't reduce physical stock
+      // but we can track orders
+      break;
+    
+    default:
+      return { valid: false, message: `Invalid stock status for ${product.name}` };
+  }
+  
+  // Update sales count and analytics
+  product.sales_count = (product.sales_count || 0) + requestedQuantity;
+  
+  // Update analytics if they exist
+  if (product.analytics) {
+    // You could add order analytics here if needed
+  }
+  
+  await product.save();
+  return { valid: true };
+}; 
+
 
 const placeOrder = async (req, res) => {
   try {
@@ -14,43 +81,164 @@ const placeOrder = async (req, res) => {
       return res.status(400).json({ message: 'No items in order.' });
     }
 
-    // ✅ Step 1: Check stock and reduce it
+    const userType = getUserType(req.user);
+    let calculatedTotal = 0;
+    const processedItems = [];
+
+    // ✅ Step 1: Validate products, check stock, and calculate total
     for (const item of items) {
       const product = await Product.findById(item.product);
       if (!product) {
         return res.status(404).json({ message: `Product not found: ${item.product}` });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
+      // Check if user can access this product (corporate-only restriction)
+      if (product.is_corporate_only && userType !== 'corporate') {
+        return res.status(403).json({ 
+          message: `Product ${product.name} is only available to corporate customers` 
+        });
       }
 
-      product.stock -= item.quantity;
-      await product.save();
+      // Check corporate minimum order quantity
+      if (userType === 'corporate' && product.corporatePricing?.enabled) {
+        const minOrderQty = product.corporatePricing.minimumOrderQuantity || 1;
+        if (item.quantity < minOrderQty) {
+          return res.status(400).json({
+            message: `Minimum order quantity for ${product.name} is ${minOrderQty} for corporate customers`,
+            minimumQuantity: minOrderQty,
+            requestedQuantity: item.quantity
+          });
+        }
+      }
+
+      // Calculate effective price for this user and quantity
+      const effectivePrice = getEffectivePrice(product, req.user, item.quantity);
+      const itemTotal = effectivePrice * item.quantity;
+      calculatedTotal += itemTotal;
+
+      // Prepare processed item for order
+      processedItems.push({
+        product: item.product,
+        quantity: item.quantity,
+        priceAtTime: effectivePrice,
+        itemTotal: itemTotal,
+        productName: product.name,
+        productSku: product.sku,
+        stockStatus: product.stock_status,
+        corporatePricing: userType === 'corporate' && product.corporatePricing?.enabled ? {
+          tierApplied: product.corporatePricing.priceTiers?.find(tier => 
+            item.quantity >= tier.minQuantity && (!tier.maxQuantity || item.quantity <= tier.maxQuantity)
+          )
+        } : null
+      });
     }
 
-    // ✅ Step 2: Create order
+    // Validate total amount (allow small rounding differences)
+    if (Math.abs(calculatedTotal - totalAmount) > 0.1) {
+      return res.status(400).json({ 
+        message: 'Total amount mismatch', 
+        calculated: calculatedTotal, 
+        provided: totalAmount 
+      });
+    }
+
+    // ✅ Step 2: Update stock for all products (do this after all validations pass)
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const product = await Product.findById(item.product);
+      
+      const stockUpdate = await validateAndUpdateStock(product, item.quantity);
+      if (!stockUpdate.valid) {
+        // If stock update fails, we need to rollback any previous stock changes
+        // For now, we'll return an error. In production, you might want to implement proper rollback
+        return res.status(400).json({ message: stockUpdate.message });
+      }
+    }
+
+    // ✅ Step 3: Create enhanced order
     const newOrder = new Order({
       user: req.user._id,
-      items,
+      items: processedItems,
       shippingAddress,
       paymentMethod,
-      totalAmount,
+      totalAmount: calculatedTotal,
+      userType,
+      orderMetadata: {
+        hasCorporatePricing: processedItems.some(item => item.corporatePricing),
+        stockStatuses: processedItems.map(item => ({
+          product: item.product,
+          stockStatus: item.stockStatus
+        }))
+      }
     });
 
     const savedOrder = await newOrder.save();
-    res.status(201).json(savedOrder);
+
+    // ✅ Step 4: Clear user's cart after successful order
+    try {
+      await Cart.findOneAndUpdate(
+        { user: req.user._id },
+        { $set: { items: [] } }
+      );
+    } catch (cartError) {
+      console.warn('Failed to clear cart after order:', cartError);
+      // Don't fail the order if cart clearing fails
+    }
+
+    // ✅ Step 5: Populate order for response
+    await savedOrder.populate([
+      { path: 'user', select: 'name email accountType userType' },
+      { path: 'items.product', select: 'name images sku' }
+    ]);
+
+    res.status(201).json({
+      message: 'Order placed successfully',
+      order: savedOrder,
+      calculatedTotal,
+      userType
+    });
+
   } catch (error) {
     console.error('Error placing order:', error);
-    res.status(500).json({ message: 'Something went wrong' });
+    res.status(500).json({ 
+      message: 'Failed to place order',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    });
   }
 };
 
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-    res.status(200).json(orders);
+    const orders = await Order.find({ user: req.user._id })
+      .populate([
+        { 
+          path: 'items.product', 
+          select: 'name images price retailPrice corporatePricing is_corporate_only stock_status rating numReviews' 
+        }
+      ])
+      .sort({ createdAt: -1 });
+
+    // Enhanced orders with additional info for frontend
+    const enhancedOrders = orders.map(order => {
+      const orderObj = order.toObject();
+      
+      // Add summary information
+      orderObj.summary = {
+        totalItems: orderObj.items.reduce((sum, item) => sum + item.quantity, 0),
+        userType: orderObj.userType || getUserType(req.user),
+        hasCorporatePricing: orderObj.items.some(item => item.corporatePricing),
+        hasPreOrders: orderObj.items.some(item => item.stockStatus === 'pre_order'),
+        hasBackOrders: orderObj.items.some(item => item.stockStatus === 'back_order')
+      };
+
+      return orderObj;
+    });
+
+    res.status(200).json({
+      orders: enhancedOrders,
+      totalOrders: orders.length
+    });
   } catch (error) {
     console.error('Error fetching user orders:', error);
     res.status(500).json({ message: 'Failed to fetch orders' });
@@ -60,11 +248,64 @@ const getMyOrders = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .populate('user', 'name email') // only return name & email from user
-      .sort({ createdAt: -1 });
+    const { page = 1, limit = 10, status, userType } = req.query;
+    
+    // Build filter
+    const filter = {};
+    if (status) filter.orderStatus = status;
+    if (userType) filter.userType = userType;
 
-    res.status(200).json(orders);
+    const orders = await Order.find(filter)
+      .populate([
+        { path: 'user', select: 'name email accountType userType' },
+        { 
+          path: 'items.product', 
+          select: 'name images price retailPrice corporatePricing is_corporate_only stock_status sku' 
+        }
+      ])
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const totalOrders = await Order.countDocuments(filter);
+
+    // Enhanced orders with analytics
+    const enhancedOrders = orders.map(order => {
+      const orderObj = order.toObject();
+      
+      // Add analytics and summary
+      orderObj.analytics = {
+        totalItems: orderObj.items.reduce((sum, item) => sum + item.quantity, 0),
+        averageItemPrice: orderObj.totalAmount / orderObj.items.reduce((sum, item) => sum + item.quantity, 0),
+        hasCorporatePricing: orderObj.items.some(item => item.corporatePricing),
+        corporateDiscount: orderObj.items
+          .filter(item => item.corporatePricing?.tierApplied)
+          .reduce((sum, item) => sum + (item.corporatePricing.tierApplied.discount || 0), 0),
+        productTypes: {
+          corporateOnly: orderObj.items.filter(item => item.product?.is_corporate_only).length,
+          preOrders: orderObj.items.filter(item => item.stockStatus === 'pre_order').length,
+          backOrders: orderObj.items.filter(item => item.stockStatus === 'back_order').length
+        }
+      };
+
+      return orderObj;
+    });
+
+    res.status(200).json({
+      orders: enhancedOrders,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalOrders / limit),
+        totalOrders,
+        hasNext: page * limit < totalOrders,
+        hasPrev: page > 1
+      },
+      summary: {
+        totalRevenue: enhancedOrders.reduce((sum, order) => sum + order.totalAmount, 0),
+        corporateOrders: enhancedOrders.filter(order => order.userType === 'corporate').length,
+        individualOrders: enhancedOrders.filter(order => order.userType === 'individual').length
+      }
+    });
   } catch (error) {
     console.error('Error fetching all orders:', error);
     res.status(500).json({ message: 'Failed to fetch all orders' });

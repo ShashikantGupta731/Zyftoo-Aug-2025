@@ -3,6 +3,11 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
+  console.log(' PROTECT MIDDLEWARE HIT')
+  console.log('🔐 Request path:', req.path)
+  console.log('🔐 Authorization header:', req.headers.authorization)
+  console.log(' All headers:', req.headers)
+  
   let token;
   try {
     if (
@@ -10,13 +15,23 @@ const protect = async (req, res, next) => {
       req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
+      console.log(' Token extracted:', token ? token.substring(0, 20) + '...' : 'null')
+      console.log('🔐 JWT_SECRET exists:', !!process.env.JWT_SECRET)
+      
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password'); // attach user data to req
+      console.log('🔐 Token decoded successfully:', decoded)
+      
+      req.user = await User.findById(decoded.id).select('-password');
+      console.log('🔐 User found:', req.user ? req.user._id : 'null')
+      console.log('🔐 User role:', req.user ? req.user.role : 'null')
+      
       next();
     } else {
+      console.log('❌ No Bearer token found')
       return res.status(401).json({ message: 'Not authorized, no token' });
     }
   } catch (error) {
+    console.log('❌ Token verification failed:', error.message)
     return res.status(401).json({ message: 'Not authorized, token failed' });
   }
 };

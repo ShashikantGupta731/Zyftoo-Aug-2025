@@ -19,6 +19,8 @@ router.get('/test', (req, res) => {
 // Category admin routes
 const categoryController = require('../../controllers/categoryController');
 const { uploadCategoryImage } = require('../../utils/fileUpload');
+router.get('/categories', categoryController.getCategories);
+router.get('/categories/:id', categoryController.getCategory);
 router.post('/categories', uploadCategoryImage.single('image'), categoryController.createCategory);
 router.put('/categories/:id', uploadCategoryImage.single('image'), categoryController.updateCategory);
 router.delete('/categories/:id', categoryController.deleteCategory);
@@ -28,6 +30,7 @@ const productController = require('../../controllers/productController');
 router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProduct);
 router.delete('/products/:id', productController.deleteProduct);
+router.get('/products', productController.getAllProducts);
 
 // AdminUser routes
 router.get('/users', adminUserController.getAdminUsers);

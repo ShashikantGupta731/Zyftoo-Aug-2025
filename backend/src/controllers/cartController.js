@@ -1,33 +1,158 @@
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 
+// Helper function to determine user type
+const getUserType = (user) => {
+  return user.accountType === 'corporate' || user.userType === 'Corporate' ? 'corporate' : 'individual';
+};
+
+// Helper function to get effective price for a product
+const getEffectivePrice = (product, user, quantity = 1) => {
+  const userType = getUserType(user);
+  
+  // If corporate user and product has corporate pricing
+  if (userType === 'corporate' && product.corporatePricing?.enabled && product.corporatePricing.priceTiers?.length > 0) {
+    // Find the appropriate tier based on quantity
+    const applicableTier = product.corporatePricing.priceTiers
+      .filter(tier => quantity >= tier.minQuantity && (!tier.maxQuantity || quantity <= tier.maxQuantity))
+      .sort((a, b) => b.minQuantity - a.minQuantity)[0]; // Get the highest minimum quantity tier that applies
+    
+    if (applicableTier) {
+      return applicableTier.pricePerUnit;
+    }
+  }
+  
+  // Fallback to regular pricing
+  return product.finalPrice || product.retailPrice?.sellingPrice || product.sale_price || product.price;
+};
+
+// Helper function to validate product access
+const canUserAccessProduct = (product, user) => {
+  const userType = getUserType(user);
+  
+  // Check if product is corporate-only but user is not corporate
+  if (product.is_corporate_only && userType !== 'corporate') {
+    return false;
+  }
+  
+  return true;
+};
+
+// Helper function to validate stock and availability
+const validateProductAvailability = (product, requestedQuantity) => {
+  // Check if product is published
+  if (!product.status) {
+    return { valid: false, message: 'Product is not available' };
+  }
+  
+  // Check stock status
+  if (product.stock_status === 'out_of_stock') {
+    return { valid: false, message: 'Product is out of stock' };
+  }
+  
+  // Check quantity availability
+  if (product.stock_status === 'in_stock' && product.quantity < requestedQuantity) {
+    return { valid: false, message: `Only ${product.quantity} items available in stock` };
+  }
+  
+  // Pre-order and back-order are allowed
+  return { valid: true };
+};
+
 // ➕ Add to Cart
 const addToCart = async (req, res) => {
   const userId = req.user._id;
   const productId = req.params.productId;
+  const { quantity = 1 } = req.body; // Allow specifying quantity
 
   try {
     const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Check if user can access this product
+    if (!canUserAccessProduct(product, req.user)) {
+      return res.status(403).json({ 
+        message: 'This product is only available to corporate customers',
+        productAccess: 'corporate_only'
+      });
+    }
 
     let cart = await Cart.findOne({ user: userId });
+    let existingQuantity = 0;
+
+    // Check existing quantity in cart
+    if (cart) {
+      const existingItem = cart.items.find(item => item.product.equals(productId));
+      existingQuantity = existingItem ? existingItem.quantity : 0;
+    }
+
+    const totalQuantity = existingQuantity + quantity;
+
+    // Validate stock availability
+    const stockValidation = validateProductAvailability(product, totalQuantity);
+    if (!stockValidation.valid) {
+      return res.status(400).json({ 
+        message: stockValidation.message,
+        availableQuantity: product.quantity,
+        stockStatus: product.stock_status
+      });
+    }
+
+    // Check corporate minimum order quantity
+    const userType = getUserType(req.user);
+    if (userType === 'corporate' && product.corporatePricing?.enabled) {
+      const minOrderQty = product.corporatePricing.minimumOrderQuantity || 1;
+      if (totalQuantity < minOrderQty) {
+        return res.status(400).json({
+          message: `Minimum order quantity for corporate customers is ${minOrderQty}`,
+          minimumQuantity: minOrderQty,
+          currentQuantity: totalQuantity
+        });
+      }
+    }
+
+    // Calculate effective price
+    const effectivePrice = getEffectivePrice(product, req.user, totalQuantity);
 
     if (!cart) {
       cart = new Cart({
         user: userId,
-        items: [{ product: productId, quantity: 1 }]
+        items: [{ 
+          product: productId, 
+          quantity: quantity,
+          priceAtTime: effectivePrice,
+          userType: userType
+        }]
       });
     } else {
       const itemIndex = cart.items.findIndex(item => item.product.equals(productId));
       if (itemIndex > -1) {
-        cart.items[itemIndex].quantity += 1;
+        cart.items[itemIndex].quantity = totalQuantity;
+        cart.items[itemIndex].priceAtTime = effectivePrice; // Update price
       } else {
-        cart.items.push({ product: productId, quantity: 1 });
+        cart.items.push({ 
+          product: productId, 
+          quantity: quantity,
+          priceAtTime: effectivePrice,
+          userType: userType
+        });
       }
     }
 
     await cart.save();
-    res.status(200).json({ message: 'Product added to cart', cart });
+
+    // Populate the cart for response
+    await cart.populate('items.product');
+
+    res.status(200).json({ 
+      message: 'Product added to cart successfully', 
+      cart,
+      effectivePrice,
+      stockStatus: product.stock_status,
+      userType
+    });
   } catch (error) {
     console.error('Add to cart error:', error);
     res.status(500).json({ error: 'Failed to add to cart' });
@@ -40,19 +165,64 @@ const updateCartItem = async (req, res) => {
   const { quantity } = req.body;
   const productId = req.params.productId;
 
-  if (quantity < 1) return res.status(400).json({ message: 'Quantity must be at least 1' });
+  if (quantity < 1) {
+    return res.status(400).json({ message: 'Quantity must be at least 1' });
+  }
 
   try {
     const cart = await Cart.findOne({ user: userId });
-    if (!cart) return res.status(404).json({ message: 'Cart not found' });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
 
     const item = cart.items.find(item => item.product.equals(productId));
-    if (!item) return res.status(404).json({ message: 'Product not in cart' });
+    if (!item) {
+      return res.status(404).json({ message: 'Product not in cart' });
+    }
 
+    // Get product details for validation
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Validate stock availability
+    const stockValidation = validateProductAvailability(product, quantity);
+    if (!stockValidation.valid) {
+      return res.status(400).json({ 
+        message: stockValidation.message,
+        availableQuantity: product.quantity,
+        stockStatus: product.stock_status
+      });
+    }
+
+    // Check corporate minimum order quantity
+    const userType = getUserType(req.user);
+    if (userType === 'corporate' && product.corporatePricing?.enabled) {
+      const minOrderQty = product.corporatePricing.minimumOrderQuantity || 1;
+      if (quantity < minOrderQty) {
+        return res.status(400).json({
+          message: `Minimum order quantity for corporate customers is ${minOrderQty}`,
+          minimumQuantity: minOrderQty,
+          requestedQuantity: quantity
+        });
+      }
+    }
+
+    // Update quantity and recalculate price
     item.quantity = quantity;
+    item.priceAtTime = getEffectivePrice(product, req.user, quantity);
+
     await cart.save();
 
-    res.status(200).json({ message: 'Cart item updated', cart });
+    // Populate the cart for response
+    await cart.populate('items.product');
+
+    res.status(200).json({ 
+      message: 'Cart item updated successfully', 
+      cart,
+      updatedPrice: item.priceAtTime
+    });
   } catch (error) {
     console.error('Update cart error:', error);
     res.status(500).json({ error: 'Failed to update cart' });
@@ -84,9 +254,66 @@ const getCart = async (req, res) => {
 
   try {
     const cart = await Cart.findOne({ user: userId }).populate('items.product');
-    if (!cart) return res.status(200).json({ message: 'Cart is empty', items: [] });
+    if (!cart) {
+      return res.status(200).json({ 
+        message: 'Cart is empty', 
+        items: [],
+        summary: {
+          totalItems: 0,
+          totalAmount: 0,
+          userType: getUserType(req.user)
+        }
+      });
+    }
 
-    res.status(200).json({ items: cart.items });
+    const userType = getUserType(req.user);
+    let totalAmount = 0;
+    let totalItems = 0;
+
+    // Enhanced cart items with pricing and availability info
+    const enhancedItems = cart.items.map(item => {
+      const product = item.product;
+      
+      // Check if product is still available
+      const availability = validateProductAvailability(product, item.quantity);
+      
+      // Calculate current effective price (prices might have changed)
+      const currentPrice = getEffectivePrice(product, req.user, item.quantity);
+      
+      // Calculate item total
+      const itemTotal = currentPrice * item.quantity;
+      totalAmount += itemTotal;
+      totalItems += item.quantity;
+
+      return {
+        ...item.toObject(),
+        currentPrice,
+        itemTotal,
+        availability,
+        priceChanged: Math.abs(currentPrice - (item.priceAtTime || 0)) > 0.01,
+        corporatePricing: product.corporatePricing?.enabled && userType === 'corporate' ? {
+          enabled: true,
+          minimumOrderQuantity: product.corporatePricing.minimumOrderQuantity,
+          tierApplied: product.corporatePricing.priceTiers?.find(tier => 
+            item.quantity >= tier.minQuantity && (!tier.maxQuantity || item.quantity <= tier.maxQuantity)
+          )
+        } : null
+      };
+    });
+
+    // Cart summary
+    const summary = {
+      totalItems,
+      totalAmount: Math.round(totalAmount * 100) / 100, // Round to 2 decimal places
+      userType,
+      hasUnavailableItems: enhancedItems.some(item => !item.availability.valid),
+      hasPriceChanges: enhancedItems.some(item => item.priceChanged)
+    };
+
+    res.status(200).json({ 
+      items: enhancedItems,
+      summary
+    });
   } catch (error) {
     console.error('Get cart error:', error);
     res.status(500).json({ error: 'Failed to fetch cart' });

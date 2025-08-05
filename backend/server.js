@@ -15,35 +15,14 @@ const addressRoutes = require('./src/routes/addressRoutes');
 const corporateRoutes = require('./src/routes/corporateRoutes');
 const trackOrderRoutes = require('./src/routes/trackOrderRoutes');
 const categoryRoutes = require('./src/routes/categoryRoutes');
-const subcategoryRoutes = require('./src/routes/subcategoryRoutes');
 const uploadRoutes = require('./src/routes/uploadRoutes');
-const testRoutes = require('./src/routes/testRoutes');
-const pageRoutes = require('./src/routes/pageRoutes');
-
-// Import new admin module
-const Admin = require('./src/admin');
 
 
 dotenv.config();
-
-// Test crypto utility at startup
-console.log('🧪 Testing crypto utility at startup...');
-try {
-  const { encryptData, decryptData } = require('./src/utils/cryptoUtil');
-  const testData = { test: 'startup' };
-  const encrypted = encryptData(testData);
-  const decrypted = decryptData(encrypted);
-  console.log('✅ Crypto utility working at startup');
-  console.log('🔑 Environment key available:', !!process.env.ENCRYPTION_KEY);
-  console.log('🔑 Environment key length:', process.env.ENCRYPTION_KEY?.length || 0);
-} catch (startupError) {
-  console.error('❌ Crypto utility failed at startup:', startupError.message);
-}
-
 const app = express();
 connectDB();
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002'], 
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001'], 
   credentials: true
 }));
 
@@ -55,15 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Request logging middleware for debugging
 app.use((req, res, next) => {
-  console.log(`🌐 REQUEST: ${req.method} ${req.path} - Origin: ${req.get('Origin')}`);
-  console.log(`🌐 Body size:`, req.body ? JSON.stringify(req.body).length : 0);
-  if (req.path.includes('/auth/')) {
-    console.log('🔐 AUTH REQUEST DETECTED:', req.body);
-  }
+  console.log(`${req.method} ${req.path} - Origin: ${req.get('Origin')}`);
   next();
 });
 
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/otp', otpRoutes);
@@ -76,29 +51,12 @@ app.use('/api/address', addressRoutes);
 app.use('/api/corporate', corporateRoutes);
 app.use('/api', trackOrderRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/subcategories', subcategoryRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/test', testRoutes);
-app.use('/api', pageRoutes);
-
-// Initialize new admin module
-Admin.initializeAdmin(app);
-console.log('🔧 New admin module initialized');
-
-// Legacy admin routes (if still needed)
-// app.use('/api/admin', require('./src/routes/admin/adminRoutes'));
 
 
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
-
-// Test route for debugging
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'API test successful', timestamp: new Date().toISOString() });
-});
-
-// Routes (added later)
 
 
 
