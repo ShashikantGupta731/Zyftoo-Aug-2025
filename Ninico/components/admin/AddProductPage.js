@@ -120,8 +120,10 @@ export default function AddProductPage({ onNavigate }) {
   // API base URL - try different ports/hosts for development
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
   
-  // Update the hardcoded admin token to match the one from PagesManagement
-  const ADMIN_TOKEN = 'U2FsdGVkX18YWqEj2QhAhtAp15KTqf6o817sd2ZD4AanGs2Xe9iC50XdYlcTjtaK9LP4QqdIObHXWpWTHQUDvmAr7LXOtMOOL9Xh1360onC3w3DX3WxEzxzsyqkXbu7knGmwx6DLfzoxc7/hQrBbPF5zj+bTk0Gh5vifwuc0BLD3QcEa1zZhSq0AqFOWDX9759cA/TTbw/bg4yZiADLuP8eiNlYISnTr3/IsIbJbxCCQRop0e7P2OfwLkzEKB9z+N7GgtxHmTOf3l5SCahkOCGbLFTrLlK6peH/SLpMLj0Dxgy+PrMTxsYik12PS1DXymouwgf3EbKK6laeJTaVy0vZDquOj37K2WAoZeOkJTj6mNm4UMkiVHTBufMIbf0FwJ/obuUSQYsdcFjHu7WNylrn1PfIPICuv6gu8Tp2cuJuVvXIr63p2lyKhUKaQHUAx1hnLe8l/EUTSYlboZ/WqOngt3kHhfYv9OsQnlJn2DKBtFoAVUN7fr0wqXw2QoHQFyC1M9jSyAKrQheO025A4Vq3ze6M235NriffBUZ8NMf3c47LVOY8jejUsib1yK0up'
+  // Get admin token from localStorage
+  const getAdminToken = () => {
+    return localStorage.getItem('adminToken') || localStorage.getItem('authToken') || ''
+  }
 
   // Utility function to format hierarchical category names
   const formatCategoryHierarchy = (category) => {
@@ -137,14 +139,16 @@ export default function AddProductPage({ onNavigate }) {
       setCategoriesLoading(true)
       console.log('Fetching categories from:', `${API_BASE_URL}/categories`)
       
-      // Temporarily store admin token to ensure it's available
-      localStorage.setItem('authToken', ADMIN_TOKEN)
+      const token = getAdminToken()
+      if (!token) {
+        throw new Error('No admin token found. Please login again.')
+      }
       
       const response = await fetch(`${API_BASE_URL}/categories`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ADMIN_TOKEN}`
+          'Authorization': `Bearer ${token}`
         },
         credentials: 'include'
       })
@@ -207,11 +211,16 @@ export default function AddProductPage({ onNavigate }) {
       setSubcategoriesLoading(true)
       console.log('Fetching subcategories from:', `${API_BASE_URL}/subcategories`)
       
+      const token = getAdminToken()
+      if (!token) {
+        throw new Error('No admin token found. Please login again.')
+      }
+      
       const response = await fetch(`${API_BASE_URL}/subcategories`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ADMIN_TOKEN}`
+          'Authorization': `Bearer ${token}`
         },
         credentials: 'include'
       })
@@ -279,6 +288,12 @@ export default function AddProductPage({ onNavigate }) {
     setError('')
     
     try {
+      // Get the current admin token
+      const currentToken = getAdminToken()
+      if (!currentToken) {
+        throw new Error('No admin token found. Please login again.')
+      }
+
       // Validate required fields
       if (!formData.name.trim()) {
         throw new Error('Product name is required')
@@ -406,19 +421,19 @@ export default function AddProductPage({ onNavigate }) {
       
       console.log('Submitting product data:', productData)
       
-      // Send to backend API
-      console.log(' DEBUG: Token being sent:', ADMIN_TOKEN)
-      console.log('🔍 DEBUG: Token length:', ADMIN_TOKEN.length)
+      // Send to backend API with dynamic token
+      console.log('🔍 DEBUG: Token being sent:', currentToken.substring(0, 20) + '...')
+      console.log('🔍 DEBUG: Token length:', currentToken.length)
       console.log('🔍 DEBUG: Headers being sent:', {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ADMIN_TOKEN}`
+        'Authorization': `Bearer ${currentToken}`
       })
 
       const response = await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ADMIN_TOKEN}`
+          'Authorization': `Bearer ${currentToken}`
         },
         body: JSON.stringify(productData)
       })
@@ -882,6 +897,13 @@ export default function AddProductPage({ onNavigate }) {
     setError(''); // Clear previous errors
     setUploadingImages(prev => ({ ...prev, [field]: true }));
 
+    const token = getAdminToken()
+    if (!token) {
+      setError('No admin token found. Please login again.')
+      setUploadingImages(prev => ({ ...prev, [field]: false }))
+      return
+    }
+
     // Validate files
     const maxSize = 10 * 1024 * 1024; // 10MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -911,7 +933,7 @@ export default function AddProductPage({ onNavigate }) {
           
           const res = await fetch(`${API_BASE_URL}/upload/product-images`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+            headers: { 'Authorization': `Bearer ${token}` },
             body: formDataObj
           });
           
@@ -952,7 +974,7 @@ export default function AddProductPage({ onNavigate }) {
         
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+          headers: { 'Authorization': `Bearer ${token}` },
           body: formDataObj
         });
         
