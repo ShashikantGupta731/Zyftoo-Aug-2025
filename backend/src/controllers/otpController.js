@@ -32,27 +32,42 @@ const sendOTPEmail = async (email, otp, purpose) => {
 exports.sendOtp = async (req, res) => {
   try {
     console.log('📲 OTP send request received');
-    console.log('🔓 Decrypting OTP send data...');
+    console.log('📦 Request body:', req.body);
     
-    const decryptedData = decryptData(req.body.encryptedData);
-    const { phone, email, purpose, userType } = decryptedData;
+    // ✅ UPDATE: Expect decrypted data directly
+    // Since middleware has already decrypted the data
+    const { phone, email, purpose, userType } = req.body;
+    
+    // Validate required fields
+    if (!purpose) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Purpose is required' 
+      });
+    }
 
     console.log(`📲 OTP send request for ${email ? `email: ${email}` : `phone: ${phone}`} purpose: ${purpose} userType: ${userType || 'Individual'}`);
 
     // Validate based on userType
     if (userType === 'Corporate') {
       if (!email) {
-        return res.status(400).json({ message: 'Email is required for Corporate users' });
+        return res.status(400).json({ 
+          success: false,
+          message: 'Email is required for Corporate users' 
+        });
       }
     } else {
       if (!phone) {
-        return res.status(400).json({ message: 'Phone is required for Individual users' });
+        return res.status(400).json({ 
+          success: false,
+          message: 'Phone is required for Individual users' 
+        });
       }
     }
 
     // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log(`📲 Generating OTP for ${email || phone} with purpose: ${purpose}`);
+    const otpCode = generateOTP();
+    console.log(`📲 Generated OTP: ${otpCode} for ${email || phone}`);
 
     // Create OTP record
     const otpData = {
@@ -78,29 +93,12 @@ exports.sendOtp = async (req, res) => {
     // Send OTP via appropriate channel
     if (userType === 'Corporate' && email) {
       // Send OTP via email for corporate users
-      console.log(`📧 OTP for ${email}: ${otpCode}`);
-      
-      const subject = purpose === 'signup' ? 'Verify Your Corporate Registration' : 'Password Reset OTP';
-      const html = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Your OTP Code</h2>
-          <p>Your verification code is:</p>
-          <div style="background: #f8f9fa; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0;">
-            ${otpCode}
-          </div>
-          <p>This code will expire in 5 minutes.</p>
-          <p>If you didn't request this, please ignore this email.</p>
-        </div>
-      `;
-
-      await sendEmail({
-        to: email,
-        subject,
-        html
-      });
+      console.log(`📧 Sending OTP to email: ${email}`);
+      await sendOTPEmail(email, otpCode, purpose);
     } else if (phone) {
       // Send OTP via SMS for individual users (for now just log it)
-      console.log(`📲 OTP for ${phone}: ${otpCode}`);
+      console.log(`📲 OTP for phone ${phone}: ${otpCode}`);
+      // TODO: Implement SMS sending
     }
 
     res.json({
@@ -112,17 +110,29 @@ exports.sendOtp = async (req, res) => {
 
   } catch (error) {
     console.error('❌ Send OTP error:', error);
-    res.status(500).json({ message: error.message });
+    console.error('❌ Error stack:', error.stack);
+    res.status(500).json({ 
+      success: false,
+      message: error.message || 'Failed to send OTP'
+    });
   }
 };
 
 exports.verifyOtp = async (req, res) => {
   try {
     console.log('🔍 Verifying OTP...');
-    console.log('🔓 Decrypting OTP verification data...');
+    console.log('📦 Request body:', req.body);
     
-    const decryptedData = decryptData(req.body.encryptedData);
-    const { phone, email, otp, purpose, userType } = decryptedData;
+    // ✅ UPDATE: Expect decrypted data directly
+    const { phone, email, otp, purpose, userType } = req.body;
+    
+    // Validate required fields
+    if (!otp || !purpose) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'OTP and purpose are required' 
+      });
+    }
 
     console.log(`✅ OTP verification for ${email ? `email: ${email}` : `phone: ${phone}`} purpose: ${purpose}`);
 
@@ -149,8 +159,18 @@ exports.verifyOtp = async (req, res) => {
       });
     }
 
+    // Check if OTP is expired (5 minutes)
+    const otpAge = Date.now() - otpRecord.createdAt.getTime();
+    if (otpAge > 5 * 60 * 1000) {
+      await OTP.deleteOne({ _id: otpRecord._id });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'OTP has expired' 
+      });
+    }
+
     // OTP is valid
-    console.log(`✅ OTP verified for ${email || phone} with purpose: ${purpose || 'signup'}`);
+    console.log(`✅ OTP verified successfully for ${email || phone}`);
 
     // Don't delete OTP here as it might be needed by the registration process
     // It will be deleted after successful registration
@@ -164,8 +184,7 @@ exports.verifyOtp = async (req, res) => {
     console.error('❌ Verify OTP error:', error);
     res.status(500).json({ 
       success: false, 
-      message: error.message 
+      message: error.message || 'OTP verification failed'
     });
   }
 };
-

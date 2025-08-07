@@ -13,12 +13,28 @@ export default function AddProductPage({ onNavigate }) {
     short_description: '',
     description: '',
 
-    // Pricing
+    // Legacy Pricing (kept for backward compatibility)
     price: '',
     compare_price: '',
     cost_price: '',
     sale_price: '',
     discount: '',
+
+    // New Retail Pricing Structure
+    retailPrice: {
+      mrp: '',
+      sellingPrice: '',
+      discount: 0,
+      currency: 'INR'
+    },
+
+    // Corporate Pricing
+    corporatePricing: {
+      enabled: false,
+      minimumOrderQuantity: 1,
+      priceTiers: [],
+      customQuoteThreshold: null
+    },
 
     // Inventory
     sku: '',
@@ -31,9 +47,17 @@ export default function AddProductPage({ onNavigate }) {
     available_from: '',
     available_to: '',
 
+    // Product Variations
+    variations: [],
+
     // Categories & Tags
     categories: [],
     tags: [],
+
+    // Product Relations
+    related_products: [],
+    cross_sell_products: [],
+    is_random_related_products: false,
 
     // Images
     images: [],
@@ -58,6 +82,16 @@ export default function AddProductPage({ onNavigate }) {
     is_trending: false,
     is_return: false,
     status: true,
+
+    // New Business Features
+    safe_checkout: true,
+    secure_checkout: true,
+    social_share: true,
+    encourage_order: false,
+    encourage_view: false,
+
+    // Corporate Features
+    is_corporate_only: false
   })
 
   // Refs for file inputs
@@ -69,15 +103,27 @@ export default function AddProductPage({ onNavigate }) {
     product_meta_image_id: useRef(),
   }
 
-  // Sample categories with subcategories - will be replaced with API data
+  // Remove the duplicate state variables and keep only these:
   const [availableCategories, setAvailableCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedSubcategories, setSelectedSubcategories] = useState([])
+
+  // Add state for subcategories
+  const [subcategories, setSubcategories] = useState([])
+  const [subcategoriesLoading, setSubcategoriesLoading] = useState(false)
+
+  // Remove these duplicate lines:
+  // const [categories, setCategories] = useState([]); // Main categories
+  // const [subcategories, setSubcategories] = useState([]); // Subcategories
 
   // API base URL - try different ports/hosts for development
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
   
-  // Hardcoded admin token for testing
-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzI4MTMyMCwiZXhwIjoxNzUzODg2MTIwfQ.3wEx7ZCDvYtUQppFM9CcXjhG1zTQX9_RYY_dy3Y6MZs'
+  // Get admin token from localStorage
+  const getAdminToken = () => {
+    return localStorage.getItem('adminToken') || localStorage.getItem('authToken') || ''
+  }
 
   // Utility function to format hierarchical category names
   const formatCategoryHierarchy = (category) => {
@@ -87,16 +133,22 @@ export default function AddProductPage({ onNavigate }) {
     return `${category.parent.name} > ${category.name}`
   }
 
-  // Fetch categories from backend
+  // Fetch categories from backend (updated version)
   const fetchCategories = async () => {
     try {
       setCategoriesLoading(true)
       console.log('Fetching categories from:', `${API_BASE_URL}/categories`)
+      
+      const token = getAdminToken()
+      if (!token) {
+        throw new Error('No admin token found. Please login again.')
+      }
+      
       const response = await fetch(`${API_BASE_URL}/categories`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ADMIN_TOKEN}`
+          'Authorization': `Bearer ${token}`
         },
         credentials: 'include'
       })
@@ -108,30 +160,41 @@ export default function AddProductPage({ onNavigate }) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       
-      const data = await response.json()
-      console.log('Fetched categories:', data)
+      const responseData = await response.json()
+      console.log('Fetched categories response:', responseData)
       
-      // Sort categories to show main categories first, then subcategories
-      const sortedCategories = data.sort((a, b) => {
-        // Main categories first
-        if (!a.parent && b.parent) return -1
-        if (a.parent && !b.parent) return 1
-        
-        // Within same level, sort alphabetically
-        if (!a.parent && !b.parent) {
-          return a.name.localeCompare(b.name)
+      // Handle different response formats like in CategoriesPage.js
+      let categoriesData = []
+      if (responseData.success && Array.isArray(responseData.data)) {
+        categoriesData = responseData.data
+      } else if (Array.isArray(responseData)) {
+        categoriesData = responseData
+      } else if (responseData && typeof responseData === 'object') {
+        // Handle case where data might be wrapped in another object
+        console.warn('Categories data is not an array, attempting to extract array from object:', responseData)
+        if (Array.isArray(responseData.categories)) {
+          categoriesData = responseData.categories
+        } else if (Array.isArray(responseData.data)) {
+          categoriesData = responseData.data
+        } else {
+          throw new Error('Categories data is not in expected format')
         }
-        
-        // For subcategories, sort by parent name first, then by subcategory name
-        if (a.parent && b.parent) {
-          const parentCompare = (a.parent.name || '').localeCompare(b.parent.name || '')
-          if (parentCompare !== 0) return parentCompare
-          return a.name.localeCompare(b.name)
-        }
-        
-        return 0
-      })
+      } else {
+        throw new Error('Categories data is not an array or object')
+      }
       
+      console.log('Processed categories data:', categoriesData)
+      console.log('Categories data type:', typeof categoriesData, 'Is array:', Array.isArray(categoriesData))
+      
+      // Ensure categoriesData is an array before sorting
+      if (!Array.isArray(categoriesData)) {
+        throw new Error('Categories data is not an array after processing')
+      }
+      
+      // Sort categories alphabetically
+      const sortedCategories = categoriesData.sort((a, b) => a.name.localeCompare(b.name))
+      
+      console.log('Sorted categories:', sortedCategories)
       setAvailableCategories(sortedCategories)
       setError('')
     } catch (err) {
@@ -142,9 +205,63 @@ export default function AddProductPage({ onNavigate }) {
     }
   }
 
-  // Load categories on component mount
+  // Fetch subcategories from backend
+  const fetchSubcategories = async () => {
+    try {
+      setSubcategoriesLoading(true)
+      console.log('Fetching subcategories from:', `${API_BASE_URL}/subcategories`)
+      
+      const token = getAdminToken()
+      if (!token) {
+        throw new Error('No admin token found. Please login again.')
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/subcategories`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        credentials: 'include'
+      })
+      
+      console.log('Subcategories response status:', response.status)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      const responseData = await response.json()
+      console.log('Fetched subcategories response:', responseData)
+      
+      let subcategoriesData = []
+      if (responseData.success && Array.isArray(responseData.data)) {
+        subcategoriesData = responseData.data
+      } else if (Array.isArray(responseData)) {
+        subcategoriesData = responseData
+      } else {
+        throw new Error('Subcategories data is not in expected format')
+      }
+      
+      console.log('Processed subcategories data:', subcategoriesData)
+      
+      // Sort subcategories alphabetically
+      const sortedSubcategories = subcategoriesData.sort((a, b) => a.name.localeCompare(b.name))
+      
+      console.log('Sorted subcategories:', sortedSubcategories)
+      setSubcategories(sortedSubcategories)
+    } catch (err) {
+      console.error('Fetch subcategories error:', err)
+      setError('Failed to load subcategories: ' + err.message)
+    } finally {
+      setSubcategoriesLoading(false)
+    }
+  }
+
+  // Update the useEffect to fetch both categories and subcategories
   useEffect(() => {
     fetchCategories()
+    fetchSubcategories()
   }, [])
 
   const handleInputChange = (e) => {
@@ -171,6 +288,12 @@ export default function AddProductPage({ onNavigate }) {
     setError('')
     
     try {
+      // Get the current admin token
+      const currentToken = getAdminToken()
+      if (!currentToken) {
+        throw new Error('No admin token found. Please login again.')
+      }
+
       // Validate required fields
       if (!formData.name.trim()) {
         throw new Error('Product name is required')
@@ -181,57 +304,136 @@ export default function AddProductPage({ onNavigate }) {
       if (!formData.price || formData.price <= 0) {
         throw new Error('Valid price is required')
       }
-      if (!formData.categories || formData.categories.length === 0) {
+      if (!selectedCategory) {
         throw new Error('Please select at least one category')
       }
       
-      // Prepare product data for backend
+      // Prepare product data for backend - structured to match createProduct expectations
       const productData = {
         // Basic Info
         name: formData.name.trim(),
         description: formData.description.trim(),
         short_description: formData.short_description.trim(),
         
-        // Pricing & Inventory
+        // Legacy Pricing (required for backward compatibility)
         price: parseFloat(formData.price),
-        sku: formData.sku.trim() || undefined,
-        quantity: formData.track_quantity ? parseInt(formData.quantity) || 0 : null,
+        compare_price: formData.compare_price ? parseFloat(formData.compare_price) : null,
+        cost_price: formData.cost_price ? parseFloat(formData.cost_price) : null,
+        sale_price: formData.sale_price ? parseFloat(formData.sale_price) : null,
+        discount: formData.discount || null,
+        
+        // New Retail Pricing Structure
+        retailPrice: {
+          mrp: formData.retailPrice.mrp || parseFloat(formData.price),
+          sellingPrice: formData.retailPrice.sellingPrice || parseFloat(formData.price),
+          discount: formData.retailPrice.discount || 0,
+          currency: formData.retailPrice.currency || 'INR'
+        },
+        
+        // Corporate Pricing Structure
+        corporatePricing: {
+          enabled: formData.corporatePricing.enabled || false,
+          minimumOrderQuantity: formData.corporatePricing.minimumOrderQuantity || 1,
+          priceTiers: formData.corporatePricing.priceTiers || [],
+          customQuoteThreshold: formData.corporatePricing.customQuoteThreshold || null
+        },
+        
+        // Corporate Specific
+        is_corporate_only: formData.is_corporate_only || false,
+        
+        // Inventory
+        sku: formData.sku.trim() || null,
+        quantity: formData.track_quantity ? parseInt(formData.quantity) || 0 : 0,
         stock_status: formData.track_quantity ? (parseInt(formData.quantity) > 0 ? 'in_stock' : 'out_of_stock') : 'in_stock',
+        type: formData.type || 'simple',
+        unit: formData.unit || null,
+        weight: formData.requires_shipping ? parseFloat(formData.weight) || null : null,
+        requires_shipping: formData.requires_shipping,
+        available_from: formData.available_from || null,
+        available_to: formData.available_to || null,
         
-        // Categories (MongoDB ObjectIds)
-        categories: formData.categories.filter(Boolean),
+        // Product Variations
+        variations: formData.variations || [],
         
-        // Images - include all uploaded images
+        // Categories & Tags - Combine selected category and subcategories
+        categories: [selectedCategory, ...selectedSubcategories].filter(Boolean),
+        tags: formData.tags || [],
+        
+        // Product Relations
+        related_products: formData.related_products || [],
+        cross_sell_products: formData.cross_sell_products || [],
+        is_random_related_products: formData.is_random_related_products || false,
+        
+        // Images
         images: formData.images || [],
         product_thumbnail_id: formData.product_thumbnail_id || null,
         product_galleries_id: formData.product_galleries_id || [],
         size_chart_image_id: formData.size_chart_image_id || null,
         product_meta_image_id: formData.product_meta_image_id || null,
         
-        // Shipping & Tax
-        weight: formData.requires_shipping ? parseFloat(formData.weight) || null : null,
-        tax_id: formData.tax_id && formData.tax_id !== '' && formData.tax_id !== 'tax1' ? formData.tax_id : null,
-        
-        // SEO & Settings
+        // SEO
         meta_title: formData.meta_title.trim() || formData.name.trim(),
         meta_description: formData.meta_description.trim(),
         
-        // Product type and status
-        type: 'simple', // Default to simple product type
-        status: formData.status,
-        is_featured: formData.is_featured,
-        is_popular: formData.is_popular,
-        is_trending: formData.is_trending
+        // Shipping & Tax
+        is_free_shipping: formData.is_free_shipping || false,
+        tax_id: formData.tax_id && formData.tax_id !== '' && formData.tax_id !== 'tax1' ? formData.tax_id : null,
+        estimated_delivery_text: formData.estimated_delivery_text || null,
+        return_policy_text: formData.return_policy_text || null,
+        
+        // Flags
+        is_featured: formData.is_featured || false,
+        is_popular: formData.is_popular || false,
+        is_trending: formData.is_trending || false,
+        is_return: formData.is_return || false,
+        status: formData.status !== undefined ? formData.status : true,
+        
+        // Additional Business Features
+        safe_checkout: formData.safe_checkout !== undefined ? formData.safe_checkout : true,
+        secure_checkout: formData.secure_checkout !== undefined ? formData.secure_checkout : true,
+        social_share: formData.social_share !== undefined ? formData.social_share : true,
+        encourage_order: formData.encourage_order || false,
+        encourage_view: formData.encourage_view || false,
+        
+        // Reviews & Ratings (defaults for new products)
+        reviews: [],
+        rating: 0,
+        numReviews: 0,
+        
+        // Sales Analytics (defaults for new products)
+        sales_count: 0,
+        
+        // Analytics (defaults for new products)
+        analytics: {
+          views: {
+            total: 0,
+            individual: 0,
+            corporate: 0,
+            anonymous: 0
+          },
+          lastViewed: null,
+          popularityScore: 0,
+          dailyViews: [],
+          weeklyViews: 0,
+          monthlyViews: 0
+        }
       }
       
       console.log('Submitting product data:', productData)
       
-      // Send to backend API
+      // Send to backend API with dynamic token
+      console.log('🔍 DEBUG: Token being sent:', currentToken.substring(0, 20) + '...')
+      console.log('🔍 DEBUG: Token length:', currentToken.length)
+      console.log('🔍 DEBUG: Headers being sent:', {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentToken}`
+      })
+
       const response = await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ADMIN_TOKEN}`
+          'Authorization': `Bearer ${currentToken}`
         },
         body: JSON.stringify(productData)
       })
@@ -416,7 +618,10 @@ export default function AddProductPage({ onNavigate }) {
             <div>{error}</div>
             <button 
               className="btn btn-outline-danger btn-sm ms-auto"
-              onClick={fetchCategories}
+              onClick={() => {
+                fetchCategories()
+                fetchSubcategories()
+              }}
             >
               Retry
             </button>
@@ -424,13 +629,13 @@ export default function AddProductPage({ onNavigate }) {
         </div>
       )}
       
-      {categoriesLoading ? (
+      {(categoriesLoading || subcategoriesLoading) ? (
         <div className="col-12">
           <div className="text-center p-4">
             <div className="spinner-border text-primary" role="status">
               <span className="visually-hidden">Loading categories...</span>
             </div>
-            <p className="mt-2 text-muted">Loading categories...</p>
+            <p className="mt-2 text-muted">Loading categories and subcategories...</p>
           </div>
         </div>
       ) : availableCategories.length === 0 ? (
@@ -451,88 +656,209 @@ export default function AddProductPage({ onNavigate }) {
         </div>
       ) : (
         <>
-          {/* Category Selection */}
-          <div className="col-md-6">
+          {/* Category Selection Section */}
+          <div className="col-md-8">
             <div className="card border-0 shadow-sm">
               <div className="card-header bg-light">
-                <h6 className="mb-0">Select Category</h6>
+                <h6 className="mb-0">
+                  <i className="bi bi-grid me-2"></i>
+                  Select Product Categories
+                </h6>
               </div>
               <div className="card-body">
-                <div className="mb-3">
-                  <label className="form-label">Categories *</label>
-                  <select
-                    className="form-select"
-                    multiple
-                    size="8"
-                    value={formData.categories}
-                    onChange={(e) => {
-                      const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
-                      setFormData(prev => ({
-                        ...prev,
-                        categories: selectedOptions
-                      }))
-                    }}
-                    required
-                  >
-                    {availableCategories.map(category => (
-                      <option key={category._id} value={category._id}>
-                        {formatCategoryHierarchy(category)}
-                        {category.description && ` - ${category.description}`}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="form-text">Hold Ctrl/Cmd to select multiple categories. Main categories and subcategories are both available.</div>
-                  
-                  {formData.categories.length > 0 && (
-                    <div className="mt-2">
-                      <small className="text-success">
-                        <i className="bi bi-check-circle me-1"></i>
-                        Selected {formData.categories.length} categories
-                      </small>
+                <div className="row">
+                  {/* Main Category Dropdown */}
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        <i className="bi bi-folder me-2"></i>
+                        Main Category *
+                      </label>
+                      <select
+                        className="form-select"
+                        value={selectedCategory}
+                        onChange={(e) => handleCategoryChange(e.target.value)}
+                        required
+                      >
+                        <option value="">Choose a main category...</option>
+                        {getMainCategories().map(category => (
+                          <option key={category._id} value={category._id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="form-text">Select the primary category for this product</div>
                     </div>
-                  )}
+                  </div>
+                  
+                  {/* Subcategory Dropdown */}
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label fw-semibold">
+                        <i className="bi bi-diagram-3 me-2"></i>
+                        Subcategory
+                      </label>
+                      <select
+                        className="form-select"
+                        value={selectedSubcategories[0] || ''}
+                        onChange={(e) => {
+                          const subcategoryId = e.target.value
+                          if (subcategoryId) {
+                            handleSubcategoryChange([subcategoryId])
+                          } else {
+                            handleSubcategoryChange([])
+                          }
+                        }}
+                        disabled={!selectedCategory}
+                      >
+                        <option value="">
+                          {selectedCategory ? 'Choose a subcategory...' : 'Select main category first'}
+                        </option>
+                        {selectedCategory && (() => {
+                          const subcategories = getSubcategoriesForCategory(selectedCategory);
+                          console.log('Subcategories for', selectedCategory, ':', subcategories);
+                          return subcategories.map(subcategory => (
+                            <option key={subcategory._id} value={subcategory._id}>
+                              {subcategory.name}
+                            </option>
+                          ));
+                        })()}
+                      </select>
+                      <div className="form-text">
+                        {selectedCategory 
+                          ? (() => {
+                              const subcategories = getSubcategoriesForCategory(selectedCategory);
+                              return subcategories.length > 0 
+                                ? 'Select a subcategory (optional)'
+                                : 'No subcategories available for this category';
+                            })()
+                          : 'Select a main category first'
+                        }
+                      </div>
+                    </div>
+                  </div>
                 </div>
+                
+                {/* Multiple Subcategories Section (if needed) */}
+                {selectedCategory && getSubcategoriesForCategory(selectedCategory).length > 1 && (
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="mb-3">
+                        <label className="form-label fw-semibold">
+                          <i className="bi bi-collection me-2"></i>
+                          Additional Subcategories (Optional)
+                        </label>
+                        <select
+                          className="form-select"
+                          multiple
+                          size="4"
+                          value={selectedSubcategories.slice(1)} // Exclude first selected subcategory
+                          onChange={(e) => {
+                            const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
+                            const firstSelected = selectedSubcategories[0] || ''
+                            handleSubcategoryChange([firstSelected, ...selectedOptions].filter(Boolean))
+                          }}
+                        >
+                          {getSubcategoriesForCategory(selectedCategory).map(subcategory => (
+                            <option key={subcategory._id} value={subcategory._id}>
+                              {subcategory.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="form-text">
+                          Hold Ctrl/Cmd to select multiple additional subcategories
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
           
-          {/* Selected Categories Display */}
-          <div className="col-md-6">
+          {/* Selected Categories Summary */}
+          <div className="col-md-4">
             <div className="card border-0 shadow-sm">
               <div className="card-header bg-light">
-                <h6 className="mb-0">Selected Categories</h6>
+                <h6 className="mb-0">
+                  <i className="bi bi-check-circle me-2"></i>
+                  Selected Categories
+                </h6>
               </div>
               <div className="card-body">
-                {formData.categories.length === 0 ? (
+                {!selectedCategory ? (
                   <div className="text-center py-4">
                     <i className="bi bi-grid text-muted" style={{ fontSize: '2rem' }}></i>
-                    <p className="text-muted mt-2 mb-0">No categories selected</p>
+                    <p className="text-muted mt-2 mb-0">No category selected</p>
                   </div>
                 ) : (
                   <div>
-                    <div className="d-flex flex-wrap gap-2">
-                      {formData.categories.map(categoryId => {
-                        const category = availableCategories.find(cat => cat._id === categoryId)
-                        if (!category) return null
-                        return (
-                          <div key={category._id} className="d-flex align-items-center p-2 bg-primary bg-opacity-10 rounded">
-                            {category.image?.url && (
-                              <img 
-                                src={category.image.url} 
-                                alt={category.name}
-                                className="rounded me-2"
-                                style={{ width: '24px', height: '24px', objectFit: 'cover' }}
-                              />
-                            )}
-                            <div>
-                              <div className="fw-semibold text-primary">{formatCategoryHierarchy(category)}</div>
-                              {category.description && (
-                                <small className="text-muted">{category.description}</small>
+                    {/* Selected Main Category */}
+                    <div className="mb-3">
+                      <h6 className="fw-semibold text-primary mb-2">Main Category</h6>
+                      <div className="d-flex align-items-center p-2 bg-primary bg-opacity-10 rounded">
+                        {(() => {
+                          const category = availableCategories.find(cat => cat._id === selectedCategory)
+                          return category ? (
+                            <>
+                              {category.image?.url && (
+                                <img 
+                                  src={category.image.url} 
+                                  alt={category.name}
+                                  className="rounded me-2"
+                                  style={{ width: '24px', height: '24px', objectFit: 'cover' }}
+                                />
                               )}
-                            </div>
-                          </div>
-                        )
-                      })}
+                              <div>
+                                <div className="fw-semibold text-primary">{category.name}</div>
+                                {category.description && (
+                                  <small className="text-muted">{category.description}</small>
+                                )}
+                              </div>
+                            </>
+                          ) : null
+                        })()}
+                      </div>
+                    </div>
+                    
+                    {/* Selected Subcategories */}
+                    {selectedSubcategories.length > 0 && (
+                      <div>
+                        <h6 className="fw-semibold text-success mb-2">Subcategories</h6>
+                        <div className="d-flex flex-column gap-2">
+                          {selectedSubcategories.map(subcategoryId => {
+                            const subcategory = availableCategories.find(subcat => subcat._id === subcategoryId)
+                            if (!subcategory) return null
+                            return (
+                              <div key={subcategory._id} className="d-flex align-items-center p-2 bg-success bg-opacity-10 rounded">
+                                {subcategory.image?.url && (
+                                  <img 
+                                    src={subcategory.image.url} 
+                                    alt={subcategory.name}
+                                    className="rounded me-2"
+                                    style={{ width: '20px', height: '20px', objectFit: 'cover' }}
+                                  />
+                                )}
+                                <div>
+                                  <div className="fw-semibold text-success">{subcategory.name}</div>
+                                  {subcategory.description && (
+                                    <small className="text-muted">{subcategory.description}</small>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Summary */}
+                    <div className="mt-3 pt-3 border-top">
+                      <small className="text-muted">
+                        <i className="bi bi-info-circle me-1"></i>
+                        Total: {selectedSubcategories.length + 1} category
+                        {selectedSubcategories.length > 0 && 'ies'}
+                      </small>
                     </div>
                   </div>
                 )}
@@ -545,7 +871,7 @@ export default function AddProductPage({ onNavigate }) {
             <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
               <div>
                 <h6 className="mb-1">Need to manage categories?</h6>
-                <small className="text-muted">Add, edit, or organize your product categories</small>
+                <small className="text-muted">Add, edit, or organize your product categories and subcategories</small>
               </div>
               <button 
                 type="button"
@@ -570,6 +896,13 @@ export default function AddProductPage({ onNavigate }) {
     console.log('Uploading images for field:', field, 'Files:', files.length);
     setError(''); // Clear previous errors
     setUploadingImages(prev => ({ ...prev, [field]: true }));
+
+    const token = getAdminToken()
+    if (!token) {
+      setError('No admin token found. Please login again.')
+      setUploadingImages(prev => ({ ...prev, [field]: false }))
+      return
+    }
 
     // Validate files
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -600,7 +933,7 @@ export default function AddProductPage({ onNavigate }) {
           
           const res = await fetch(`${API_BASE_URL}/upload/product-images`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+            headers: { 'Authorization': `Bearer ${token}` },
             body: formDataObj
           });
           
@@ -641,7 +974,7 @@ export default function AddProductPage({ onNavigate }) {
         
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${ADMIN_TOKEN}` },
+          headers: { 'Authorization': `Bearer ${token}` },
           body: formDataObj
         });
         
@@ -931,6 +1264,436 @@ export default function AddProductPage({ onNavigate }) {
     </div>
   )
 
+  const handleAddPriceTier = () => {
+    setFormData(prev => ({
+      ...prev,
+      corporatePricing: {
+        ...prev.corporatePricing,
+        priceTiers: [
+          ...(prev.corporatePricing.priceTiers || []),
+          { minQuantity: '', maxQuantity: '', pricePerUnit: '', discount: '', description: '' }
+        ]
+      }
+    }))
+  }
+
+  const handlePriceTierChange = (idx, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      corporatePricing: {
+        ...prev.corporatePricing,
+        priceTiers: prev.corporatePricing.priceTiers.map((tier, i) =>
+          i === idx ? { ...tier, [field]: value } : tier
+        )
+      }
+    }))
+  }
+
+  const handleRemovePriceTier = (idx) => {
+    setFormData(prev => ({
+      ...prev,
+      corporatePricing: {
+        ...prev.corporatePricing,
+        priceTiers: prev.corporatePricing.priceTiers.filter((_, i) => i !== idx)
+      }
+    }))
+  }
+
+  const renderCorporatePricingTab = () => (
+    <div className="row">
+      <div className="col-12 mb-4">
+        <div className="alert alert-info">
+          <i className="bi bi-info-circle me-2"></i>
+          <strong>Corporate Pricing:</strong> Configure bulk pricing for corporate customers. This allows you to offer different pricing tiers based on quantity.
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={formData.corporatePricing.enabled}
+              onChange={(e) => {
+                setFormData(prev => ({
+                  ...prev,
+                  corporatePricing: {
+                    ...prev.corporatePricing,
+                    enabled: e.target.checked
+                  }
+                }))
+              }}
+            />
+            <label className="form-check-label">Enable Corporate Pricing</label>
+          </div>
+          <div className="form-text">Allow corporate customers to see bulk pricing</div>
+        </div>
+      </div>
+      
+      {formData.corporatePricing.enabled && (
+        <>
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Minimum Order Quantity</label>
+              <input
+                type="number"
+                className="form-control"
+                value={formData.corporatePricing.minimumOrderQuantity}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    corporatePricing: {
+                      ...prev.corporatePricing,
+                      minimumOrderQuantity: parseInt(e.target.value) || 1
+                    }
+                  }))
+                }}
+                min="1"
+              />
+            </div>
+          </div>
+          
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">Custom Quote Threshold</label>
+              <input
+                type="number"
+                className="form-control"
+                value={formData.corporatePricing.customQuoteThreshold || ''}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    corporatePricing: {
+                      ...prev.corporatePricing,
+                      customQuoteThreshold: e.target.value ? parseInt(e.target.value) : null
+                    }
+                  }))
+                }}
+                placeholder="Quantity above which to show 'Request Quote'"
+              />
+              <div className="form-text">Leave empty for no threshold</div>
+            </div>
+          </div>
+          
+          <div className="col-12">
+            <div className="mb-3">
+              <label className="form-label">Price Tiers</label>
+              <div className="card">
+                <div className="card-body">
+                  <p className="text-muted mb-3">Configure pricing tiers for different quantities</p>
+                  {(formData.corporatePricing.priceTiers || []).map((tier, idx) => (
+                    <div key={idx} className="row align-items-end mb-2">
+                      <div className="col-2">
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Min Qty"
+                          value={tier.minQuantity}
+                          onChange={e => handlePriceTierChange(idx, 'minQuantity', e.target.value)}
+                          min="1"
+                        />
+                      </div>
+                      <div className="col-2">
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Max Qty"
+                          value={tier.maxQuantity}
+                          onChange={e => handlePriceTierChange(idx, 'maxQuantity', e.target.value)}
+                          min="1"
+                        />
+                      </div>
+                      <div className="col-2">
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Price/Unit"
+                          value={tier.pricePerUnit}
+                          onChange={e => handlePriceTierChange(idx, 'pricePerUnit', e.target.value)}
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                      <div className="col-2">
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Discount (%)"
+                          value={tier.discount}
+                          onChange={e => handlePriceTierChange(idx, 'discount', e.target.value)}
+                          min="0"
+                          max="100"
+                          step="0.01"
+                        />
+                      </div>
+                      <div className="col-3">
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Description"
+                          value={tier.description}
+                          onChange={e => handlePriceTierChange(idx, 'description', e.target.value)}
+                        />
+                      </div>
+                      <div className="col-1">
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleRemovePriceTier(idx)}
+                          title="Remove"
+                        >
+                          <i className="bi bi-x"></i>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="text-center py-3">
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={handleAddPriceTier}
+                    >
+                      <i className="bi bi-plus-circle me-2"></i>
+                      Add Price Tier
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="is_corporate_only"
+              checked={formData.is_corporate_only}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Corporate Only Product</label>
+          </div>
+          <div className="form-text">This product is only available to corporate customers</div>
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderProductVariationsTab = () => (
+    <div className="row">
+      <div className="col-12 mb-4">
+        <div className="alert alert-info">
+          <i className="bi bi-info-circle me-2"></i>
+          <strong>Product Variations:</strong> Create different versions of this product (e.g., different sizes, colors, materials).
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <label className="form-label">Product Type</label>
+          <select
+            className="form-select"
+            name="type"
+            value={formData.type}
+            onChange={handleInputChange}
+          >
+            <option value="simple">Simple Product</option>
+            <option value="variable">Variable Product</option>
+            <option value="grouped">Grouped Product</option>
+          </select>
+          <div className="form-text">Simple: Single product. Variable: Multiple variations. Grouped: Multiple products sold together.</div>
+        </div>
+      </div>
+      
+      {formData.type === 'variable' && (
+        <div className="col-12">
+          <div className="card">
+            <div className="card-header">
+              <h6 className="mb-0">Product Variations</h6>
+            </div>
+            <div className="card-body">
+              <p className="text-muted">Variations will be implemented here</p>
+              <div className="text-center py-3">
+                <button type="button" className="btn btn-outline-primary btn-sm">
+                  <i className="bi bi-plus-circle me-2"></i>
+                  Add Variation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  const renderProductRelationsTab = () => (
+    <div className="row">
+      <div className="col-12 mb-4">
+        <div className="alert alert-info">
+          <i className="bi bi-info-circle me-2"></i>
+          <strong>Product Relations:</strong> Link related products and cross-sell items to increase sales.
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <label className="form-label">Related Products</label>
+          <select
+            className="form-select"
+            multiple
+            size="6"
+            value={formData.related_products}
+            onChange={(e) => {
+              const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
+              setFormData(prev => ({
+                ...prev,
+                related_products: selectedOptions
+              }))
+            }}
+          >
+            <option value="" disabled>Select related products...</option>
+            {/* Product options will be loaded here */}
+          </select>
+          <div className="form-text">Products that customers might also be interested in</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <label className="form-label">Cross-Sell Products</label>
+          <select
+            className="form-select"
+            multiple
+            size="6"
+            value={formData.cross_sell_products}
+            onChange={(e) => {
+              const selectedOptions = Array.from(e.target.selectedOptions, option => option.value)
+              setFormData(prev => ({
+                ...prev,
+                cross_sell_products: selectedOptions
+              }))
+            }}
+          >
+            <option value="" disabled>Select cross-sell products...</option>
+            {/* Product options will be loaded here */}
+          </select>
+          <div className="form-text">Products to suggest during checkout</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="is_random_related_products"
+              checked={formData.is_random_related_products}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Show Random Related Products</label>
+          </div>
+          <div className="form-text">Display random related products instead of fixed ones</div>
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderBusinessFeaturesTab = () => (
+    <div className="row">
+      <div className="col-12 mb-4">
+        <div className="alert alert-info">
+          <i className="bi bi-info-circle me-2"></i>
+          <strong>Business Features:</strong> Configure checkout experience and social sharing options.
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="safe_checkout"
+              checked={formData.safe_checkout}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Safe Checkout</label>
+          </div>
+          <div className="form-text">Display safe checkout badges</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="secure_checkout"
+              checked={formData.secure_checkout}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Secure Checkout</label>
+          </div>
+          <div className="form-text">Display secure checkout indicators</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="social_share"
+              checked={formData.social_share}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Enable Social Sharing</label>
+          </div>
+          <div className="form-text">Allow customers to share this product</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="encourage_order"
+              checked={formData.encourage_order}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Encourage Order</label>
+          </div>
+          <div className="form-text">Show urgency messages to encourage purchase</div>
+        </div>
+      </div>
+      
+      <div className="col-md-6">
+        <div className="mb-3">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="encourage_view"
+              checked={formData.encourage_view}
+              onChange={handleInputChange}
+            />
+            <label className="form-check-label">Encourage View</label>
+          </div>
+          <div className="form-text">Show messages to encourage product viewing</div>
+        </div>
+      </div>
+    </div>
+  )
+
   const renderShippingTab = () => (
     <div className="row">
       <div className="col-12">
@@ -1087,14 +1850,57 @@ export default function AddProductPage({ onNavigate }) {
     </div>
   )
 
+  // Update the helper functions
+  const getMainCategories = () => {
+    return availableCategories.filter(cat => !cat.parent);
+  };
 
+  const getSubcategoriesForCategory = (parentId) => {
+    console.log('Looking for subcategories of parent:', parentId);
+    console.log('Available subcategories:', subcategories);
+    
+    const subcategoriesForCategory = subcategories.filter(subcat => {
+      // Handle different parent field formats
+      if (subcat.parent) {
+        // Case 1: parent is an object with _id
+        if (typeof subcat.parent === 'object' && subcat.parent._id) {
+          return subcat.parent._id === parentId;
+        }
+        // Case 2: parent is a string ID
+        else if (typeof subcat.parent === 'string') {
+          return subcat.parent === parentId;
+        }
+        // Case 3: parent is an object with id (lowercase)
+        else if (typeof subcat.parent === 'object' && subcat.parent.id) {
+          return subcat.parent.id === parentId;
+        }
+      }
+      return false;
+    });
+    
+    console.log('Found subcategories for category:', parentId, ':', subcategoriesForCategory);
+    return subcategoriesForCategory;
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setSelectedSubcategories([]); // Clear subcategories when main category changes
+  };
+
+  const handleSubcategoryChange = (subcategoryIds) => {
+    setSelectedSubcategories(subcategoryIds);
+  };
 
   const tabs = [
     { id: 'basic', label: 'Basic Info', icon: 'bi-info-circle' },
     { id: 'pricing', label: 'Pricing & Inventory', icon: 'bi-currency-dollar' },
+    { id: 'corporate', label: 'Corporate Pricing', icon: 'bi-building' },
     { id: 'categories', label: 'Categories', icon: 'bi-grid' },
+    { id: 'variations', label: 'Variations', icon: 'bi-collection' },
+    { id: 'relations', label: 'Product Relations', icon: 'bi-link' },
     { id: 'images', label: 'Images', icon: 'bi-image' },
     { id: 'shipping', label: 'Shipping & Tax', icon: 'bi-truck' },
+    { id: 'business', label: 'Business Features', icon: 'bi-gear' },
     { id: 'seo', label: 'SEO & Settings', icon: 'bi-search' }
   ]
 
@@ -1105,6 +1911,27 @@ export default function AddProductPage({ onNavigate }) {
     size_chart_image_id: '/upload/size-chart',
     product_meta_image_id: '/upload/meta-image'
   };
+
+  // Add this function to test the token
+  const testToken = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/test-token`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${ADMIN_TOKEN}`
+        }
+      })
+      const data = await response.json()
+      console.log('🧪 Token test result:', data)
+    } catch (error) {
+      console.error('🧪 Token test error:', error)
+    }
+  }
+
+  // Call this in useEffect to test
+  useEffect(() => {
+    testToken()
+  }, [])
 
   return (
     <div className="container-fluid">
@@ -1199,9 +2026,13 @@ export default function AddProductPage({ onNavigate }) {
               <div className="card-body">
                 {activeTab === 'basic' && renderBasicInfoTab()}
                 {activeTab === 'pricing' && renderPricingInventoryTab()}
+                {activeTab === 'corporate' && renderCorporatePricingTab()}
                 {activeTab === 'categories' && renderCategoriesTab()}
+                {activeTab === 'variations' && renderProductVariationsTab()}
+                {activeTab === 'relations' && renderProductRelationsTab()}
                 {activeTab === 'images' && renderImagesTab()}
                 {activeTab === 'shipping' && renderShippingTab()}
+                {activeTab === 'business' && renderBusinessFeaturesTab()}
                 {activeTab === 'seo' && renderSeoSettingsTab()}
               </div>
             </div>

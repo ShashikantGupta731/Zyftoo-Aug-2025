@@ -23,11 +23,33 @@ const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token if available
+    // Skip auth for auth endpoints (login, signup, etc.)
+    const isAuthEndpoint = config.url.includes('/auth/') || 
+                          config.url.includes('/adminlogin') ||
+                          config.url.includes('/login') ||
+                          config.url.includes('/signup');
+    
+    if (isAuthEndpoint) {
+      console.log('🔓 Skipping auth for endpoint:', config.url);
+      return config;
+    }
+
+    // Add auth token if available for non-auth endpoints
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      // For all non-auth requests, try to add token
+      const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('authToken')
+      
+      if (adminToken) {
+        config.headers.Authorization = `Bearer ${adminToken}`
+        console.log('� Token added to request:', config.url)
+        
+        // Add admin request header if this might be an admin operation
+        if (config.url.includes('/admin') || config.params?.adminView === 'true') {
+          config.headers['x-admin-request'] = 'true'
+          console.log('👨‍💼 Admin request header added')
+        }
+      } else {
+        console.warn('⚠️ No auth token found for request:', config.url)
       }
     }
     return config;
@@ -37,9 +59,35 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Response interceptor for error handling
+// Response interceptor for error handling and decryption
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Check if response is encrypted
+    if (response.data && typeof response.data === 'string' && response.data.startsWith('U2FsdGVk')) {
+      try {
+        console.log('🔐 Encrypted response detected, attempting decryption');
+        // Decrypt the response
+        const decryptedText = CryptoJS.AES.decrypt(
+          response.data,
+          ENCRYPTION_KEY
+        ).toString(CryptoJS.enc.Utf8);
+        
+        const decryptedData = JSON.parse(decryptedText);
+        console.log('🔓 Successfully decrypted response:', decryptedData);
+        
+        // Return decrypted data with encryption flag
+        return {
+          ...response,
+          data: decryptedData,
+          encryptedData: true
+        };
+      } catch (decryptError) {
+        console.error('❌ Failed to decrypt response:', decryptError);
+        return response;
+      }
+    }
+    return response;
+  },
   (error) => {
     // Handle common errors
     if (error.response?.status === 401) {
@@ -47,6 +95,7 @@ apiClient.interceptors.response.use(
       if (typeof window !== 'undefined') {
         localStorage.removeItem('authToken');
         sessionStorage.removeItem('authToken');
+        localStorage.removeItem('adminToken');
       }
     }
     return Promise.reject(error);
@@ -129,30 +178,32 @@ export const post = async (endpoint, payload = {}, encrypt = false, config = {})
       };
     }
 
+    console.log('🚀 Sending request to:', endpoint);
+    console.log('📦 Request payload:', requestData);
+
     const response = await apiClient.post(endpoint, requestData, config);
     
-    let responseData = response.data;
-    
-    // Decrypt response body if it exists and contains encrypted data
-    if (responseData.body && typeof responseData.body === 'string') {
-      try {
-        responseData.body = decryptData(responseData.body);
-      } catch (error) {
-        // If decryption fails, keep original data
-        console.warn('Failed to decrypt response body, using raw data');
-      }
+    console.log('✅ Response received:', response.data);
+
+    // For admin login, return the raw axios response to maintain compatibility
+    if (endpoint.includes('/adminlogin') || endpoint.includes('/auth/')) {
+      return response;
     }
 
+    // Handle both encrypted and unencrypted responses for other endpoints
+    const responseData = response.data;
+    
+    // If it was encrypted, response.encryptedData will be true
+    // and response.data will already be decrypted by the interceptor
     return {
-      data: responseData,
+      ...responseData,
       success: response.status >= 200 && response.status < 300,
-      status: response.status,
-      message: responseData.message
+      status: response.status
     };
   } catch (error) {
     console.error('POST request error:', error);
     throw {
-      data: null,
+      data: error.response?.data || null,
       success: false,
       status: error.response?.status || 500,
       message: error.response?.data?.message || error.message || 'Request failed'

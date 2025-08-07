@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1752833065399,
@@ -20,6 +20,18 @@
                 {
                     "date": 1753614088192,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   LOGIN: '/auth/login',\r\n   SIGNUP: '/auth/signup',\r\n   LOGOUT: '/auth/logout',\r\n   CHECK_USER: '/auth/check-user',\r\n+  CHECK_USER_EMAIL: '/auth/check-user-email',\r\n   RESET_PASSWORD: '/auth/reset-password',\r\n   REFRESH_TOKEN: '/auth/refresh-token'\r\n };\r\n \r\n"
+                },
+                {
+                    "date": 1753725076253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n };\r\n \r\n // Category endpoints\r\n export const CATEGORY = {\r\n-  GET_ALL: '/categories',\r\n+  GET_ALL: '/products/categories',\r\n   GET_BY_ID: '/categories',\r\n   CREATE: '/categories',\r\n   UPDATE: '/categories',\r\n   DELETE: '/categories'\r\n"
+                },
+                {
+                    "date": 1753725402591,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n };\r\n \r\n // Category endpoints\r\n export const CATEGORY = {\r\n-  GET_ALL: '/products/categories',\r\n+  GET_ALL: '/categories',\r\n   GET_BY_ID: '/categories',\r\n   CREATE: '/categories',\r\n   UPDATE: '/categories',\r\n   DELETE: '/categories'\r\n"
+                },
+                {
+                    "date": 1753729761018,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,8 +43,26 @@\n   SEARCH: '/products/search',\r\n   BY_CATEGORY: '/products/category'\r\n };\r\n \r\n+// Admin Product endpoints\r\n+export const ADMIN_PRODUCT = {\r\n+  GET_ALL: '/admin/products',\r\n+  GET_BY_ID: '/admin/products',\r\n+  CREATE: '/admin/products',\r\n+  UPDATE: '/admin/products',\r\n+  DELETE: '/admin/products'\r\n+};\r\n+\r\n+// Admin Category endpoints  \r\n+export const ADMIN_CATEGORY = {\r\n+  GET_ALL: '/admin/categories',\r\n+  GET_BY_ID: '/admin/categories',\r\n+  CREATE: '/admin/categories',\r\n+  UPDATE: '/admin/categories',\r\n+  DELETE: '/admin/categories'\r\n+};\r\n+\r\n // Category endpoints\r\n export const CATEGORY = {\r\n   GET_ALL: '/categories',\r\n   GET_BY_ID: '/categories',\r\n"
                 }
             ],
             "date": 1752833065399,

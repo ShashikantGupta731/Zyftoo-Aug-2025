@@ -1,0 +1,26 @@
+{
+    "sourceFile": "backend/src/routes/productRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1753640078110,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753725076249,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,22 +7,21 @@\n   updateProduct,\r\n   deleteProduct,\r\n   getProductMeta,\r\n   getCorporateProducts,\r\n-  getProductPricing\r\n+  getProductPricing,\r\n+  getCategories\r\n } = require('../controllers/productController');\r\n const { protect, authorizeRoles } = require('../middleware/authMiddleware');\r\n \r\n-// Public routes\r\n+// Public routes (specific routes first, then dynamic routes)\r\n+router.get('/categories', getCategories);\r\n router.get('/meta', getProductMeta);\r\n+router.get('/corporate', getCorporateProducts);\r\n router.get('/', getAllProducts);\r\n router.get('/:id', getProductById);\r\n+router.get('/:id/pricing', protect, getProductPricing);\r\n \r\n-// Corporate routes (require authentication)\r\n-router.use('/corporate', protect); // Apply auth to all corporate routes\r\n-router.get('/corporate', getCorporateProducts); // Only for corporate users\r\n-router.get('/:id/pricing', protect, getProductPricing); // For getting dynamic pricing\r\n-\r\n // Protected admin routes\r\n router.use(protect, authorizeRoles('admin', 'superadmin'));\r\n router.post('/', createProduct);\r\n router.put('/:id', updateProduct);\r\n"
+                },
+                {
+                    "date": 1753725402683,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,15 +7,13 @@\n   updateProduct,\r\n   deleteProduct,\r\n   getProductMeta,\r\n   getCorporateProducts,\r\n-  getProductPricing,\r\n-  getCategories\r\n+  getProductPricing\r\n } = require('../controllers/productController');\r\n const { protect, authorizeRoles } = require('../middleware/authMiddleware');\r\n \r\n // Public routes (specific routes first, then dynamic routes)\r\n-router.get('/categories', getCategories);\r\n router.get('/meta', getProductMeta);\r\n router.get('/corporate', getCorporateProducts);\r\n router.get('/', getAllProducts);\r\n router.get('/:id', getProductById);\r\n"
+                }
+            ],
+            "date": 1753640078110,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst {\r\n  createProduct,\r\n  getAllProducts,\r\n  getProductById,\r\n  updateProduct,\r\n  deleteProduct,\r\n  getProductMeta,\r\n  getCorporateProducts,\r\n  getProductPricing\r\n} = require('../controllers/productController');\r\nconst { protect, authorizeRoles } = require('../middleware/authMiddleware');\r\n\r\n// Public routes\r\nrouter.get('/meta', getProductMeta);\r\nrouter.get('/', getAllProducts);\r\nrouter.get('/:id', getProductById);\r\n\r\n// Corporate routes (require authentication)\r\nrouter.use('/corporate', protect); // Apply auth to all corporate routes\r\nrouter.get('/corporate', getCorporateProducts); // Only for corporate users\r\nrouter.get('/:id/pricing', protect, getProductPricing); // For getting dynamic pricing\r\n\r\n// Protected admin routes\r\nrouter.use(protect, authorizeRoles('admin', 'superadmin'));\r\nrouter.post('/', createProduct);\r\nrouter.put('/:id', updateProduct);\r\nrouter.delete('/:id', deleteProduct);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

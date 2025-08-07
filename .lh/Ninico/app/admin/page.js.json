@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/app/admin/page.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753949861880,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753949861880,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport { useEffect } from 'react'\r\nimport AdminLayout from '../../components/admin/AdminLayout'\r\nimport { useAdminAuth } from '../../hooks/useAdminAuth'\r\n\r\nexport default function AdminPage() {\r\n  // Use the admin auth hook\r\n  useAdminAuth()\r\n\r\n  return <AdminLayout />\r\n}\r\n"
+        }
+    ]
+}

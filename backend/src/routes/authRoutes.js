@@ -7,7 +7,9 @@ const {
   verifyEmail,
   checkUser,
   checkUserByEmail
-} = require('../controllers/authController'); // ✅ This must point to your controller file
+} = require('../controllers/authController'); 
+
+// Removed adminLogin import - now in separate adminAuthRoutes.js
 
 // Debug middleware for all auth routes
 router.use((req, res, next) => {
@@ -23,5 +25,7 @@ router.post('/reset-password', resetPassword);
 router.get('/verify-email/:token', verifyEmail);
 router.get('/check-user/:phone', checkUser);  // ✅ Now checkUser is defined
 router.get('/check-user-email/:email', checkUserByEmail);  // ✅ New email-based user check
+
+// Removed adminLogin route - now in separate adminAuthRoutes.js
 
 module.exports = router;

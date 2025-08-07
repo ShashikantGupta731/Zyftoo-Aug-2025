@@ -5,6 +5,7 @@
 
 import { get, post } from './apiService.js';
 import { AUTH, OTP } from './apiEndpoints.js';
+import { decryptData } from './cryptoHelper.js'; // Use your actual decryptData location
 
 /**
  * Authentication Service Class
@@ -47,114 +48,127 @@ class AuthService {
    * @param {boolean} encrypt - Whether to encrypt the request
    * @returns {Promise<Object>} - Login result
    */
-  async login(credentials, encrypt = true) {
-    try {
-      console.log('🔐 [AuthService] Login attempt:', { 
-        hasEmail: !!credentials.email, 
-        hasPhone: !!credentials.phone, 
-        userType: credentials.userType 
-      })
-      
-      const response = await post(AUTH.LOGIN, credentials, encrypt);
-      
-      console.log('📥 [AuthService] Login response received:', { 
-        success: response.success, 
-        hasData: !!response.data,
-        hasEncryptedData: !!response.data?.encryptedData
-      })
+ async login(credentials, encrypt = true) {
+  try {
+    console.log('🔐 [AuthService] Login attempt:', { 
+      hasEmail: !!credentials.email, 
+      hasPhone: !!credentials.phone, 
+      userType: credentials.userType 
+    });
 
-      // Handle encrypted response
-      if (response.success && response.data?.encryptedData) {
-        console.log('🔓 [AuthService] Decrypting response data...')
-        
-        try {
-          // Import decryptData function
-          const { decryptData } = await import('./apiService.js')
-          
-          // Decrypt the response
-          const decryptedData = decryptData(response.data.encryptedData)
-          console.log('✅ [AuthService] Decryption successful:', {
-            hasUser: !!decryptedData.data?.user,
-            hasToken: !!decryptedData.data?.token
-          })
-          
-          // Store auth data if login successful
-          if (decryptedData.success && decryptedData.data) {
-            const { token, user } = decryptedData.data
-            
-            if (token) {
-              const storage = credentials.rememberMe ? localStorage : sessionStorage;
-              storage.setItem('authToken', token);
-              console.log('💾 [AuthService] Token stored successfully')
-            }
-            
-            if (user) {
-              const storage = credentials.rememberMe ? localStorage : sessionStorage;
-              storage.setItem('user', JSON.stringify(user));
-              console.log('💾 [AuthService] User data stored:', {
-                name: user.name,
-                email: user.email,
-                userType: user.userType
-              })
-            }
-            
-            // Return in the expected format
-            return {
-              success: true,
-              data: {
-                data: {
-                  token,
-                  user
-                }
-              },
-              message: decryptedData.message || 'Login successful'
-            }
+    const response = await post(AUTH.LOGIN, credentials, encrypt);
+
+    console.log('📥 [AuthService] Login response received:', { 
+      success: response.success, 
+      hasData: !!response.data,
+      hasEncryptedData: !!response.data?.encryptedData
+    });
+
+    // Handle encrypted response
+    if (response.success && response.encryptedData) {
+      console.log('🔓 [AuthService] Decrypting response data...');
+      try {
+               // Decrypt the response
+        const decryptedData = decryptData(response.encryptedData);
+        console.log('✅ [AuthService] Decryption successful:', {
+          hasUser: !!decryptedData.data?.user,
+          hasToken: !!decryptedData.data?.token
+        });
+
+        // Store auth data if login successful
+        if (decryptedData.success && decryptedData.data) {
+          const { token, user } = decryptedData.data;
+
+          if (token) {
+            const storage = credentials.rememberMe ? localStorage : sessionStorage;
+            console.log('💾 [AuthService] Storing token:', token);
+            localStorage.setItem('token', token); // instead of 'authToken'
+            localStorage.setItem('user', JSON.stringify(user));
+            console.log('💾 [AuthService] Token stored successfully');
           }
-          
+
+          if (user) {
+            const storage = credentials.rememberMe ? localStorage : sessionStorage;
+            storage.setItem('user', JSON.stringify(user));
+            console.log('💾 [AuthService] User data stored:', {
+              name: user.name,
+              email: user.email,
+              userType: user.userType
+            });
+          }
+
           return {
-            success: false,
-            message: decryptedData.message || 'Login failed'
-          }
-          
-        } catch (decryptError) {
-          console.error('❌ [AuthService] Decryption failed:', decryptError)
-          return {
-            success: false,
-            message: 'Failed to process server response'
-          }
+            success: true,
+            data: { token, user },
+            message: decryptedData.message || 'Login successful'
+          };
         }
+
+        return {
+          success: false,
+          message: decryptedData.message || 'Login failed'
+        };
+
+      } catch (decryptError) {
+        console.error('❌ [AuthService] Decryption failed:', decryptError);
+        return {
+          success: false,
+          message: 'Failed to process server response'
+        };
       }
-      
-      // Handle unencrypted response (fallback)
-      if (response.success && response.data?.data?.token) {
-        const storage = credentials.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('authToken', response.data.data.token);
-        storage.setItem('user', JSON.stringify(response.data.data.user));
-        console.log('💾 [AuthService] Auth data stored successfully (unencrypted)')
-      } else if (response.success && response.data?.token) {
-        // Handle alternative token structure
-        const storage = credentials.rememberMe ? localStorage : sessionStorage;
-        storage.setItem('authToken', response.data.token);
-        storage.setItem('user', JSON.stringify(response.data.user));
-        console.log('💾 [AuthService] Auth data stored successfully (alt structure)')
-      }
-      
-      return response;
-    } catch (error) {
-      console.error('❌ [AuthService] Login error:', error);
-      
-      // Enhanced error handling for corporate login
-      if (error.response?.status === 401) {
-        if (credentials.userType === 'Corporate') {
-          throw new Error('Invalid corporate email or password');
-        } else {
-          throw new Error('Invalid credentials');
-        }
-      }
-      
-      throw error;
     }
+
+    // Handle unencrypted response (fallback)
+    if (response.success && response.data?.data?.token) {
+      const storage = credentials.rememberMe ? localStorage : sessionStorage;
+      storage.setItem('token', response.data.data.token);
+      storage.setItem('user', JSON.stringify(response.data.data.user));
+      console.log('💾 [AuthService] Auth data stored successfully (unencrypted)');
+      return {
+        success: true,
+        data: {
+          token: response.data.data.token,
+          user: response.data.data.user
+        },
+        message: response.data.message || 'Login successful'
+      };
+    } else if (response.success && response.data?.token) {
+      // Handle alternative token structure
+      const storage = credentials.rememberMe ? localStorage : sessionStorage;
+      storage.setItem('token', response.data.token);
+      storage.setItem('user', JSON.stringify(response.data.user));
+      console.log('💾 [AuthService] Auth data stored successfully (alt structure)');
+      return {
+        success: true,
+        data: {
+          token: response.data.token,
+          user: response.data.user
+        },
+        message: response.data.message || 'Login successful'
+      };
+    }
+
+    // If none of the above, return the raw response
+    return {
+      success: false,
+      message: response.data?.message || 'Login failed'
+    };
+
+  } catch (error) {
+    console.error('❌ [AuthService] Login error:', error);
+
+    // Enhanced error handling for corporate login
+    if (error.response?.status === 401) {
+      if (credentials.userType === 'Corporate') {
+        throw new Error('Invalid corporate email or password');
+      } else {
+        throw new Error('Invalid credentials');
+      }
+    }
+
+    throw error;
   }
+}
 
   /**
    * User signup/registration
@@ -170,18 +184,23 @@ class AuthService {
       const response = await post(AUTH.SIGNUP, userData, encrypt, { signal: controller.signal });
       clearTimeout(timeoutId);
       
-      if (response.data?.success) {
-        return {
-          success: true,
-          message: response.data.message,
-          data: response.data
-        };
-      }
-      
+    const actualResponse = response.data || response;
+    const isSuccessful = actualResponse.success === true || 
+                        response.success === true ||
+                        (actualResponse.message && actualResponse.message.includes('successful'));
+    
+    if (isSuccessful) {
       return {
-        success: false,
-        message: response.data?.message || 'Registration failed'
+        success: true,
+        message: actualResponse.message || response.message || 'Registration successful',
+        data: actualResponse
       };
+    }
+    
+    return {
+      success: false,
+      message: actualResponse.message || response.message || 'Registration failed'
+    };
     } catch (error) {
       console.error('Signup error:', error);
       
@@ -290,9 +309,9 @@ class AuthService {
    */
   logout() {
     // Clear all auth data from storage
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
   }
 
@@ -318,7 +337,7 @@ class AuthService {
    * @returns {string|null} - Current auth token
    */
   getAuthToken() {
-    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
   }
 
   /**

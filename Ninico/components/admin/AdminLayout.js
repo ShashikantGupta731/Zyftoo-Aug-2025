@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import AdminDashboard from './Dashboard'
 import UsersPage from './UsersPage'
 import ProductsPage from './ProductsPage'
@@ -9,7 +10,17 @@ import CategoriesPage from './CategoriesPage'
 import PagesManagement from './PagesManagement'
 
 export default function AdminLayout() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const [activeMenu, setActiveMenu] = useState('dashboard')
+
+  useEffect(() => {
+    // Check for tab parameter in URL
+    const tab = searchParams.get('tab')
+    if (tab) {
+      setActiveMenu(tab)
+    }
+  }, [searchParams])
 
   const renderContent = () => {
     switch(activeMenu) {
@@ -161,8 +172,11 @@ export default function AdminLayout() {
           <ul className="nav nav-pills flex-column mb-auto">
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'dashboard' ? 'active bg-white bg-opacity-20' : ''}`}
-                onClick={() => setActiveMenu('dashboard')}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'dashboard' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('dashboard')
+                  router.push('/admin?tab=dashboard')
+                }}
               >
                 <i className="bi bi-house me-2"></i>
                 Dashboard
@@ -171,8 +185,11 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'users' ? 'active bg-white bg-opacity-20' : ''}`}
-                onClick={() => setActiveMenu('users')}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'users' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('users')
+                  router.push('/admin?tab=users')
+                }}
               >
                 <i className="bi bi-people me-2"></i>
                 Users
@@ -182,8 +199,11 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'products' ? 'active bg-white bg-opacity-20' : ''}`}
-                onClick={() => setActiveMenu('products')}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'products' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('products')
+                  router.push('/admin?tab=products')
+                }}
               >
                 <i className="bi bi-box me-2"></i>
                 Products
@@ -193,8 +213,11 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'categories' ? 'active bg-white bg-opacity-20' : ''}`}
-                onClick={() => setActiveMenu('categories')}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'categories' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('categories')
+                  router.push('/admin?tab=categories')
+                }}
               >
                 <i className="bi bi-grid me-2"></i>
                 Categories
@@ -204,7 +227,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'stores' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'stores' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('stores')}
               >
                 <i className="bi bi-shop me-2"></i>
@@ -215,8 +238,11 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'orders' ? 'active bg-white bg-opacity-20' : ''}`}
-                onClick={() => setActiveMenu('orders')}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'orders' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('orders')
+                  router.push('/admin?tab=orders')
+                }}
               >
                 <i className="bi bi-list-ul me-2"></i>
                 Orders
@@ -226,7 +252,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'media' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'media' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('media')}
               >
                 <i className="bi bi-image me-2"></i>
@@ -236,7 +262,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'blog' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'blog' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('blog')}
               >
                 <i className="bi bi-journal-text me-2"></i>
@@ -247,7 +273,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'pages' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'pages' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('pages')}
               >
                 <i className="bi bi-file-earmark me-2"></i>
@@ -257,7 +283,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'taxes' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'taxes' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('taxes')}
               >
                 <i className="bi bi-percent me-2"></i>
@@ -267,7 +293,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'shipping' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'shipping' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('shipping')}
               >
                 <i className="bi bi-truck me-2"></i>
@@ -277,7 +303,7 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'coupons' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'coupons' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('coupons')}
               >
                 <i className="bi bi-ticket me-2"></i>
@@ -287,11 +313,24 @@ export default function AdminLayout() {
             
             <li className="nav-item mb-1">
               <button 
-                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent ${activeMenu === 'currencies' ? 'active bg-white bg-opacity-20' : ''}`}
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'currencies' ? 'active bg-white bg-opacity-20' : ''}`}
                 onClick={() => setActiveMenu('currencies')}
               >
                 <i className="bi bi-currency-exchange me-2"></i>
                 Currencies
+              </button>
+            </li>
+            
+            <li className="nav-item mb-1">
+              <button 
+                className={`nav-link text-white d-flex align-items-center py-2 w-100 border-0 bg-transparent hover-bg-white-opacity ${activeMenu === 'settings' ? 'active bg-white bg-opacity-20' : ''}`}
+                onClick={() => {
+                  setActiveMenu('settings')
+                  router.push('/admin?tab=settings')
+                }}
+              >
+                <i className="bi bi-gear me-2"></i>
+                Settings
               </button>
             </li>
           </ul>
@@ -467,13 +506,16 @@ export default function AdminLayout() {
         .bi-moon::before { content: "🌙"; }
         
         /* Custom nav-link hover and active styles */
-        .nav-link:hover {
+        .nav-link:hover, .hover-bg-white-opacity:hover {
           background-color: rgba(255, 255, 255, 0.1) !important;
         }
         
         .nav-link.active {
           background-color: rgba(255, 255, 255, 0.2) !important;
         }
+        
+        /* Settings icon */
+        .bi-gear::before { content: "⚙"; }
         
         body {
           background-color: #f8f9fa;

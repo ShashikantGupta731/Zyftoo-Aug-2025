@@ -2,11 +2,17 @@
 import { useState, useEffect } from 'react'
 import { get, del } from '@/util/apiService'
 import { PRODUCT, CATEGORY } from '@/util/apiEndpoints'
+import { 
+  fetchCategories as serviceFetchCategories,
+  fetchSubcategories as serviceFetchSubcategories
+} from '@/services/categoryService'
 
 export default function ProductsPage({ onNavigate }) {
   const [Products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
-  const [categories, setCategories] = useState([]) // Add categories state
+  const [allCategories, setAllCategories] = useState([])
+  const [allSubcategories, setAllSubcategories] = useState([])
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -22,6 +28,101 @@ export default function ProductsPage({ onNavigate }) {
     priceRange: ''
   })
 
+  // Fetch all categories and subcategories once on component mount
+  useEffect(() => {
+    const fetchCategoriesData = async () => {
+      try {
+        console.log('📂 Fetching all categories and subcategories...')
+        
+        // Fetch both in parallel - same approach as CategoriesPage
+        const [categoriesData, subcategoriesData] = await Promise.all([
+          serviceFetchCategories(),
+          serviceFetchSubcategories()
+        ])
+        
+        console.log('✅ Fetched categories:', categoriesData)
+        console.log('✅ Fetched subcategories:', subcategoriesData)
+        
+        setAllCategories(categoriesData || [])
+        setAllSubcategories(subcategoriesData || [])
+        setCategoriesLoaded(true)
+      } catch (error) {
+        console.error('❌ Error fetching categories:', error)
+        setCategoriesLoaded(true) // Set to true even on error to prevent infinite loading
+      }
+    }
+    
+    fetchCategoriesData()
+  }, [])
+
+  // Helper function to get category/subcategory name by ID
+  const getCategoryNameById = (categoryId) => {
+    if (!categoryId || !categoriesLoaded) return null
+    
+    // Clean the ID - remove prefixes if they exist
+    const cleanId = categoryId.replace('MainCategory-', '').replace('subcategory-', '')
+    
+    // First check in main categories
+    const mainCategory = allCategories.find(cat => {
+      const catId = cat._id || cat.id
+      return catId === categoryId || catId === cleanId || catId === `MainCategory-${cleanId}`
+    })
+    
+    if (mainCategory) {
+      return {
+        name: mainCategory.name,
+        type: 'main',
+        fullName: mainCategory.name
+      }
+    }
+    
+    // Then check in subcategories
+    const subCategory = allSubcategories.find(subcat => {
+      const subcatId = subcat._id || subcat.id
+      return subcatId === categoryId || subcatId === cleanId || subcatId === `subcategory-${cleanId}`
+    })
+    
+    if (subCategory) {
+      // Get parent name if available
+      const parentName = subCategory.parent?.name || 'Unknown'
+      return {
+        name: subCategory.name,
+        type: 'sub',
+        fullName: `${parentName} > ${subCategory.name}`,
+        parent: parentName
+      }
+    }
+    
+    return null
+  }
+
+  // Format categories for display - separate main and sub
+  const formatCategoriesForDisplay = (productCategories) => {
+    if (!productCategories || !Array.isArray(productCategories) || productCategories.length === 0) {
+      return { main: 'Uncategorized', sub: 'Uncategorized' }
+    }
+    
+    const mainCats = []
+    const subCats = []
+    
+    productCategories.forEach(catId => {
+      const categoryInfo = getCategoryNameById(catId)
+      
+      if (categoryInfo) {
+        if (categoryInfo.type === 'main') {
+          mainCats.push(categoryInfo.name)
+        } else if (categoryInfo.type === 'sub') {
+          subCats.push(categoryInfo.fullName)
+        }
+      }
+    })
+    
+    return {
+      main: mainCats.length > 0 ? mainCats.join(', ') : 'Uncategorized',
+      sub: subCats.length > 0 ? subCats.join(', ') : 'Uncategorized'
+    }
+  }
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
@@ -29,37 +130,52 @@ export default function ProductsPage({ onNavigate }) {
       try {
         console.log('Fetching products and categories from API...')
         
-        // Fetch products and categories in parallel
-        const [productsResponse, categoriesResponse] = await Promise.all([
-          get(PRODUCT.GET_ALL),
-          get(CATEGORY.GET_ALL)
-        ])
+        // Check if admin token exists
+        const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('authToken')
+        if (!adminToken) {
+          console.error('No admin token found in localStorage')
+          setError('Authentication required. Please login again.')
+          setTimeout(() => {
+            window.location.href = '/adminLogin'
+          }, 2000)
+          return
+        }
+
+        console.log('Admin token found, fetching products...')
+        
+        // First fetch products without population to get raw category IDs
+        const productsResponse = await get(PRODUCT.GET_ALL, { 
+          adminView: 'true', 
+          limit: 100
+        })
         
         console.log('Products Response:', productsResponse)
-        console.log('Categories Response:', categoriesResponse)
         
         if (!productsResponse.success) throw new Error(productsResponse.message || 'Failed to fetch Products')
         
         // Handle products
-        const productsArray = Array.isArray(productsResponse.data) ? productsResponse.data : (productsResponse.data.products || [])
+        const productsArray = Array.isArray(productsResponse.data) 
+          ? productsResponse.data 
+          : (productsResponse.data.products || [])
+        
         setProducts(productsArray)
         setFilteredProducts(productsArray)
         
-        // Handle categories
-        if (categoriesResponse.success) {
-          const categoriesArray = Array.isArray(categoriesResponse.data) ? categoriesResponse.data : (categoriesResponse.data.categories || [])
-          setCategories(categoriesArray)
-          console.log('Fetched categories:', categoriesArray)
-        } else {
-          console.warn('Failed to fetch categories:', categoriesResponse.message)
-          setCategories([]) // Set empty array if categories fail to load
-        }
-        
-        console.log('First product categories:', productsArray[0]?.categories)
+        console.log('Products fetched:', productsArray.length)
+        console.log('Sample product categories:', productsArray[0]?.categories)
         
       } catch (err) {
         console.error('Fetch error:', err)
-        setError(err.message)
+        
+        // Handle authentication errors specifically
+        if (err.message?.includes('Admin token not found') || err.message?.includes('jwt expired')) {
+          setError('Session expired. Please login again.')
+          setTimeout(() => {
+            window.location.href = '/adminLogin'
+          }, 2000)
+        } else {
+          setError(err.message)
+        }
       } finally {
         setLoading(false)
       }
@@ -81,23 +197,15 @@ export default function ProductsPage({ onNavigate }) {
       )
     }
 
-    // Category filter
+    // Category filter - updated to work with the new approach
     if (filters.category && filters.category !== 'all') {
       filtered = filtered.filter(product => {
         if (!product.categories || !Array.isArray(product.categories)) return false
-        return product.categories.some(cat => {
-          if (typeof cat === 'object' && cat.name) {
-            // Handle populated category objects
-            const hierarchicalName = getHierarchicalCategoryName(cat)
-            return hierarchicalName === filters.category
-          } else if (typeof cat === 'string') {
-            // Handle ObjectId strings - map to full name
-            const fullName = getFullCategoryName(cat)
-            return fullName === filters.category
-          } else if (typeof cat === 'object' && cat.$oid) {
-            // Handle MongoDB ObjectId objects - map to full name
-            const fullName = getFullCategoryName(cat)
-            return fullName === filters.category
+        
+        return product.categories.some(catId => {
+          const categoryInfo = getCategoryNameById(catId)
+          if (categoryInfo) {
+            return categoryInfo.fullName === filters.category || categoryInfo.name === filters.category
           }
           return false
         })
@@ -138,7 +246,7 @@ export default function ProductsPage({ onNavigate }) {
     }
 
     setFilteredProducts(filtered)
-  }, [Products, filters])
+  }, [Products, filters, categoriesLoaded])
 
   // Handle filter changes
   const handleFilterChange = (filterType, value) => {
@@ -182,6 +290,14 @@ export default function ProductsPage({ onNavigate }) {
     if (!productToDelete) return
 
     try {
+      // Check admin token before delete
+      const adminToken = localStorage.getItem('adminToken') || localStorage.getItem('authToken')
+      if (!adminToken) {
+        alert('Authentication required. Please login again.')
+        window.location.href = '/adminLogin'
+        return
+      }
+
       const response = await del(`${PRODUCT.DELETE}/${productToDelete._id}`)
 
       if (!response.success) {
@@ -193,134 +309,37 @@ export default function ProductsPage({ onNavigate }) {
       setShowDeleteModal(false)
       setProductToDelete(null)
       
-      // Show success message (you can add a toast notification here)
       alert('Product deleted successfully!')
     } catch (err) {
       console.error('Delete error:', err)
-      alert('Failed to delete product: ' + err.message)
-    }
-  }
-
-  // Helper function to extract ObjectId string from MongoDB ObjectId object
-  const getObjectIdString = (obj) => {
-    if (typeof obj === 'string') return obj
-    if (typeof obj === 'object' && obj.$oid) return obj.$oid
-    if (typeof obj === 'object' && obj._id) return obj._id
-    return null
-  }
-
-  // Helper function to get category by ID
-  const getCategoryById = (categoryId) => {
-    if (!categoryId || !categories.length) return null
-    
-    // Extract actual ID string from ObjectId object if needed
-    const idString = getObjectIdString(categoryId)
-    if (!idString) return null
-    
-    return categories.find(cat => {
-      const catId = getObjectIdString(cat._id)
-      return catId === idString
-    })
-  }
-
-  // Helper function to get full category name with parent
-  const getFullCategoryName = (categoryId) => {
-    if (!categoryId) return 'Unknown Category'
-    
-    const category = getCategoryById(categoryId)
-    if (!category) {
-      const idString = getObjectIdString(categoryId)
-      return `Unknown Category (${idString?.substring(0, 8)}...)`
-    }
-    
-    let name = category.name
-    if (category.parent) {
-      const parentCategory = getCategoryById(category.parent)
-      if (parentCategory) {
-        name = `${parentCategory.name} > ${category.name}`
+      
+      if (err.message?.includes('Admin token not found') || err.message?.includes('jwt expired')) {
+        alert('Session expired. Please login again.')
+        window.location.href = '/adminLogin'
+      } else {
+        alert('Failed to delete product: ' + err.message)
       }
     }
-    return name
   }
 
-  // Get unique categories for filter dropdown
+  // Get unique categories for filter dropdown - updated for new approach
   const getUniqueCategories = () => {
     const categoryNames = new Set()
     
-    // Debug: log first few products to see category structure
-    if (Products.length > 0) {
-      console.log('First product categories:', Products[0]?.categories)
-      console.log('Category structure:', Products[0]?.categories?.[0])
-      console.log('Available categories for mapping:', categories)
-      
-      // Test a specific product with categories
-      const productWithCategories = Products.find(p => p.categories && p.categories.length > 0)
-      if (productWithCategories) {
-        console.log('Product with categories:', productWithCategories.name)
-        console.log('Its categories:', productWithCategories.categories)
-        console.log('First category type:', typeof productWithCategories.categories[0])
-        console.log('First category:', productWithCategories.categories[0])
-        
-        // Test the mapping function
-        const testMapping = getFullCategoryName(productWithCategories.categories[0])
-        console.log('Test mapping result:', testMapping)
-      }
-    }
+    if (!categoriesLoaded) return []
     
     Products.forEach(product => {
       if (product.categories && Array.isArray(product.categories)) {
-        product.categories.forEach(cat => {
-          if (typeof cat === 'object' && cat.name) {
-            // Already populated category object
-            const hierarchicalName = getHierarchicalCategoryName(cat)
-            categoryNames.add(hierarchicalName)
-          } else if (typeof cat === 'string') {
-            // Category ID string - map to full name
-            const fullName = getFullCategoryName(cat)
-            categoryNames.add(fullName)
-          } else if (typeof cat === 'object' && cat.$oid) {
-            // MongoDB ObjectId object - map to full name
-            const fullName = getFullCategoryName(cat)
-            categoryNames.add(fullName)
+        product.categories.forEach(catId => {
+          const categoryInfo = getCategoryNameById(catId)
+          if (categoryInfo && categoryInfo.fullName !== 'Uncategorized') {
+            categoryNames.add(categoryInfo.fullName)
           }
         })
       }
     })
     
-    console.log('Unique categories found:', Array.from(categoryNames))
     return Array.from(categoryNames).sort()
-  }
-
-  // Build hierarchical category name (Parent > Child)
-  const getHierarchicalCategoryName = (category) => {
-    if (!category) return ''
-    
-    let name = category.name
-    if (category.parent && category.parent.name) {
-      name = `${category.parent.name} > ${category.name}`
-    }
-    return name
-  }
-
-  // Format categories for display
-  const formatCategoriesForDisplay = (categories) => {
-    if (!categories || categories.length === 0) return 'Uncategorized'
-    
-    return categories.map(cat => {
-      if (typeof cat === 'string') {
-        // Category ID string - map to full name
-        return getFullCategoryName(cat)
-      }
-      if (typeof cat === 'object' && cat.name) {
-        // Already populated - use hierarchical name
-        return getHierarchicalCategoryName(cat)
-      }
-      if (typeof cat === 'object' && cat.$oid) {
-        // MongoDB ObjectId object - map to full name
-        return getFullCategoryName(cat)
-      }
-      return 'Unknown Category'
-    }).join(', ')
   }
 
   return (
@@ -566,7 +585,8 @@ export default function ProductsPage({ onNavigate }) {
                       </th>
                       <th>Product Name</th>
                       <th>SKU</th>
-                      <th>Category</th>
+                      <th>Main Category</th>
+                      <th>Subcategories</th>
                       <th>Stock</th>
                       <th>Price</th>
                       <th>Status</th>
@@ -580,11 +600,11 @@ export default function ProductsPage({ onNavigate }) {
                       </tr>
                     ) : error ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-5 text-danger">{error}</td>
+                        <td colSpan="9" className="text-center py-5 text-danger">{error}</td>
                       </tr>
                     ) : filteredProducts.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="text-center py-5 text-muted">
+                        <td colSpan="9" className="text-center py-5 text-muted">
                           {Products.length === 0 ? (
                             <>
                               <i className="bi bi-box" style={{ fontSize: '3rem' }}></i>
@@ -613,7 +633,9 @@ export default function ProductsPage({ onNavigate }) {
                         </td>
                       </tr>
                     ) : (
-                      filteredProducts.map(Product => (
+                      filteredProducts.map(Product => {
+                        const categoryDisplay = formatCategoriesForDisplay(Product.categories)
+                        return (
                         <tr key={Product._id}>
                           <td className="ps-4"><input type="checkbox" className="form-check-input" /></td>
                           <td>
@@ -640,7 +662,22 @@ export default function ProductsPage({ onNavigate }) {
                           </td>
                           <td>{Product.sku || 'N/A'}</td>
                           <td>
-                            {formatCategoriesForDisplay(Product.categories)}
+                            {!categoriesLoaded ? (
+                              <div className="spinner-border spinner-border-sm" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                            ) : (
+                              categoryDisplay.main
+                            )}
+                          </td>
+                          <td>
+                            {!categoriesLoaded ? (
+                              <div className="spinner-border spinner-border-sm" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                              </div>
+                            ) : (
+                              categoryDisplay.sub
+                            )}
                           </td>
                           <td>
                             <span className={`badge ${Product.quantity > 10 ? 'bg-success' : Product.quantity > 0 ? 'bg-warning' : 'bg-danger'}`}>
@@ -679,7 +716,8 @@ export default function ProductsPage({ onNavigate }) {
                             </div>
                           </td>
                         </tr>
-                      ))
+                        )
+                      })
                     )}
                   </tbody>
                 </table>
@@ -791,9 +829,89 @@ export default function ProductsPage({ onNavigate }) {
                     <div className="row mb-2">
                       <div className="col-sm-4"><strong>Category:</strong></div>
                       <div className="col-sm-8">
-                        {formatCategoriesForDisplay(selectedProduct.categories)}
+                        {formatCategoriesForDisplayLegacy(selectedProduct.categories)}
                       </div>
                     </div>
+                    
+                    {/* New Enhanced Fields */}
+                    {selectedProduct.rating > 0 && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Rating:</strong></div>
+                        <div className="col-sm-8">
+                          <span className="text-warning">
+                            {'⭐'.repeat(Math.floor(selectedProduct.rating))}
+                          </span>
+                          <span className="ms-1">
+                            {selectedProduct.rating}/5 ({selectedProduct.numReviews || 0} reviews)
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedProduct.hasActiveCorporatePricing && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Corporate Pricing:</strong></div>
+                        <div className="col-sm-8">
+                          <span className="badge bg-info">Available</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedProduct.is_corporate_only && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Access:</strong></div>
+                        <div className="col-sm-8">
+                          <span className="badge bg-warning">Corporate Only</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Product Flags */}
+                    {(selectedProduct.is_featured || selectedProduct.is_popular || selectedProduct.is_trending) && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Flags:</strong></div>
+                        <div className="col-sm-8">
+                          {selectedProduct.is_featured && <span className="badge bg-warning me-1">Featured</span>}
+                          {selectedProduct.is_popular && <span className="badge bg-success me-1">Popular</span>}
+                          {selectedProduct.is_trending && <span className="badge bg-primary me-1">Trending</span>}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Business Features */}
+                    {(selectedProduct.safe_checkout || selectedProduct.secure_checkout || selectedProduct.social_share) && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Features:</strong></div>
+                        <div className="col-sm-8">
+                          {selectedProduct.safe_checkout && <span className="badge bg-light text-dark me-1">Safe Checkout</span>}
+                          {selectedProduct.secure_checkout && <span className="badge bg-light text-dark me-1">Secure</span>}
+                          {selectedProduct.social_share && <span className="badge bg-light text-dark me-1">Social Share</span>}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Analytics (if available) */}
+                    {selectedProduct.analytics?.views?.total > 0 && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Views:</strong></div>
+                        <div className="col-sm-8">
+                          <span className="badge bg-secondary">
+                            {selectedProduct.analytics.views.total} total views
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedProduct.sales_count > 0 && (
+                      <div className="row mb-2">
+                        <div className="col-sm-4"><strong>Sales:</strong></div>
+                        <div className="col-sm-8">
+                          <span className="badge bg-success">
+                            {selectedProduct.sales_count} sold
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 

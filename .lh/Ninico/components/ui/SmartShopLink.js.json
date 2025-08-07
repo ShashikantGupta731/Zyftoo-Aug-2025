@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/SmartShopLink.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753714956270,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753714956270,
+            "name": "Commit-0",
+            "content": "import Link from 'next/link'\r\nimport { useCorporateShopRedirect } from '@/hooks/useCorporateShopRedirect'\r\n\r\nconst SmartShopLink = ({ href, children, className, ...props }) => {\r\n    const { getShopUrl } = useCorporateShopRedirect()\r\n    \r\n    const finalHref = getShopUrl(href)\r\n    \r\n    return (\r\n        <Link href={finalHref} className={className} {...props}>\r\n            {children}\r\n        </Link>\r\n    )\r\n}\r\n\r\nexport default SmartShopLink\r\n"
+        }
+    ]
+}

@@ -1,0 +1,350 @@
+/**
+ * Encrypted API Service
+ * Provides secure API communication with optional encryption/decryption
+ */
+
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
+import { API_BASE_URL } from './apiEndpoints.js';
+
+// Encryption configuration
+const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'default-32-character-secret-key';
+const ENCRYPTION_IV = process.env.NEXT_PUBLIC_ENCRYPTION_IV || 'default-16-chars';
+
+// Create axios instance with default configuration
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor to add auth token
+apiClient.interceptors.request.use(
+  (config) => {
+    // Add auth token if available
+    if (typeof window !== 'undefined') {
+      // Check for admin token first if the request is to an admin endpoint
+      const isAdminRequest = config.url.includes('/admin') || config.headers['x-admin-request'] === 'true';
+      if (isAdminRequest) {
+        const adminToken = localStorage.getItem('adminToken');
+        if (adminToken) {
+          config.headers.Authorization = `Bearer ${adminToken}`;
+        } else {
+          console.warn('🚫 Admin token not found for admin request');
+        }
+      } else {
+        // For regular user requests
+        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle common errors
+    if (error.response?.status === 401) {
+      // Clear invalid tokens
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('authToken');
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Encrypt data using AES encryption (matches backend implementation)
+ */
+export const encryptData = (data) => {
+  try {
+    console.log('🔒 [Frontend] Starting encryption...');
+    console.log('📝 [Frontend] Input data:', data);
+    console.log('📝 [Frontend] Data type:', typeof data);
+    
+    const key = ENCRYPTION_KEY;
+    console.log('🔑 [Frontend] Using key (first 8 chars):', key.substring(0, 8) + '...');
+    
+    const jsonString = JSON.stringify(data);
+    console.log('📝 [Frontend] JSON string:', jsonString);
+    console.log('📝 [Frontend] JSON string length:', jsonString.length);
+    
+    // Use the exact same method as backend (without IV)
+    const encrypted = CryptoJS.AES.encrypt(jsonString, key).toString();
+    console.log('🔒 [Frontend] Encrypted result:', encrypted);
+    console.log('🔒 [Frontend] Encrypted length:', encrypted.length);
+    
+    return encrypted;
+  } catch (error) {
+    console.error('❌ [Frontend] Encryption error:', error);
+    throw new Error('Failed to encrypt data');
+  }
+};
+
+/**
+ * Decrypt data using AES decryption (matches backend implementation)
+ */
+export const decryptData = (encryptedData) => {
+  try {
+    console.log('🔓 [Frontend] Starting decryption...');
+    console.log('📝 [Frontend] Input cipher:', encryptedData);
+    console.log('📝 [Frontend] Cipher length:', encryptedData?.length || 0);
+    
+    // Use the same key as backend
+    const key = ENCRYPTION_KEY;
+    console.log('🔑 [Frontend] Using key (first 8 chars):', key.substring(0, 8) + '...');
+    
+    // Use the exact same method as backend (without IV)
+    const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, key);
+    const decryptedString = decryptedBytes.toString(CryptoJS.enc.Utf8);
+    
+    console.log('🔓 [Frontend] Decrypted string:', decryptedString);
+    console.log('🔓 [Frontend] Decrypted string length:', decryptedString.length);
+    
+    if (!decryptedString) {
+      console.error('❌ [Frontend] Failed to decrypt data - empty result');
+      throw new Error('Failed to decrypt data - invalid cipher or key');
+    }
+    
+    const parsed = JSON.parse(decryptedString);
+    console.log('✅ [Frontend] Successfully parsed JSON:', parsed);
+    return parsed;
+  } catch (error) {
+    console.error('❌ [Frontend] Decryption error:', error);
+    throw new Error('Failed to decrypt data: ' + error.message);
+  }
+};
+
+/**
+ * POST request with optional encryption
+ */
+export const post = async (endpoint, payload = {}, encrypt = false, config = {}) => {
+  try {
+    let requestData = payload;
+    
+    // Encrypt payload if requested
+    if (encrypt && payload) {
+      requestData = {
+        encryptedData: encryptData(payload)
+      };
+    }
+
+    const response = await apiClient.post(endpoint, requestData, config);
+    
+    let responseData = response.data;
+    
+    // Decrypt response body if it exists and contains encrypted data
+    if (responseData.body && typeof responseData.body === 'string') {
+      try {
+        responseData.body = decryptData(responseData.body);
+      } catch (error) {
+        // If decryption fails, keep original data
+        console.warn('Failed to decrypt response body, using raw data');
+      }
+    }
+
+    return {
+      data: responseData,
+      success: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: responseData.message
+    };
+  } catch (error) {
+    console.error('POST request error:', error);
+    throw {
+      data: null,
+      success: false,
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || error.message || 'Request failed'
+    };
+  }
+};
+
+/**
+ * GET request with optional decryption
+ */
+export const get = async (endpoint, params, decrypt = false, config = {}) => {
+  try {
+    const response = await apiClient.get(endpoint, {
+      ...config,
+      params
+    });
+    
+    let responseData = response.data;
+    
+    // Decrypt response body if requested and it exists
+    if (decrypt && responseData.body && typeof responseData.body === 'string') {
+      try {
+        responseData.body = decryptData(responseData.body);
+      } catch (error) {
+        // If decryption fails, keep original data
+        console.warn('Failed to decrypt response body, using raw data');
+      }
+    }
+
+    return {
+      data: responseData,
+      success: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: responseData.message
+    };
+  } catch (error) {
+    console.error('GET request error:', error);
+    throw {
+      data: null,
+      success: false,
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || error.message || 'Request failed'
+    };
+  }
+};
+
+/**
+ * PUT request with optional encryption
+ */
+export const put = async (endpoint, payload = {}, encrypt = false, config = {}) => {
+  try {
+    let requestData = payload;
+    
+    // Encrypt payload if requested
+    if (encrypt && payload) {
+      requestData = {
+        encryptedData: encryptData(payload)
+      };
+    }
+
+    const response = await apiClient.put(endpoint, requestData, config);
+    
+    let responseData = response.data;
+    
+    // Decrypt response body if it exists and contains encrypted data
+    if (responseData.body && typeof responseData.body === 'string') {
+      try {
+        responseData.body = decryptData(responseData.body);
+      } catch (error) {
+        console.warn('Failed to decrypt response body, using raw data');
+      }
+    }
+
+    return {
+      data: responseData,
+      success: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: responseData.message
+    };
+  } catch (error) {
+    console.error('PUT request error:', error);
+    throw {
+      data: null,
+      success: false,
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || error.message || 'Request failed'
+    };
+  }
+};
+
+/**
+ * DELETE request
+ */
+export const del = async (endpoint, config = {}) => {
+  try {
+    const response = await apiClient.delete(endpoint, config);
+    
+    let responseData = response.data;
+    
+    // Decrypt response body if it exists and contains encrypted data
+    if (responseData.body && typeof responseData.body === 'string') {
+      try {
+        responseData.body = decryptData(responseData.body);
+      } catch (error) {
+        console.warn('Failed to decrypt response body, using raw data');
+      }
+    }
+
+    return {
+      data: responseData,
+      success: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: responseData.message
+    };
+  } catch (error) {
+    console.error('DELETE request error:', error);
+    throw {
+      data: null,
+      success: false,
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || error.message || 'Request failed'
+    };
+  }
+};
+
+/**
+ * File upload with multipart/form-data
+ */
+export const uploadFile = async (endpoint, formData, method = 'POST', config = {}) => {
+  try {
+    let response;
+    const requestConfig = {
+      ...config,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...config?.headers
+      }
+    };
+
+    // Use the appropriate HTTP method
+    switch (method.toUpperCase()) {
+      case 'PUT':
+        response = await apiClient.put(endpoint, formData, requestConfig);
+        break;
+      case 'PATCH':
+        response = await apiClient.patch(endpoint, formData, requestConfig);
+        break;
+      case 'POST':
+      default:
+        response = await apiClient.post(endpoint, formData, requestConfig);
+        break;
+    }
+
+    return {
+      data: response.data,
+      success: response.status >= 200 && response.status < 300,
+      status: response.status,
+      message: response.data.message
+    };
+  } catch (error) {
+    console.error('File upload error:', error);
+    throw {
+      data: null,
+      success: false,
+      status: error.response?.status || 500,
+      message: error.response?.data?.message || error.message || 'Upload failed'
+    };
+  }
+};
+
+// Export the axios instance for direct use (backward compatibility)
+export default apiClient;
+
+// Export all methods as named exports
+export const apiService = {
+  get,
+  post,
+  put,
+  delete: del,
+  uploadFile,
+  encryptData,
+  decryptData
+};

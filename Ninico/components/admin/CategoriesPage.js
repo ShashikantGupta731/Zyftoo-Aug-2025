@@ -1,7 +1,13 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { get, post, put, del, uploadFile } from '@/util/apiService'
-import { CATEGORY, SUBCATEGORY } from '@/util/apiEndpoints'
+import { 
+  saveCategory as serviceSaveCategory, 
+  deleteCategory as serviceDeleteCategory,
+  saveSubcategory as serviceSaveSubcategory,
+  deleteSubcategory as serviceDeleteSubcategory,
+  fetchCategories as serviceFetchCategories,
+  fetchSubcategories as serviceFetchSubcategories
+} from '@/services/categoryService'
 
 export default function CategoriesPage({ onNavigate }) {
   const [activeView, setActiveView] = useState('list') // 'list', 'add', 'subcategories', 'addSubcategory'
@@ -28,9 +34,6 @@ export default function CategoriesPage({ onNavigate }) {
     image: null
   })
 
-  // Hardcoded admin token for testing
-  const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NzZhYTJmYzc3YWY4ODU3Njk1ZDA5MiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MjYwNzMyMCwiZXhwIjoxNzUzMjEyMTIwfQ.ugFuaDCq_ewqIE-dZaql3BB91kaXBIxE0TQmqdYnagI'
-
   // Utility function to format hierarchical category names
   const formatCategoryHierarchy = (category) => {
     if (!category.parent || !category.parent.name) {
@@ -39,41 +42,14 @@ export default function CategoriesPage({ onNavigate }) {
     return `${category.parent.name} > ${category.name}`
   }
 
-  // Fetch categories from backend
+  // Fetch categories from backend using service
   const fetchCategories = async () => {
     try {
       setLoading(true)
       
-      // Temporarily store admin token
-      localStorage.setItem('authToken', ADMIN_TOKEN)
-      
-      const response = await get(CATEGORY.GET_ALL)
-      console.log('Fetched categories response:', response)
-      
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to fetch categories')
-      }
-      
-      console.log('Fetched categories:', response.data)
-      console.log('Categories data type:', typeof response.data, 'Is array:', Array.isArray(response.data))
-      
-      // Ensure response.data is an array
-      let categoriesData = []
-      if (Array.isArray(response.data)) {
-        categoriesData = response.data
-      } else if (response.data && typeof response.data === 'object') {
-        // Handle case where data might be wrapped in another object
-        console.warn('Categories data is not an array, attempting to extract array from object:', response.data)
-        if (Array.isArray(response.data.categories)) {
-          categoriesData = response.data.categories
-        } else if (Array.isArray(response.data.data)) {
-          categoriesData = response.data.data
-        } else {
-          throw new Error('Categories data is not in expected format')
-        }
-      } else {
-        throw new Error('Categories data is not an array or object')
-      }
+      console.log('Fetching categories using service...')
+      const categoriesData = await serviceFetchCategories()
+      console.log('Fetched categories:', categoriesData)
       
       // Sort categories to show main categories first, then subcategories
       const sortedCategories = categoriesData.sort((a, b) => {
@@ -101,127 +77,103 @@ export default function CategoriesPage({ onNavigate }) {
       setError('')
     } catch (err) {
       console.error('Fetch categories error:', err)
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
+      
       setError('Failed to load categories: ' + err.message)
     } finally {
       setLoading(false)
     }
   }
 
-  // Fetch subcategories from backend
+  // Fetch subcategories from backend using service
   const fetchSubcategories = async () => {
     try {
       setLoading(true)
       
-      // Temporarily store admin token
-      localStorage.setItem('authToken', ADMIN_TOKEN)
+      console.log('Fetching subcategories using service...')
+      const subcategoriesData = await serviceFetchSubcategories()
+      console.log('Fetched subcategories:', subcategoriesData)
       
-      const response = await get(SUBCATEGORY.GET_ALL)
-      console.log('Fetched subcategories response:', response)
-      
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to fetch subcategories')
-      }
-      
-      console.log('Fetched subcategories:', response.data)
-      console.log('Subcategories data type:', typeof response.data, 'Is array:', Array.isArray(response.data))
-      
-      // Ensure response.data is an array
-      let subcategoriesData = []
-      if (Array.isArray(response.data)) {
-        subcategoriesData = response.data
-      } else if (response.data && typeof response.data === 'object') {
-        // Handle case where data might be wrapped in another object
-        console.warn('Subcategories data is not an array, attempting to extract array from object:', response.data)
-        if (Array.isArray(response.data.subcategories)) {
-          subcategoriesData = response.data.subcategories
-        } else if (Array.isArray(response.data.data)) {
-          subcategoriesData = response.data.data
-        } else {
-          throw new Error('Subcategories data is not in expected format')
-        }
-      } else {
-        throw new Error('Subcategories data is not an array or object')
-      }
-      
-      console.log('Processed subcategories data:', subcategoriesData)
       setSubcategories(subcategoriesData)
       setError('')
     } catch (err) {
       console.error('Fetch subcategories error:', err)
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
+      
       setError('Failed to load subcategories: ' + err.message)
     } finally {
       setLoading(false)
     }
   }
 
-  // Create or update subcategory
+  // Create or update subcategory using service
   const saveSubcategory = async (subcategoryData) => {
     try {
       console.log('Saving subcategory data:', subcategoryData)
       console.log('Editing subcategory:', editingSubcategory)
       
-      // Create FormData for file upload
-      const formDataToSend = new FormData()
-      formDataToSend.append('name', subcategoryData.name)
-      formDataToSend.append('description', subcategoryData.description || '')
-      formDataToSend.append('parent', subcategoryData.parent)
-      formDataToSend.append('status', subcategoryData.status)
-      
-      // Add image file if selected
-      if (subcategoryData.image) {
-        formDataToSend.append('image', subcategoryData.image)
+      // Use the subcategory service with proper options
+      const options = {
+        isEditing: !!editingSubcategory,
+        editingSubcategoryId: editingSubcategory?._id
       }
       
-      // For updates, add the subcategory ID
-      if (editingSubcategory) {
-        formDataToSend.append('subcategoryId', editingSubcategory._id)
-      }
-      
-      // Log all FormData key-value pairs
-      console.log('Subcategory FormData contents:');
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0]+ ':', pair[1]);
-      }
-      
-      // Use appropriate endpoint and method
-      const endpoint = editingSubcategory 
-        ? `${SUBCATEGORY.UPDATE}/${editingSubcategory._id}`
-        : SUBCATEGORY.CREATE
-      
-      const method = editingSubcategory ? 'PUT' : 'POST'
-      
-      console.log('Using subcategory endpoint:', endpoint, 'with method:', method)
-      
-      // Use uploadFile with the correct method
-      const response = await uploadFile(endpoint, formDataToSend, method)
+      const response = await serviceSaveSubcategory(subcategoryData, options)
       console.log('Save subcategory response:', response)
 
-      // Check for success based on HTTP status and response format
-      if (response.success || (response.status >= 200 && response.status < 300)) {
-        // Show success message
-        console.log(editingSubcategory ? 'Subcategory updated successfully!' : 'Subcategory created successfully!');
-        alert(editingSubcategory ? 'Subcategory updated successfully!' : 'Subcategory created successfully!');
-        
-        // Reset form and go back to subcategories list
-        setActiveView('subcategories')
-        setEditingSubcategory(null)
-        setSubcategoryFormData({ name: '', description: '', parent: '', status: true, image: null })
-        setError('')
-        
-        // Refresh subcategories list
-        await fetchSubcategories()
-        
-        return response.data
-      } else {
-        throw new Error(response.message || response.data?.error || 'Failed to save subcategory')
-      }
+      // Show success message
+      console.log(editingSubcategory ? 'Subcategory updated successfully!' : 'Subcategory created successfully!')
+      alert(editingSubcategory ? 'Subcategory updated successfully!' : 'Subcategory created successfully!')
+      
+      // Reset form and go back to subcategories list
+      setActiveView('subcategories')
+      setEditingSubcategory(null)
+      setSubcategoryFormData({ name: '', description: '', parent: '', status: true, image: null })
+      setError('')
+      
+      // Refresh subcategories list
+      await fetchSubcategories()
+      
+      return response
     } catch (err) {
-      console.error('Save subcategory error:', err);
-      console.error('Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      });
+      console.error('Save subcategory error:', err)
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
       
       const errorMessage = err.message || 'Failed to save subcategory'
       setError(errorMessage)
@@ -230,7 +182,7 @@ export default function CategoriesPage({ onNavigate }) {
     }
   }
 
-  // Delete subcategory
+  // Delete subcategory using service
   const deleteSubcategory = async (subcategoryId) => {
     const subcategoryToDelete = subcategories.find(subcat => subcat._id === subcategoryId)
     
@@ -244,39 +196,37 @@ export default function CategoriesPage({ onNavigate }) {
       console.log('Deleting subcategory with ID:', subcategoryId)
       console.log('Subcategory details:', subcategoryToDelete)
       
-      // Temporarily store admin token to ensure it's available
-      localStorage.setItem('authToken', ADMIN_TOKEN)
-      
-      const response = await del(`${SUBCATEGORY.DELETE}/${subcategoryId}`)
+      const response = await serviceDeleteSubcategory(subcategoryId)
       console.log('Delete subcategory response:', response)
 
-      // Check for different response formats
-      if (response.success || (response.status >= 200 && response.status < 300) || response.data?.message) {
-        console.log('Subcategory deleted successfully')
-        
-        // Refresh subcategories list
-        await fetchSubcategories()
-        
-        // Show success message
-        alert('Subcategory deleted successfully!')
-      } else {
-        throw new Error(response.message || response.data?.error || 'Failed to delete subcategory')
-      }
+      console.log('Subcategory deleted successfully')
+      
+      // Refresh subcategories list
+      await fetchSubcategories()
+      
+      // Show success message
+      alert('Subcategory deleted successfully!')
       
     } catch (err) {
       console.error('Delete subcategory error:', err)
-      console.error('Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      })
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
       
       let errorMessage = 'Failed to delete subcategory'
       
-      if (err.status === 404) {
+      if (err.message?.includes('404')) {
         errorMessage = 'Subcategory not found'
-      } else if (err.status === 401 || err.status === 403) {
-        errorMessage = 'Unauthorized to delete subcategory'
       } else {
         errorMessage = err.message || 'An unexpected error occurred'
       }
@@ -286,89 +236,50 @@ export default function CategoriesPage({ onNavigate }) {
     }
   }
 
-  // Create or update category
+  // Create or update category using service
   const saveCategory = async (categoryData) => {
     try {
-      console.log('Saving category data:', categoryData); // Debug log
-      console.log('Editing category:', editingCategory); // Debug log
+      console.log('Saving category data:', categoryData)
+      console.log('Editing category:', editingCategory)
       
-      // Create FormData for file upload
-      const formDataToSend = new FormData()
-      formDataToSend.append('name', categoryData.name)
-      formDataToSend.append('description', categoryData.description || '')
-      formDataToSend.append('status', categoryData.status)
-      
-      if (categoryData.parent) {
-        formDataToSend.append('parent', categoryData.parent)
-        formDataToSend.append('isSubcategory', 'true')
-        
-        // Find parent category name for proper folder structure
-        const parentCategory = categories.find(cat => cat._id === categoryData.parent)
-        if (parentCategory) {
-          formDataToSend.append('parentCategoryName', parentCategory.name)
-        }
-      } else {
-        formDataToSend.append('isSubcategory', 'false')
+      // Use the category service with proper options
+      const options = {
+        isEditing: !!editingCategory,
+        editingCategoryId: editingCategory?._id
       }
       
-      // Add category name for folder creation
-      formDataToSend.append('categoryName', categoryData.name)
-      
-      // Add image file if selected
-      if (categoryData.image) {
-        formDataToSend.append('image', categoryData.image)
-      }
-      
-      // For updates, add the category ID
-      if (editingCategory) {
-        formDataToSend.append('categoryId', editingCategory._id)
-      }
-      
-      // Log all FormData key-value pairs
-      console.log('FormData contents:');
-      for (let pair of formDataToSend.entries()) {
-        console.log(pair[0]+ ':', pair[1]);
-      }
-      
-      // Use appropriate endpoint and method
-      const endpoint = editingCategory 
-        ? `${CATEGORY.UPDATE}/${editingCategory._id}`
-        : CATEGORY.CREATE
-      
-      const method = editingCategory ? 'PUT' : 'POST'
-      
-      console.log('Using endpoint:', endpoint, 'with method:', method); // Debug log
-      
-      // Use uploadFile with the correct method
-      const response = await uploadFile(endpoint, formDataToSend, method)
-      console.log('Save response:', response); // Debug log
+      const response = await serviceSaveCategory(categoryData, options)
+      console.log('Save response:', response)
 
-      // Check for success based on HTTP status and response format
-      if (response.success || (response.status >= 200 && response.status < 300)) {
-        // Show success message
-        console.log(editingCategory ? 'Category updated successfully!' : 'Category created successfully!');
-        alert(editingCategory ? 'Category updated successfully!' : 'Category created successfully!');
-        
-        // Reset form and go back to list
-        setActiveView('list')
-        setEditingCategory(null)
-        setFormData({ name: '', description: '', parent: '', status: true, image: null })
-        setError('')
-        
-        // Refresh categories list
-        await fetchCategories()
-        
-        return response.data
-      } else {
-        throw new Error(response.message || response.data?.error || 'Failed to save category')
-      }
+      // Show success message
+      console.log(editingCategory ? 'Category updated successfully!' : 'Category created successfully!')
+      alert(editingCategory ? 'Category updated successfully!' : 'Category created successfully!')
+      
+      // Reset form and go back to list
+      setActiveView('list')
+      setEditingCategory(null)
+      setFormData({ name: '', description: '', parent: '', status: true, image: null })
+      setError('')
+      
+      // Refresh categories list
+      await fetchCategories()
+      
+      return response
     } catch (err) {
-      console.error('Save category error:', err);
-      console.error('Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      });
+      console.error('Save category error:', err)
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
       
       const errorMessage = err.message || 'Failed to save category'
       setError(errorMessage)
@@ -393,45 +304,43 @@ export default function CategoriesPage({ onNavigate }) {
     }
 
     try {
-      console.log('Deleting category with ID:', categoryId); // Debug log
-      console.log('Category details:', categoryToDelete); // Debug log
-      console.log('Has subcategories:', hasSubcategories); // Debug log
+      console.log('Deleting category with ID:', categoryId)
+      console.log('Category details:', categoryToDelete)
+      console.log('Has subcategories:', hasSubcategories)
       
-      // Temporarily store admin token to ensure it's available
-      localStorage.setItem('authToken', ADMIN_TOKEN)
-      
-      const response = await del(`${CATEGORY.DELETE}/${categoryId}`)
-      console.log('Delete response:', response); // Debug log
+      const response = await serviceDeleteCategory(categoryId)
+      console.log('Delete response:', response)
 
-      // Check for different response formats
-      if (response.success || (response.status >= 200 && response.status < 300) || response.data?.message) {
-        console.log('Category deleted successfully'); // Debug log
-        
-        // Refresh categories list
-        await fetchCategories()
-        
-        // Show success message
-        alert('Category deleted successfully!')
-      } else {
-        throw new Error(response.message || response.data?.error || 'Failed to delete category')
-      }
+      console.log('Category deleted successfully')
+      
+      // Refresh categories list
+      await fetchCategories()
+      
+      // Show success message
+      alert('Category deleted successfully!')
       
     } catch (err) {
-      console.error('Delete category error:', err); // Debug log
-      console.error('Error details:', {
-        message: err.message,
-        status: err.status,
-        data: err.data
-      }); // Debug log
+      console.error('Delete category error:', err)
+      
+      // Check for authentication errors
+      if (err.message?.includes('jwt expired') || err.message?.includes('401') || err.message?.includes('Unauthorized')) {
+        setError('Session expired. Please login again.')
+        // Clear tokens and redirect to login
+        localStorage.removeItem('adminToken')
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('adminInfo')
+        setTimeout(() => {
+          window.location.href = '/adminLogin'
+        }, 2000)
+        return
+      }
       
       let errorMessage = 'Failed to delete category'
       
-      if (err.status === 400) {
-        errorMessage = err.message || err.data?.error || 'Cannot delete category with subcategories. Delete subcategories first.'
-      } else if (err.status === 404) {
+      if (err.message?.includes('404')) {
         errorMessage = 'Category not found'
-      } else if (err.status === 401 || err.status === 403) {
-        errorMessage = 'Unauthorized to delete category'
+      } else if (err.message?.includes('400')) {
+        errorMessage = err.message || 'Cannot delete category with subcategories. Delete subcategories first.'
       } else {
         errorMessage = err.message || 'An unexpected error occurred'
       }

@@ -9,12 +9,20 @@ import authService from '@/util/authService'
 export default function CorporateSignIn() {
     const router = useRouter()
     const { login, user } = useContext(AuthContext)
+    const [otpAttempts, setOtpAttempts] = useState(0)
+    const MAX_OTP_ATTEMPTS = 3
     
     // Redirect if already logged in as corporate user
     useEffect(() => {
-        if (user && user.userType === 'Corporate') {
-            router.push('/CorporateHome')
-        }
+        // Add a small delay to avoid race conditions with CorporateRouteManager
+        const timer = setTimeout(() => {
+            if (user && user.userType === 'Corporate') {
+                console.log('🔄 [Corporate Sign-in] Redirecting authenticated user to CorporateHome')
+                router.push('/CorporateHome')
+            }
+        }, 100)
+        
+        return () => clearTimeout(timer)
     }, [user, router])
 
     const [isSignUp, setIsSignUp] = useState(false)
@@ -233,32 +241,22 @@ export default function CorporateSignIn() {
         }
     }
 
-    const handleOtpVerification = async () => {
+           const handleOtpVerification = async () => {
         if (otp.some(digit => !digit)) {
             setToast('Please enter complete OTP')
+            return
+        }
+
+        // Check if max attempts reached
+        if (otpAttempts >= MAX_OTP_ATTEMPTS) {
+            setToast('Maximum OTP attempts exceeded. Please request a new OTP.')
             return
         }
 
         const enteredOtp = otp.join('')
 
         try {
-            // First verify OTP
-            const otpData = {
-                email,
-                otp: enteredOtp,
-                purpose: 'signup',
-                userType: 'Corporate'
-            }
-            
-            const otpResponse = await authService.verifyOTP(otpData)
-
-            if (!otpResponse.success) {
-                setToast(otpResponse.message || 'Invalid OTP')
-                setOtp(new Array(6).fill('')) // Clear OTP fields
-                return
-            }
-
-            // If OTP is valid, proceed with registration
+            // ✅ DIRECTLY PROCEED WITH REGISTRATION
             const registrationData = {
                 name: name.trim(),
                 email: email.toLowerCase().trim(),
@@ -277,42 +275,111 @@ export default function CorporateSignIn() {
                 dob: new Date().toISOString().split('T')[0],
                 pincode: pincode.trim()
             }
-
+            
+            console.log('📝 Submitting corporate registration with OTP...');
             const signupResponse = await authService.signup(registrationData)
-
-            if (!signupResponse.success) {
-                setToast(signupResponse.message || 'Registration failed')
-                return
+            console.log('📥 Signup response:', signupResponse);
+            
+            // ✅ MINIMAL FIX: Just check if we got a registration successful message
+            // This works regardless of the response structure
+            const registrationSuccessful = 
+                signupResponse?.message?.toLowerCase().includes('registration successful') ||
+                signupResponse?.data?.message?.toLowerCase().includes('registration successful');
+            
+            if (registrationSuccessful) {
+                console.log('✅ Registration successful!');
+                setToast('Registration successful! Please check your email for verification.')
+                
+                // Clear all form fields and redirect to login
+                setTimeout(() => {
+                    setStep('login')
+                    setIsSignUp(false)
+                    // Clear all fields
+                    setName('')
+                    setEmail('')
+                    setPhone('')
+                    setPassword('')
+                    setConfirmPassword('')
+                    setCompanyName('')
+                    setGstNumber('')
+                    setCompanyAddress('')
+                    setPincode('')
+                    setOtp(new Array(6).fill(''))
+                }, 3000)
+                
+                return;
             }
 
-            setToast('Registration successful! Please check your email for verification.')
+            // If we reach here, registration failed
+            const errorMessage = signupResponse.message || 'Registration failed'
             
-            // Clear all form fields and redirect to login after delay
-            setTimeout(() => {
-                setStep('login')
-                setIsSignUp(false)
-                // Clear all fields
-                setName('')
-                setEmail('')
-                setPhone('')
-                setPassword('')
-                setConfirmPassword('')
-                setCompanyName('')
-                setGstNumber('')
-                setCompanyAddress('')
-                setPincode('')
+            // Handle OTP-specific errors
+            if (errorMessage.toLowerCase().includes('otp') || 
+                errorMessage.toLowerCase().includes('invalid') ||
+                errorMessage.toLowerCase().includes('expired')) {
+                
+                // Increment attempt counter for OTP errors
+                const newAttempts = otpAttempts + 1
+                setOtpAttempts(newAttempts)
+                
+                if (newAttempts >= MAX_OTP_ATTEMPTS) {
+                    setToast('Maximum OTP attempts exceeded. Please request a new OTP.')
+                } else {
+                    setToast(`Invalid OTP. ${MAX_OTP_ATTEMPTS - newAttempts} attempts remaining.`)
+                }
+                
+                // Clear OTP fields for retry
                 setOtp(new Array(6).fill(''))
-            }, 3000)
+                
+                // Focus on first OTP input
+                setTimeout(() => {
+                    const firstInput = document.getElementById('otp-0')
+                    firstInput?.focus()
+                }, 100)
+            } else {
+                setToast(errorMessage)
+            }
             
         } catch (error) {
             console.error('Registration error:', error)
-            setToast(error.response?.data?.message || 'Registration failed. Please try again.')
+            
+            // Extract error message
+            const errorMessage = error.response?.data?.message || 
+                               error.message || 
+                               'Registration failed. Please try again.'
+            
+            // Check if it's an OTP error
+            if (errorMessage.toLowerCase().includes('otp') || 
+                errorMessage.toLowerCase().includes('invalid') ||
+                errorMessage.toLowerCase().includes('expired')) {
+                
+                // Increment attempt counter
+                const newAttempts = otpAttempts + 1
+                setOtpAttempts(newAttempts)
+                
+                if (newAttempts >= MAX_OTP_ATTEMPTS) {
+                    setToast('Maximum OTP attempts exceeded. Please request a new OTP.')
+                } else {
+                    setToast(`Invalid OTP. ${MAX_OTP_ATTEMPTS - newAttempts} attempts remaining.`)
+                }
+                
+                // Clear OTP fields
+                setOtp(new Array(6).fill(''))
+                
+                // Focus on first OTP input
+                setTimeout(() => {
+                    const firstInput = document.getElementById('otp-0')
+                    firstInput?.focus()
+                }, 100)
+            } else {
+                setToast(errorMessage)
+            }
         }
     }
 
     const handleResendOTP = async (e) => {
         e.preventDefault()
-        
+        setOtpAttempts(0)
         try {
             // Determine the purpose based on current step
             const purpose = step === 'resetOtp' ? 'reset' : 'signup'

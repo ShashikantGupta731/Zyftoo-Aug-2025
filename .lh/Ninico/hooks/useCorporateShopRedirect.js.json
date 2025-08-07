@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/hooks/useCorporateShopRedirect.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753714956270,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753714956270,
+            "name": "Commit-0",
+            "content": "import { useContext } from 'react'\r\nimport AuthContext from '@/components/context/AuthContext'\r\n\r\nexport const useCorporateShopRedirect = () => {\r\n    const { user } = useContext(AuthContext)\r\n    \r\n    const getShopUrl = (originalPath = '/shop') => {\r\n        if (user && user.accountType === 'corporate') {\r\n            // Map regular shop URLs to corporate equivalents\r\n            if (originalPath === '/shop') {\r\n                return '/corporate-shop'\r\n            }\r\n            if (originalPath.startsWith('/shop-details/')) {\r\n                const id = originalPath.replace('/shop-details/', '')\r\n                return `/corporate-shop/${id}`\r\n            }\r\n            // Add more mappings as needed\r\n            return originalPath.replace('/shop', '/corporate-shop')\r\n        }\r\n        return originalPath\r\n    }\r\n    \r\n    const isCorporateUser = () => {\r\n        return user && user.accountType === 'corporate'\r\n    }\r\n    \r\n    return {\r\n        getShopUrl,\r\n        isCorporateUser,\r\n        user\r\n    }\r\n}\r\n"
+        }
+    ]
+}

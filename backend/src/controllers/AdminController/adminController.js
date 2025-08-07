@@ -1,5 +1,10 @@
-const Product = require('../models/Product');
+const Product = require('../../models/Product');
+const User = require('../../models/User');
 const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { decryptData, encryptData } = require('../../utils/cryptoUtil');
+const AdminAuthService = require('../../services/AdminAuthService');
 
 const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -170,3 +175,78 @@ const createProduct = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const adminLogin = asyncHandler(async (req, res) => {
+  console.log('🚀 [Admin Controller] Admin login request received');
+  console.log('📦 Raw request body:', JSON.stringify(req.body));
+  
+  try {
+    let loginData;
+    
+    // Check if data is encrypted
+    if (req.body.encryptedData) {
+      console.log('🔐 Encrypted data detected, decrypting...');
+      try {
+        loginData = decryptData(req.body.encryptedData);
+        console.log('🔓 Data decrypted successfully:', loginData);
+      } catch (decryptError) {
+        console.error('❌ Decryption error:', decryptError);
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid encrypted data'
+        });
+      }
+    } else {
+      // Handle unencrypted data (for debugging)
+      console.log('📄 Unencrypted data received');
+      loginData = req.body;
+    }
+    
+    // Use AdminAuthService for login processing
+    const result = await AdminAuthService.adminLogin(loginData);
+    
+    // Prepare response data
+    const responseData = {
+      success: true,
+      message: 'Admin login successful',
+      data: result
+    };
+    
+    // Try to encrypt response
+    let encryptedResponseData;
+    try {
+      encryptedResponseData = encryptData(responseData);
+      console.log('🔒 Response encrypted successfully');
+      
+      // Return encrypted response
+      return res.status(200).json({
+        success: true,
+        encryptedData: encryptedResponseData
+      });
+    } catch (encryptError) {
+      console.error('❌ Response encryption failed:', encryptError);
+      // Return unencrypted response if encryption fails
+      return res.status(200).json(responseData);
+    }
+    
+  } catch (error) {
+    console.error('❌ [Admin Controller] Admin login error:', error.message);
+    
+    // Determine status code based on error
+    let statusCode = 500;
+    if (error.message.includes('Invalid credentials')) {
+      statusCode = 401;
+    } else if (error.message.includes('required') || error.message.includes('Invalid user type')) {
+      statusCode = 400;
+    }
+    
+    return res.status(statusCode).json({
+      success: false,
+      error: error.message || 'Login failed. Please try again.'
+    });
+  }
+});
+module.exports = {
+  createProduct,
+  adminLogin,
+};
