@@ -114,6 +114,67 @@ export default function BulkUploadPage({ onNavigate }) {
     setDefaultSubcategories(subcategoryIds)
   }
 
+  // Add helper function to resize image to thumbnail
+  const resizeImageToThumbnail = async (imageUrl, width = 300, height = 300) => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image()
+      img.crossOrigin = 'Anonymous'
+      img.onload = function () {
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        
+        // Calculate aspect ratio and center the image
+        const imgAspect = img.width / img.height
+        const canvasAspect = width / height
+        
+        let drawWidth, drawHeight, offsetX = 0, offsetY = 0
+        
+        if (imgAspect > canvasAspect) {
+          // Image is wider - fit by height
+          drawHeight = height
+          drawWidth = height * imgAspect
+          offsetX = -(drawWidth - width) / 2
+        } else {
+          // Image is taller - fit by width
+          drawWidth = width
+          drawHeight = width / imgAspect
+          offsetY = -(drawHeight - height) / 2
+        }
+        
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
+        
+        canvas.toBlob(blob => {
+          if (blob) {
+            // Upload resized blob to server
+            const token = getAdminToken()
+            const formData = new FormData()
+            formData.append('image', blob, 'thumbnail.jpg')
+            
+            fetch(`${API_BASE_URL}/upload/product-thumbnail`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` },
+              body: formData
+            })
+              .then(res => {
+                if (!res.ok) {
+                  throw new Error('Failed to upload thumbnail')
+                }
+                return res.json()
+              })
+              .then(data => resolve(data.url))
+              .catch(reject)
+          } else {
+            reject(new Error('Failed to create thumbnail blob'))
+          }
+        }, 'image/jpeg', 0.85)
+      }
+      img.onerror = () => reject(new Error('Failed to load image for thumbnail creation'))
+      img.src = imageUrl
+    })
+  }
+
   // Image upload functions - matching AddProductPage exactly
   const handleDefaultImageUpload = async (e, field) => {
     const files = Array.from(e.target.files)
@@ -379,6 +440,25 @@ export default function BulkUploadPage({ onNavigate }) {
             throw new Error('Please select at least one category')
           }
           
+          // Determine main image URL for thumbnail generation
+          const mainImageUrl = (product.images && product.images.length > 0)
+            ? product.images[0]
+            : (defaultImages.images && defaultImages.images.length > 0 ? defaultImages.images[0] : null)
+
+          // Generate thumbnail from first image if no thumbnail is provided
+          let thumbnailUrl = product.product_thumbnail_id || defaultImages.product_thumbnail_id || null
+          
+          if (!thumbnailUrl && mainImageUrl) {
+            try {
+              console.log('Generating thumbnail from image:', mainImageUrl)
+              thumbnailUrl = await resizeImageToThumbnail(mainImageUrl)
+              console.log('Generated thumbnail URL:', thumbnailUrl)
+            } catch (error) {
+              console.error('Failed to generate thumbnail:', error)
+              // Continue without thumbnail if generation fails
+            }
+          }
+          
           // Prepare product data - EXACTLY matching AddProductPage structure
           const productData = {
             // Basic Info
@@ -437,9 +517,9 @@ export default function BulkUploadPage({ onNavigate }) {
             cross_sell_products: product.cross_sell_products || [],
             is_random_related_products: product.is_random_related_products || false,
             
-            // Images - use product images or default images
+            // Images - use product images or default images, with auto-generated thumbnail
             images: product.images || defaultImages.images || [],
-            product_thumbnail_id: product.product_thumbnail_id || defaultImages.product_thumbnail_id || null,
+            product_thumbnail_id: thumbnailUrl,
             product_galleries_id: product.product_galleries_id || defaultImages.product_galleries_id || [],
             size_chart_image_id: product.size_chart_image_id || defaultImages.size_chart_image_id || null,
             product_meta_image_id: product.product_meta_image_id || defaultImages.product_meta_image_id || null,
@@ -815,6 +895,10 @@ Product Name 2,Another description,Short desc 2,1999.99,2499.99,1200,50,SKU002,m
                           onChange={(e) => handleDefaultImageUpload(e, 'images')}
                           disabled={uploadingDefaultImages.images}
                         />
+                        <div className="form-text">
+                          <i className="bi bi-info-circle me-1"></i>
+                          First image will be automatically resized to create the product thumbnail
+                        </div>
                         {uploadingDefaultImages.images && (
                           <div className="text-primary mt-1">
                             <small><i className="bi bi-cloud-upload me-1"></i>Uploading...</small>
@@ -824,7 +908,10 @@ Product Name 2,Another description,Short desc 2,1999.99,2499.99,1200,50,SKU002,m
                           <div className="mt-2">
                             {defaultImages.images.map((url, index) => (
                               <div key={index} className="d-flex align-items-center justify-content-between bg-light p-2 rounded mb-1">
-                                <small className="text-truncate me-2">{url}</small>
+                                <small className="text-truncate me-2">
+                                  {index === 0 && <span className="badge bg-primary me-1">Thumbnail Source</span>}
+                                  {url}
+                                </small>
                                 <button
                                   type="button"
                                   className="btn btn-sm btn-outline-danger"
@@ -838,35 +925,20 @@ Product Name 2,Another description,Short desc 2,1999.99,2499.99,1200,50,SKU002,m
                         )}
                       </div>
 
-                      {/* Product Thumbnail */}
+                      {/* Auto-Generated Thumbnail Info */}
                       <div className="col-md-6 mb-3">
-                        <label className="form-label">Product Thumbnail</label>
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/*"
-                          onChange={(e) => handleDefaultImageUpload(e, 'product_thumbnail_id')}
-                          disabled={uploadingDefaultImages.product_thumbnail_id}
-                        />
-                        {uploadingDefaultImages.product_thumbnail_id && (
-                          <div className="text-primary mt-1">
-                            <small><i className="bi bi-cloud-upload me-1"></i>Uploading...</small>
-                          </div>
-                        )}
-                        {defaultImages.product_thumbnail_id && (
-                          <div className="mt-2">
-                            <div className="d-flex align-items-center justify-content-between bg-light p-2 rounded">
-                              <small className="text-truncate me-2">{defaultImages.product_thumbnail_id}</small>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => removeDefaultImage('product_thumbnail_id')}
-                              >
-                                <i className="bi bi-x"></i>
-                              </button>
+                        <label className="form-label">Product Thumbnail (Auto-Generated)</label>
+                        <div className="form-control-plaintext bg-light p-3 rounded">
+                          <div className="text-center">
+                            <i className="bi bi-magic text-primary" style={{ fontSize: '2rem' }}></i>
+                            <div className="mt-2">
+                              <strong>Automatically Generated</strong>
                             </div>
+                            <small className="text-muted">
+                              Thumbnail will be created from the first product image and resized to 300x300px
+                            </small>
                           </div>
-                        )}
+                        </div>
                       </div>
 
                       {/* Product Galleries */}
@@ -967,7 +1039,7 @@ Product Name 2,Another description,Short desc 2,1999.99,2499.99,1200,50,SKU002,m
                     </div>
 
                     {/* Clear All Button */}
-                    {(defaultImages.images.length > 0 || defaultImages.product_thumbnail_id || 
+                    {(defaultImages.images.length > 0 || 
                       defaultImages.product_galleries_id.length > 0 || defaultImages.size_chart_image_id || 
                       defaultImages.product_meta_image_id) && (
                       <div className="text-end">
@@ -1166,6 +1238,14 @@ Product Name 2,Another description,Short desc 2,1999.99,2499.99,1200,50,SKU002,m
                   <li>tags (array or semicolon-separated)</li>
                   <li>images (array or semicolon-separated URLs)</li>
                   <li>is_featured, is_popular, is_trending (boolean)</li>
+                </ul>
+                
+                <p className="mb-2"><strong>Image Handling:</strong></p>
+                <ul className="mb-2">
+                  <li><strong>Product Images:</strong> Upload or specify URLs in product data</li>
+                  <li><strong>Auto Thumbnail:</strong> First product image is automatically resized to 300x300px thumbnail</li>
+                  <li><strong>Galleries:</strong> Additional product gallery images</li>
+                  <li><strong>Size Chart & Meta:</strong> Optional specialized images</li>
                 </ul>
                 
                 <p className="mb-2"><strong>Category Usage:</strong></p>
