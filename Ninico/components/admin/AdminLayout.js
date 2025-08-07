@@ -5,6 +5,7 @@ import AdminDashboard from './Dashboard'
 import UsersPage from './UsersPage'
 import ProductsPage from './ProductsPage'
 import AddProductPage from './AddProductPage'
+import BulkUploadPage from './BulkUploadPage'
 import EditProductPage from './EditProductPage'
 import CategoriesPage from './CategoriesPage'
 import PagesManagement from './PagesManagement'
@@ -32,6 +33,8 @@ export default function AdminLayout() {
         return <ProductsPage onNavigate={setActiveMenu} />
       case 'add-product':
         return <AddProductPage onNavigate={setActiveMenu} />
+      case 'bulk-upload':
+        return <BulkUploadPage onNavigate={setActiveMenu} />
       case 'edit-product':
         return <EditProductPage onNavigate={setActiveMenu} />
       case 'categories':

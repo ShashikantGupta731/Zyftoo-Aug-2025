@@ -1946,6 +1946,14 @@ export default function AddProductPage({ onNavigate }) {
             <div className="d-flex gap-2">
               <button 
                 type="button" 
+                className="btn btn-outline-primary"
+                onClick={() => onNavigate && onNavigate('bulk-upload')}
+              >
+                <i className="bi bi-cloud-upload me-2"></i>
+                Bulk Upload
+              </button>
+              <button 
+                type="button" 
                 className="btn btn-outline-secondary"
                 onClick={() => onNavigate && onNavigate('products')}
               >
