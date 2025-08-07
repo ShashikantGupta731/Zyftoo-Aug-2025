@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1752764965726,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753714956311,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,22 +1,52 @@\n 'use client'\n import Layout from \"@/components/layout/Layout\"\n import FilterShopBox from \"@/components/shop/FilterShopBox\"\n-import { useState } from \"react\"\n+import { useState, useEffect, useContext } from \"react\"\n+import { useRouter } from \"next/navigation\"\n+import AuthContext from '@/components/context/AuthContext'\n+\n export default function Shop() {\n     const [activeIndex, setActiveIndex] = useState(2)\n+    const { user } = useContext(AuthContext)\n+    const router = useRouter()\n+\n+    useEffect(() => {\n+        // Redirect corporate users to corporate-shop\n+        if (user && user.accountType === 'corporate') {\n+            router.push('/corporate-shop')\n+            return\n+        }\n+    }, [user, router])\n+\n     const handleOnClick = (index) => {\n         setActiveIndex(index)\n     }\n+\n+    // Don't render the regular shop if user is corporate (while redirecting)\n+    if (user && user.accountType === 'corporate') {\n+        return (\n+            <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Shop\">\n+                <div className=\"container py-5\">\n+                    <div className=\"text-center\">\n+                        <div className=\"spinner-border text-primary\" role=\"status\">\n+                            <span className=\"visually-hidden\">Redirecting...</span>\n+                        </div>\n+                        <p className=\"mt-3\">Redirecting to Corporate Shop...</p>\n+                    </div>\n+                </div>\n+            </Layout>\n+        )\n+    }\n+\n     return (\n         <>\n             <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Shop\">\n                 <div className=\"product-filter-area pt-65 pb-80\">\n                     <div className=\"container\">\n                         <FilterShopBox itemStart={10} itemEnd={18} />\n                     </div>\n                 </div>\n-\n             </Layout>\n         </>\n     )\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1753719228568,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,10 +11,11 @@\n     const router = useRouter()\n \n     useEffect(() => {\n         // Redirect corporate users to corporate-shop\n-        if (user && user.accountType === 'corporate') {\n-            router.push('/corporate-shop')\n+        if (user && (user.accountType === 'corporate' || user.userType === 'Corporate')) {\n+            console.log('🔄 [Shop] Redirecting corporate user to corporate-shop')\n+            router.replace('/corporate-shop')\n             return\n         }\n     }, [user, router])\n \n@@ -22,9 +23,9 @@\n         setActiveIndex(index)\n     }\n \n     // Don't render the regular shop if user is corporate (while redirecting)\n-    if (user && user.accountType === 'corporate') {\n+    if (user && (user.accountType === 'corporate' || user.userType === 'Corporate')) {\n         return (\n             <Layout headerStyle={1} footerStyle={1} breadcrumbTitle=\"Shop\">\n                 <div className=\"container py-5\">\n                     <div className=\"text-center\">\n"
                 }
             ],
             "date": 1752764965726,

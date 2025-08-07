@@ -1,0 +1,53 @@
+'use client'
+import { store } from "@/features/store"
+import { Jost } from 'next/font/google'
+import { Provider } from "react-redux"
+import { AuthProvider } from "@/components/context/AuthContext"
+import CorporateRouteManager from "@/components/context/CorporateRouteManager"
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify"
+import "/public/assets/css/animate.css"
+import "/public/assets/css/bootstrap.min.css"
+import "/public/assets/css/fontawesome.min.css"
+import "/public/assets/css/nice-select.css"
+import "/public/assets/css/slick.css"
+import "/public/assets/css/swiper-bundle.css"
+import "/public/assets/css/magnific-popup.css"
+import "/public/assets/css/meanmenu.css"
+import "/public/assets/css/spacing.css"
+import "/public/assets/css/main.css"
+import "/public/assets/css/modern.css"
+import "/public/assets/css/modern-overrides.css"
+const jost = Jost({
+    weight: ['300', '400', '500', '600', '700'],
+    subsets: ['latin'],
+    variable: "--tp-ff-body",
+})
+export default function RootLayout({ children }) {
+    return (
+        <html lang="en">
+            <head>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+            </head>
+            <body className={`${jost.variable}`}>
+                <Provider store={store}>
+                    <AuthProvider>
+                        {children}
+                        <ToastContainer
+                            position="bottom-right"
+                            autoClose={500}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="colored"
+                        />
+                    </AuthProvider>
+                </Provider>
+            </body>
+        </html>
+    )
+}

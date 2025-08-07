@@ -1,0 +1,666 @@
+[{
+  "_id": {
+    "$oid": "687fbc8d33f196eb765aecf1"
+  },
+  "name": "Men's Clothing",
+  "description": "Shirts, pants, suits, and men's fashion wear",
+  "parent": {
+    "$oid": "687fbada33f196eb765aecd2"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:05.802Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:05.802Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbc9333f196eb765aecf6"
+  },
+  "name": "Women's Clothing",
+  "description": "Dresses, tops, skirts, and women's fashion wear",
+  "parent": {
+    "$oid": "687fbada33f196eb765aecd2"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:11.780Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:11.780Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbc9a33f196eb765aecfb"
+  },
+  "name": "Shoes & Footwear",
+  "description": "Casual shoes, formal shoes, sneakers, and sandals",
+  "parent": {
+    "$oid": "687fbada33f196eb765aecd2"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:18.556Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:18.556Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbca033f196eb765aed00"
+  },
+  "name": "Fashion Accessories",
+  "description": "Bags, belts, scarves, and fashion accessories",
+  "parent": {
+    "$oid": "687fbada33f196eb765aecd2"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:24.792Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:24.792Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbca733f196eb765aed05"
+  },
+  "name": "Mobile Phones",
+  "description": "Smartphones, feature phones, and mobile accessories",
+  "parent": {
+    "$oid": "687fbaed33f196eb765aecd5"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:31.157Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:31.157Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcad33f196eb765aed0a"
+  },
+  "name": "Laptops & Computers",
+  "description": "Laptops, desktops, tablets, and computer accessories",
+  "parent": {
+    "$oid": "687fbaed33f196eb765aecd5"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:37.051Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:37.051Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcb333f196eb765aed0f"
+  },
+  "name": "Audio & Video",
+  "description": "Headphones, speakers, cameras, and audio equipment",
+  "parent": {
+    "$oid": "687fbaed33f196eb765aecd5"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:43.578Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:43.578Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcb933f196eb765aed14"
+  },
+  "name": "Gaming",
+  "description": "Gaming consoles, games, and gaming accessories",
+  "parent": {
+    "$oid": "687fbaed33f196eb765aecd5"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:49.636Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:49.636Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcc033f196eb765aed19"
+  },
+  "name": "Smart Home",
+  "description": "Smart devices, IoT gadgets, and home automation",
+  "parent": {
+    "$oid": "687fbaed33f196eb765aecd5"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:30:56.097Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:30:56.097Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcc533f196eb765aed1e"
+  },
+  "name": "Furniture",
+  "description": "Sofas, chairs, tables, beds, and home furniture",
+  "parent": {
+    "$oid": "687fbaf333f196eb765aecd8"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:01.301Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:01.301Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbccb33f196eb765aed23"
+  },
+  "name": "Home Decor",
+  "description": "Wall art, decorative items, vases, and home accessories",
+  "parent": {
+    "$oid": "687fbaf333f196eb765aecd8"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:07.672Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:07.672Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcd133f196eb765aed28"
+  },
+  "name": "Kitchen & Dining",
+  "description": "Cookware, dinnerware, kitchen appliances, and dining sets",
+  "parent": {
+    "$oid": "687fbaf333f196eb765aecd8"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:13.688Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:13.688Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcd733f196eb765aed2d"
+  },
+  "name": "Bedding & Bath",
+  "description": "Bed sheets, towels, pillows, and bathroom accessories",
+  "parent": {
+    "$oid": "687fbaf333f196eb765aecd8"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:19.169Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:19.169Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcdc33f196eb765aed32"
+  },
+  "name": "Skincare",
+  "description": "Face creams, serums, cleansers, and skincare products",
+  "parent": {
+    "$oid": "687fbafa33f196eb765aecdb"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:24.155Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:24.155Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbce133f196eb765aed37"
+  },
+  "name": "Makeup",
+  "description": "Lipstick, foundation, eyeshadow, and cosmetics",
+  "parent": {
+    "$oid": "687fbafa33f196eb765aecdb"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:29.806Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:29.806Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbce733f196eb765aed3c"
+  },
+  "name": "Hair Care",
+  "description": "Shampoo, conditioner, hair styling products",
+  "parent": {
+    "$oid": "687fbafa33f196eb765aecdb"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:35.408Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:35.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcee33f196eb765aed41"
+  },
+  "name": "Health Supplements",
+  "description": "Vitamins, minerals, protein powders, and health supplements",
+  "parent": {
+    "$oid": "687fbafa33f196eb765aecdb"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:42.353Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:42.353Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcf633f196eb765aed46"
+  },
+  "name": "Personal Care",
+  "description": "Body wash, deodorants, oral care, and personal hygiene",
+  "parent": {
+    "$oid": "687fbafa33f196eb765aecdb"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:50.280Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:50.280Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbcfc33f196eb765aed4b"
+  },
+  "name": "Fitness Equipment",
+  "description": "Weights, yoga mats, exercise machines, and fitness gear",
+  "parent": {
+    "$oid": "687fbb0633f196eb765aece1"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:31:56.379Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:31:56.379Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd0233f196eb765aed50"
+  },
+  "name": "Sports Apparel",
+  "description": "Activewear, sports shoes, and athletic clothing",
+  "parent": {
+    "$oid": "687fbb0633f196eb765aece1"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:02.339Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:02.339Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd0733f196eb765aed55"
+  },
+  "name": "Outdoor Gear",
+  "description": "Camping equipment, hiking gear, and outdoor accessories",
+  "parent": {
+    "$oid": "687fbb0633f196eb765aece1"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:07.516Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:07.516Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd0c33f196eb765aed5a"
+  },
+  "name": "Team Sports",
+  "description": "Football, basketball, cricket, and team sports equipment",
+  "parent": {
+    "$oid": "687fbb0633f196eb765aece1"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:12.793Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:12.793Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd1333f196eb765aed5f"
+  },
+  "name": "Fiction Books",
+  "description": "Novels, short stories, and fictional literature",
+  "parent": {
+    "$oid": "687fbb0b33f196eb765aece4"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:19.079Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:19.079Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd1833f196eb765aed64"
+  },
+  "name": "Educational Books",
+  "description": "Textbooks, reference books, and educational materials",
+  "parent": {
+    "$oid": "687fbb0b33f196eb765aece4"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:24.928Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:24.928Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd1e33f196eb765aed69"
+  },
+  "name": "Digital Media",
+  "description": "E-books, audiobooks, and digital content",
+  "parent": {
+    "$oid": "687fbb0b33f196eb765aece4"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:30.408Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:30.408Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd2533f196eb765aed6e"
+  },
+  "name": "Educational Toys",
+  "description": "Learning toys, puzzles, and educational games for kids",
+  "parent": {
+    "$oid": "687fbb1133f196eb765aece7"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:37.258Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:37.258Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd2a33f196eb765aed73"
+  },
+  "name": "Action Figures",
+  "description": "Superhero figures, collectibles, and action toys",
+  "parent": {
+    "$oid": "687fbb1133f196eb765aece7"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:42.476Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:42.476Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd2f33f196eb765aed78"
+  },
+  "name": "Board Games",
+  "description": "Family games, strategy games, and board games",
+  "parent": {
+    "$oid": "687fbb1133f196eb765aece7"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:47.280Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:47.280Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd3433f196eb765aed7d"
+  },
+  "name": "Remote Control Toys",
+  "description": "RC cars, drones, helicopters, and remote control toys",
+  "parent": {
+    "$oid": "687fbb1133f196eb765aece7"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:52.220Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:52.220Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd3b33f196eb765aed82"
+  },
+  "name": "Snacks",
+  "description": "Chips, cookies, nuts, and snack foods",
+  "parent": {
+    "$oid": "687fbb1633f196eb765aecea"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:32:59.742Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:32:59.742Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd4133f196eb765aed87"
+  },
+  "name": "Beverages",
+  "description": "Soft drinks, juices, tea, coffee, and beverages",
+  "parent": {
+    "$oid": "687fbb1633f196eb765aecea"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:05.151Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:05.151Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd4633f196eb765aed8c"
+  },
+  "name": "Organic Foods",
+  "description": "Organic fruits, vegetables, and natural food products",
+  "parent": {
+    "$oid": "687fbb1633f196eb765aecea"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:10.195Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:10.195Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd4a33f196eb765aed91"
+  },
+  "name": "Gourmet Items",
+  "description": "Premium foods, specialty items, and gourmet products",
+  "parent": {
+    "$oid": "687fbb1633f196eb765aecea"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:14.700Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:14.700Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd4f33f196eb765aed96"
+  },
+  "name": "International Cuisine",
+  "description": "Asian, Italian, Mexican, and international food products",
+  "parent": {
+    "$oid": "687fbb1633f196eb765aecea"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:19.229Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:19.229Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd5333f196eb765aed9b"
+  },
+  "name": "Car Accessories",
+  "description": "Car mats, seat covers, steering wheel covers, and accessories",
+  "parent": {
+    "$oid": "687fbb1e33f196eb765aeced"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:23.961Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:23.961Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd5933f196eb765aeda0"
+  },
+  "name": "Car Electronics",
+  "description": "Car stereos, GPS devices, dash cams, and car electronics",
+  "parent": {
+    "$oid": "687fbb1e33f196eb765aeced"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:29.446Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:29.446Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687fbd5e33f196eb765aeda5"
+  },
+  "name": "Car Care",
+  "description": "Car wash products, wax, cleaners, and maintenance items",
+  "parent": {
+    "$oid": "687fbb1e33f196eb765aeced"
+  },
+  "status": true,
+  "createdAt": {
+    "$date": "2025-07-22T16:33:34.909Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-22T16:33:34.909Z"
+  },
+  "__v": 0
+}]

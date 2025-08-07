@@ -1,0 +1,26 @@
+{
+    "sourceFile": "Ninico/components/context/CorporateRouteManager.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1753714956278,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753719228572,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,25 +8,39 @@\n     const router = useRouter()\r\n     const pathname = usePathname()\r\n \r\n     useEffect(() => {\r\n-        if (user && user.accountType === 'corporate') {\r\n+        if (user && (user.accountType === 'corporate' || user.userType === 'Corporate')) {\r\n+            console.log('🔄 [CorporateRouteManager] Corporate user detected, checking redirects for:', pathname)\r\n+            \r\n             // Define redirect mapping for corporate users\r\n             const redirectMap = {\r\n                 '/shop': '/corporate-shop',\r\n                 '/shop/': '/corporate-shop/',\r\n+                '/corporate/shop': '/corporate-shop',\r\n+                '/corporate/shop/': '/corporate-shop/',\r\n             }\r\n \r\n-            // Handle shop-details redirects\r\n+            // Handle shop-details redirects (main product pages)\r\n             if (pathname.startsWith('/shop-details/')) {\r\n                 const productId = pathname.replace('/shop-details/', '')\r\n-                router.push(`/corporate-shop/${productId}`)\r\n+                console.log(`🔄 [CorporateRouteManager] Redirecting shop-details to corporate-shop: ${productId}`)\r\n+                router.replace(`/corporate-shop/${productId}`)\r\n                 return\r\n             }\r\n \r\n+            // Handle corporate/shop-details redirects (consolidate to corporate-shop)\r\n+            if (pathname.startsWith('/corporate/shop-details/')) {\r\n+                const productId = pathname.replace('/corporate/shop-details/', '')\r\n+                console.log(`🔄 [CorporateRouteManager] Redirecting corporate/shop-details to corporate-shop: ${productId}`)\r\n+                router.replace(`/corporate-shop/${productId}`)\r\n+                return\r\n+            }\r\n+\r\n             // Handle other shop redirects\r\n             if (redirectMap[pathname]) {\r\n-                router.push(redirectMap[pathname])\r\n+                console.log(`🔄 [CorporateRouteManager] Redirecting ${pathname} to ${redirectMap[pathname]}`)\r\n+                router.replace(redirectMap[pathname])\r\n                 return\r\n             }\r\n         }\r\n     }, [user, pathname, router])\r\n"
+                },
+                {
+                    "date": 1753720005550,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,13 @@\n     const router = useRouter()\r\n     const pathname = usePathname()\r\n \r\n     useEffect(() => {\r\n+        // Skip redirects for auth pages to avoid conflicts\r\n+        if (pathname.includes('/sign-in') || pathname.includes('/login') || pathname.includes('/register')) {\r\n+            return\r\n+        }\r\n+\r\n         if (user && (user.accountType === 'corporate' || user.userType === 'Corporate')) {\r\n             console.log('🔄 [CorporateRouteManager] Corporate user detected, checking redirects for:', pathname)\r\n             \r\n             // Define redirect mapping for corporate users\r\n"
+                }
+            ],
+            "date": 1753714956278,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport { useEffect, useContext } from 'react'\r\nimport { useRouter, usePathname } from 'next/navigation'\r\nimport AuthContext from '@/components/context/AuthContext'\r\n\r\nconst CorporateRouteManager = ({ children }) => {\r\n    const { user } = useContext(AuthContext)\r\n    const router = useRouter()\r\n    const pathname = usePathname()\r\n\r\n    useEffect(() => {\r\n        if (user && user.accountType === 'corporate') {\r\n            // Define redirect mapping for corporate users\r\n            const redirectMap = {\r\n                '/shop': '/corporate-shop',\r\n                '/shop/': '/corporate-shop/',\r\n            }\r\n\r\n            // Handle shop-details redirects\r\n            if (pathname.startsWith('/shop-details/')) {\r\n                const productId = pathname.replace('/shop-details/', '')\r\n                router.push(`/corporate-shop/${productId}`)\r\n                return\r\n            }\r\n\r\n            // Handle other shop redirects\r\n            if (redirectMap[pathname]) {\r\n                router.push(redirectMap[pathname])\r\n                return\r\n            }\r\n        }\r\n    }, [user, pathname, router])\r\n\r\n    return children\r\n}\r\n\r\nexport default CorporateRouteManager\r\n"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "Ninico/components/ui/SmartProductLink.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1753719228515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1753719228515,
+            "name": "Commit-0",
+            "content": "'use client'\r\nimport Link from 'next/link'\r\nimport { useContext } from 'react'\r\nimport AuthContext from '@/components/context/AuthContext'\r\n\r\n/**\r\n * Smart Product Link Component\r\n * Automatically redirects to the appropriate product page based on user type\r\n * - Corporate users: /corporate-shop/[id]\r\n * - Regular users: /shop-details/[id]\r\n */\r\nexport default function SmartProductLink({ productId, children, className, ...props }) {\r\n    const { user } = useContext(AuthContext)\r\n    \r\n    // Determine the correct URL based on user type\r\n    const href = user && (user.accountType === 'corporate' || user.userType === 'Corporate')\r\n        ? `/corporate-shop/${productId}`\r\n        : `/shop-details/${productId}`\r\n\r\n    return (\r\n        <Link href={href} className={className} {...props}>\r\n            {children}\r\n        </Link>\r\n    )\r\n}\r\n\r\n/**\r\n * Smart Shop Link Component\r\n * Automatically redirects to the appropriate shop page based on user type\r\n * - Corporate users: /corporate-shop\r\n * - Regular users: /shop\r\n */\r\nexport function SmartShopLink({ children, className, ...props }) {\r\n    const { user } = useContext(AuthContext)\r\n    \r\n    // Determine the correct URL based on user type\r\n    const href = user && (user.accountType === 'corporate' || user.userType === 'Corporate')\r\n        ? '/corporate-shop'\r\n        : '/shop'\r\n\r\n    return (\r\n        <Link href={href} className={className} {...props}>\r\n            {children}\r\n        </Link>\r\n    )\r\n}\r\n"
+        }
+    ]
+}

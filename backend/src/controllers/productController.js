@@ -236,7 +236,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
       maxPrice,
       stockStatus,
       search,
-      adminView   // Add admin flag
+      adminView,   // Add admin flag
+      populate     // Add populate flag
     } = req.query;
 
     // Build filter object
@@ -334,14 +335,35 @@ const getAllProducts = asyncHandler(async (req, res) => {
     
     try {
       if (isAdminRequest) {
-        // Admin gets all data with basic population
-        products = await Product.find(filter)
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(parseInt(limit))
-          .lean(); // Use lean for better performance
+        // Check if admin wants populated data
+        if (populate === 'categories' || populate === 'true') {
+          console.log('📋 Admin: Fetching products with category population');
+          products = await Product.find(filter)
+            .populate([
+              {
+                path: 'categories',
+                select: 'name slug parent',
+                populate: {
+                  path: 'parent',
+                  model: 'Category',
+                  select: 'name slug'
+                }
+              }
+            ])
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .lean();
+        } else {
+          // Admin gets all data without population (for performance)
+          products = await Product.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .lean();
+        }
           
-        console.log(`📋 Admin: Retrieved ${products.length} products without population`);
+        console.log(`📋 Admin: Retrieved ${products.length} products`);
       } else {
         // Public gets fully populated data
         products = await Product.find(filter)

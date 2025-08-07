@@ -4,16 +4,16 @@ import { useContext } from 'react';
 import AuthContext from '@/components/context/AuthContext';
 import { post, get } from '@/util/apiService';
 import { AUTH, OTP } from '@/util/apiEndpoints';
-import { encryptData, decryptData, encryptAndStore, decryptAndRetrieve } from '@/util/cryptoHelper.ts';
+import { encryptData, decryptData, encryptAndStore, decryptAndRetrieve } from '@/util/cryptoHelper.js';
+import authService from '@/util/authService'
 
 
 
 
 
 export default function LoginModal({ show, onClose }) {
-  const { login } = useContext(AuthContext);
+  const { login, user, isAuthenticated } = useContext(AuthContext);
   
-  // Debug environment variables
   console.log('🔑 Environment check:');
   console.log('🔑 NEXT_PUBLIC_ENCRYPTION_KEY exists:', !!process.env.NEXT_PUBLIC_ENCRYPTION_KEY);
   console.log('🔑 Key length:', process.env.NEXT_PUBLIC_ENCRYPTION_KEY?.length || 0);
@@ -41,8 +41,6 @@ export default function LoginModal({ show, onClose }) {
   const hasImage = !!backgroundImage;
 
 
-
-
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(''), 2000);
@@ -50,19 +48,18 @@ export default function LoginModal({ show, onClose }) {
     }
   }, [toast]);
 
-  // Load user data from encrypted localStorage on component mount
+
   useEffect(() => {
-    try {
-      const encryptedUser = decryptAndRetrieve('user');
-      if (encryptedUser && login) {
-        login(encryptedUser);
-      }
-    } catch (error) {
-      console.error('Error loading encrypted user data:', error);
-      // Clear corrupted data
-      localStorage.removeItem('user');
+
+    if (show && isAuthenticated && user) {
+      console.log('✅ [LoginModal] User already authenticated:', {
+        userType: user.userType,
+        name: user.name,
+        phone: user.phone
+      });
+      
     }
-  }, [login]);
+  }, [show, isAuthenticated, user]);
 
   if (!show) return null;
 
@@ -137,7 +134,7 @@ export default function LoginModal({ show, onClose }) {
                       }}
                     >Next</button>
 
-                    <button
+                                        <button
                       className="signup-btn"
                       onClick={async () => {
                         if (phone.length !== 10) {
@@ -159,8 +156,8 @@ export default function LoginModal({ show, onClose }) {
                           console.log('🔒 Data to encrypt for signup:', dataToEncrypt);
                           const encryptedData = encryptData(dataToEncrypt);
                           console.log('🔒 Encrypted signup data:', encryptedData);
-                          console.log('📦 Signup payload:', { encryptedData });
                           
+                          // ✅ FIX: Use raw post with already encrypted data
                           const otpResponse = await post(OTP.SEND, { encryptedData }, false);
 
                           if (!otpResponse.success) {
@@ -220,114 +217,126 @@ export default function LoginModal({ show, onClose }) {
 
                   </>
                 ) : step === 'login-password' ? (
-                  <>
-                    <div className='password-text1'><h3>Password:</h3></div>
-                    <div style={{ marginBottom: '10px', fontSize: '14px', color: '#666' }}>
-                      <strong>Phone:</strong> {phone || 'Not set'}
-                    </div>
-                    <input
-                      type="password"
-                      placeholder="Enter Your password"
-                      className="password-input"
-                      value={password}
-                      onChange={(e) => setpassword(e.target.value)}
-                    />
-                    <button
-                      className="login-btn"
-                      onClick={async () => {
-                      if (password.trim() === '') {
-                        setToast('Enter the Password to Proceed');
-                        return;
-                      }
+    <>
+      <div className='password-text1'><h3>Password:</h3></div>
+      <div style={{ marginBottom: '10px', fontSize: '14px', color: '#666' }}>
+        <strong>Phone:</strong> {phone || 'Not set'}
+      </div>
+      <input
+        type="password"
+        placeholder="Enter Your password"
+        className="password-input"
+        value={password}
+        onChange={(e) => setpassword(e.target.value)}
+      />
+      <button
+        className="login-btn"
+        onClick={async () => {
+          if (password.trim() === '') {
+            setToast('Enter the Password to Proceed');
+            return;
+          }
+          if (!phone || phone.trim() === '') {
+            setToast('Phone number is required');
+            return;
+          }
 
-                      try {
-                        if (!phone || phone.trim() === '') {
-                          setToast('Phone number is required');
-                          return;
-                        }
-                        
-                        console.log('🔍 DEBUG: Starting login process...');
-                        console.log('📱 Phone:', phone);
-                        console.log('🔑 Password length:', password.length);
-                        
-                        // Encrypt login credentials
-                        const loginData = { phone, password };
-                        console.log('📝 Original login data:', loginData);
-                        
-                        // Test encryption/decryption locally first
-                        console.log('🔒 Testing encryption locally...');
-                        const testEncrypted = encryptData(loginData);
-                        console.log('🔒 Test encrypted:', testEncrypted);
-                        console.log('🔒 Test encrypted type:', typeof testEncrypted);
-                        
-                        try {
-                          const testDecrypted = decryptData(testEncrypted);
-                          console.log('🔓 Test decrypted:', testDecrypted);
-                          console.log('✅ Local encryption test passed');
-                        } catch (err) {
-                          console.error('❌ Local encryption test failed:', err);
-                          setToast('Encryption test failed');
-                          return;
-                        }
-                        
-                        const encryptedData = encryptData(loginData);
-                        console.log('🔒 Final encrypted data:', encryptedData);
-                        console.log('📦 Payload being sent:', { encryptedData });
-                        
-                        const res = await post(AUTH.LOGIN, { encryptedData }, false);
-                        const response = res.data; // ✅ Axios wraps it here
-                        console.log('📨 Parsed Axios response:', response);
+          try {
+            console.log('🚀 [Frontend] Individual login attempt for:', phone);
+            
+            // Login data specifically for individual users
+            const loginData = { 
+              phone: phone.trim(),
+              password,
+              userType: 'Individual'
+            };
+            
+            console.log('📤 [Frontend] Sending login data:', { phone: loginData.phone, userType: loginData.userType });
+            
+            const response = await authService.login(loginData, true);
+            
+            console.log('📥 [Frontend] Login response:', response);
 
+            if (!response.success) {
+              console.error('❌ [Frontend] Login failed:', response.message);
+              setToast(response.message || 'Login failed');
+              return;
+            }
 
-                        if (!response.success) {
-                          const msg = response.message || 'Login failed';
-                          console.log('❌ Login failed:', msg);
-                          setToast(msg);
-                          return;
-                        }
+            // Extract user data and token from response (same as corporate)
+            const userData = response.data?.data?.user || response.data?.user || response.user;
+            const token = response.data?.data?.token || response.data?.token || response.token;
+            
+            console.log('🔍 [Frontend] Extracted data:', {
+              hasUserData: !!userData,
+              hasToken: !!token,
+              userType: userData?.userType,
+              tokenLength: token?.length
+            });
+            
+            if (!userData) {
+              console.error('❌ [Frontend] No user data in response');
+              setToast('Invalid response from server');
+              return;
+            }
+            
+            if (!token) {
+              console.error('❌ [Frontend] No token in response');
+              setToast('Authentication token missing');
+              return;
+            }
+            
+            console.log('👤 [Frontend] User data received:', { 
+              name: userData.name, 
+              phone: userData.phone, 
+              userType: userData.userType 
+            });
+            
+            // Verify this is an individual user
+            if (userData.userType !== 'Individual') {
+              console.error('❌ [Frontend] User is not individual type:', userData.userType);
+              setToast('Invalid user type');
+              return;
+            }
 
-                        // Decrypt the response data
-                        let decryptedResponse;
-                        if (response.encryptedData) {
-                          console.log('🔓 Decrypting response data...');
-                          decryptedResponse = decryptData(response.encryptedData);
-                          console.log('✅ Decrypted response:', decryptedResponse);
-                        } else {
-                          console.log('⚠️ No encrypted data in response, using as-is');
-                          decryptedResponse = response;
-                        }
+            // Update auth context with user data and token (same as corporate)
+            if (login && typeof login === 'function') {
+              console.log('📝 [Frontend] Updating auth context...');
+              const contextResult = await login(userData, token);
+              
+              if (!contextResult || (contextResult && !contextResult.success)) {
+                console.error('❌ [Frontend] Failed to update auth context');
+                setToast('Authentication failed');
+                return;
+              }
+              console.log('✅ [Frontend] Auth context updated successfully');
+            }
 
-                        // Handle nested data structure
-                        const responseData = decryptedResponse.data || decryptedResponse;
-                        console.log('🔍 Response data structure:', responseData);
-
-                        if (!responseData?.token) {
-                          console.log('❌ Token missing in response data:', responseData);
-                          setToast('Login succeeded but token missing.');
-                          return;
-                        }
-                        
-                        console.log('✅ Login successful, storing user data...');
-                        console.log('🎫 Token found:', responseData.token);
-                        // Store user data encrypted in localStorage
-                        encryptAndStore('user', responseData.user);
-                        login(responseData.user);
-                        setStep('success');
-                      } catch (error) {
-                        console.error('❌ Login Error:', error);
-                        console.error('📋 Login Error details:', {
-                          message: error.message,
-                          status: error.status,
-                          data: error.data
-                        });
-                        setToast('Server Error: ' + (error.message || 'Unknown error'));
-                      }
-                    }}
-                    >
-                      Login
-                    </button>
-                  </>
-                ) : step === 'signupOtp' ? (
+            // Success message and form reset
+            console.log('✅ [Frontend] Individual login successful');
+            setToast('Login successful!');
+            
+            // Clear form fields
+            setPhone('');
+            setpassword('');
+            
+            // Show success step
+            setStep('success');
+            
+          } catch (error) {
+            console.error('❌ [Frontend] Login error:', error);
+            const errorMessage = error.response?.data?.message || 
+                                error.response?.data?.error || 
+                                error.message || 
+                                'Login failed. Please try again.';
+            setToast(errorMessage);
+          }
+        }}
+      >
+        Login
+      </button>
+    </>
+  ) :  step === 'signupOtp' ? (
                   <>
                     <h3>Enter OTP To Proceed:</h3>
                     <div style={{ marginBottom: '10px' }}></div>

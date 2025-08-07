@@ -3,11 +3,23 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1753281683637,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753722806215,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,15 +12,31 @@\n     name: '',\r\n     short_description: '',\r\n     description: '',\r\n \r\n-    // Pricing\r\n+    // Legacy Pricing (kept for backward compatibility)\r\n     price: '',\r\n     compare_price: '',\r\n     cost_price: '',\r\n     sale_price: '',\r\n     discount: '',\r\n \r\n+    // New Retail Pricing Structure\r\n+    retailPrice: {\r\n+      mrp: '',\r\n+      sellingPrice: '',\r\n+      discount: 0,\r\n+      currency: 'INR'\r\n+    },\r\n+\r\n+    // Corporate Pricing\r\n+    corporatePricing: {\r\n+      enabled: false,\r\n+      minimumOrderQuantity: 1,\r\n+      priceTiers: [],\r\n+      customQuoteThreshold: null\r\n+    },\r\n+\r\n     // Inventory\r\n     sku: '',\r\n     quantity: '',\r\n     stock_status: 'in_stock',\r\n@@ -30,12 +46,20 @@\n     requires_shipping: true,\r\n     available_from: '',\r\n     available_to: '',\r\n \r\n+    // Product Variations\r\n+    variations: [],\r\n+\r\n     // Categories & Tags\r\n     categories: [],\r\n     tags: [],\r\n \r\n+    // Product Relations\r\n+    related_products: [],\r\n+    cross_sell_products: [],\r\n+    is_random_related_products: false,\r\n+\r\n     // Images\r\n     images: [],\r\n     product_thumbnail_id: null,\r\n     product_galleries_id: [],\r\n@@ -57,8 +81,18 @@\n     is_popular: false,\r\n     is_trending: false,\r\n     is_return: false,\r\n     status: true,\r\n+\r\n+    // New Business Features\r\n+    safe_checkout: true,\r\n+    secure_checkout: true,\r\n+    social_share: true,\r\n+    encourage_order: false,\r\n+    encourage_view: false,\r\n+\r\n+    // Corporate Features\r\n+    is_corporate_only: false\r\n   })\r\n \r\n   // Refs for file inputs\r\n   const imageInputs = {\r\n"
+                },
+                {
+                    "date": 1753725076251,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -124,10 +124,10 @@\n   // Fetch categories from backend\r\n   const fetchCategories = async () => {\r\n     try {\r\n       setCategoriesLoading(true)\r\n-      console.log('Fetching categories from:', `${API_BASE_URL}/categories`)\r\n-      const response = await fetch(`${API_BASE_URL}/categories`, {\r\n+      console.log('Fetching categories from:', `${API_BASE_URL}/products/categories`)\r\n+      const response = await fetch(`${API_BASE_URL}/products/categories`, {\r\n         method: 'GET',\r\n         headers: {\r\n           'Content-Type': 'application/json',\r\n           'Authorization': `Bearer ${ADMIN_TOKEN}`\r\n"
+                },
+                {
+                    "date": 1753725402781,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -124,10 +124,10 @@\n   // Fetch categories from backend\r\n   const fetchCategories = async () => {\r\n     try {\r\n       setCategoriesLoading(true)\r\n-      console.log('Fetching categories from:', `${API_BASE_URL}/products/categories`)\r\n-      const response = await fetch(`${API_BASE_URL}/products/categories`, {\r\n+      console.log('Fetching categories from:', `${API_BASE_URL}/categories`)\r\n+      const response = await fetch(`${API_BASE_URL}/categories`, {\r\n         method: 'GET',\r\n         headers: {\r\n           'Content-Type': 'application/json',\r\n           'Authorization': `Bearer ${ADMIN_TOKEN}`\r\n"
                 }
             ],
             "date": 1753281683637,

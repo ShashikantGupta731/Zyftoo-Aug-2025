@@ -1,0 +1,22 @@
+{
+    "sourceFile": "backend/src/routes/admin/adminRoutes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1753729488148,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1753729761020,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,8 +18,10 @@\n \r\n // Category admin routes\r\n const categoryController = require('../../controllers/categoryController');\r\n const { uploadCategoryImage } = require('../../utils/fileUpload');\r\n+router.get('/categories', categoryController.getCategories);\r\n+router.get('/categories/:id', categoryController.getCategory);\r\n router.post('/categories', uploadCategoryImage.single('image'), categoryController.createCategory);\r\n router.put('/categories/:id', uploadCategoryImage.single('image'), categoryController.updateCategory);\r\n router.delete('/categories/:id', categoryController.deleteCategory);\r\n \r\n"
+                }
+            ],
+            "date": 1753729488148,
+            "name": "Commit-0",
+            "content": "const express = require('express');\r\nconst router = express.Router();\r\nconst { protect, authorizeRoles } = require('../../middleware/authMiddleware');\r\n\r\n\r\n// Allow SuperAdmin and Admin to add users without authentication/OTP/validation\r\nconst adminUserController = require('../../controllers/adminUserController');\r\nrouter.post('/users', adminUserController.createAdminUser);\r\n\r\n// Protect all other admin routes\r\nrouter.use(protect, authorizeRoles('admin', 'superadmin', 'SuperAdmin', 'Admin'));\r\n\r\n// Example admin-only route\r\nrouter.get('/test', (req, res) => {\r\n  res.json({ message: 'Admin route access granted', user: req.user });\r\n});\r\n\r\n\r\n// Category admin routes\r\nconst categoryController = require('../../controllers/categoryController');\r\nconst { uploadCategoryImage } = require('../../utils/fileUpload');\r\nrouter.post('/categories', uploadCategoryImage.single('image'), categoryController.createCategory);\r\nrouter.put('/categories/:id', uploadCategoryImage.single('image'), categoryController.updateCategory);\r\nrouter.delete('/categories/:id', categoryController.deleteCategory);\r\n\r\n// Product admin routes\r\nconst productController = require('../../controllers/productController');\r\nrouter.post('/products', productController.createProduct);\r\nrouter.put('/products/:id', productController.updateProduct);\r\nrouter.delete('/products/:id', productController.deleteProduct);\r\nrouter.get('/products', productController.getAllProducts);\r\n\r\n// AdminUser routes\r\nrouter.get('/users', adminUserController.getAdminUsers);\r\nrouter.get('/users/:id', adminUserController.getAdminUserById);\r\nrouter.put('/users/:id', adminUserController.updateAdminUser);\r\nrouter.delete('/users/:id', adminUserController.deleteAdminUser);\r\n\r\nmodule.exports = router;\r\n"
+        }
+    ]
+}

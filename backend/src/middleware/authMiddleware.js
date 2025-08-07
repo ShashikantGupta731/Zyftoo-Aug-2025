@@ -1,6 +1,7 @@
 // middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { decryptData } = require('../utils/cryptoUtil');
 
 const protect = async (req, res, next) => {
   console.log(' PROTECT MIDDLEWARE HIT')
@@ -80,7 +81,7 @@ const requireRoles = (...allowedRoles) => {
 
 // ✅ Unified admin access (admin + superadmin)
 const adminAccess = (req, res, next) => {
-  if (req.user && ['admin', 'superadmin'].includes(req.user.role)) {
+  if (req.user && ['Admin', 'Superadmin'].includes(req.user.role)) {
     next();
   } else {
     res.status(403).json({ 
@@ -91,4 +92,21 @@ const adminAccess = (req, res, next) => {
   }
 };
 
-module.exports = { protect, authorizeRoles, adminOnly, requireRoles, adminAccess };
+
+
+const decryptBody = (req, res, next) => {
+  if (req.body && req.body.encryptedData) {
+    try {
+      const decrypted = decryptData(req.body.encryptedData);
+      if (!decrypted || typeof decrypted !== 'object') {
+        throw new Error('Invalid encrypted data');
+      }
+      req.body = decrypted;
+    } catch (err) {
+      return res.status(400).json({ success: false, error: 'Invalid encrypted data' });
+    }
+  }
+  next();
+};
+
+module.exports = { protect, authorizeRoles, adminOnly, requireRoles, adminAccess, decryptBody };
